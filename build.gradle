@@ -1,0 +1,47 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.0'
+        
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    minSdkVersion = 16
+    targetSdkVersion = 27
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.2'
+
+    supportLibraryVersion = '27.0.2'
+
+    playServicesLocationVersion = '11.0.4'//playservices e firebase tem que ter mesma versao
+    firebaseVersion = '11.0.4'
+
+    circleImageViewVersion = '2.2.0'
+    butterknifeVersion = '8.8.1'
+    cloudinaryVersion = '1.20.0'
+    eventbusVersion = '3.1.1'
+    daggerVersion = '2.14.1'
+    glideVersion = '4.4.0'
+    jsr250Version = '1.0'
+}
