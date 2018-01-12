@@ -158,20 +158,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_pagemento) {
             // Handle the camera action
             //Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             //startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_viagens) {
             //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             //startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_ajuda) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_viagens_descontos) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_config) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_dirija_taxilivre) {
+
+        } else if (id == R.id.nav_legal) {
 
         }
 

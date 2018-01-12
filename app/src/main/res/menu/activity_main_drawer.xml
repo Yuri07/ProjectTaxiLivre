@@ -3,33 +3,36 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_pagemento"
+            android:title="Pagamento" />
+        <!--android:icon="@drawable/ic_menu_camera"-->
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_viagens"
+            android:title="Suas viagens" />
+        <!--android:icon="@drawable/ic_menu_gallery"-->
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/nav_ajuda"
+            android:title="Ajuda" />
+        <!--android:icon="@drawable/ic_menu_slideshow"-->
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_viagens_descontos"
+            android:title="Viagens com desconto" />
+        <!--android:icon="@drawable/ic_menu_manage"-->
+        <item
+            android:id="@+id/nav_config"
+            android:title="Configurações" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_dirija_taxilivre"
+                android:title="Dirija com TaxiLivre"/>
+            <!--android:icon="@drawable/ic_menu_share"-->
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_legal"
+                android:title="Legal" />
+            <!--android:icon="@drawable/ic_menu_send"-->
         </menu>
     </item>
 
