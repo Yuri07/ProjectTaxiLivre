@@ -7,7 +7,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.google.gms:google-services:3.1.2'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -34,7 +35,7 @@ ext {
 
     supportLibraryVersion = '27.0.2'
 
-    playServicesLocationVersion = '11.0.4'//playservices e firebase tem que ter mesma versao
+    playServicesLocationVersion = '11.8.0'//'11.0.4'//playservices e firebase tem que ter mesma versao
     firebaseVersion = '11.0.4'
 
     circleImageViewVersion = '2.2.0'

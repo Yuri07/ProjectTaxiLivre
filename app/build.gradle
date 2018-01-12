@@ -14,7 +14,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
         }
+
+        debug {
+            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+        }
+
     }
 }
 
@@ -28,7 +34,9 @@ dependencies {
 
     implementation "com.android.support:design:$rootProject.ext.supportLibraryVersion"
 
+    implementation "com.google.android.gms:play-services-location:$rootProject.ext.playServicesLocationVersion"
+    implementation "com.google.android.gms:play-services-maps:$rootProject.ext.playServicesLocationVersion"
+
     implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
-
 }
