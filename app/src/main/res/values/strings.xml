@@ -5,4 +5,15 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="login.message.email">Email</string>
+    <string name="login.message.password">Password</string>
+    <string name="login.message.signin">Sign In</string>
+    <string name="login.message.signup">Sign Up</string>
+    <string name="login.notice.message.useradded">User was successfully registered</string>
+    <string name="login.error.message.signin">Error trying to signIn %s</string>
+    <string name="login.error.message.signup">Error registering new user %s</string>
+
+    <string name="contactlist.menu.action.signoff">Sign out</string>
+    <string name="contactlist.title">Contacts</string>
+
 </resources>

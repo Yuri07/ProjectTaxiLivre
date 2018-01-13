@@ -37,6 +37,19 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:$rootProject.ext.playServicesLocationVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.ext.playServicesLocationVersion"
 
+    implementation "com.google.firebase:firebase-database:$rootProject.ext.firebaseVersion"
+    implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
+
     implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
+    implementation "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android:$rootProject.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.ext.daggerVersion"
+    // if you use the support libraries
+    annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.ext.daggerVersion"
+    implementation "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
+    implementation "de.hdodenhof:circleimageview:$rootProject.ext.circleImageViewVersion"
+
 }
+apply plugin: 'com.google.gms.google-services'
