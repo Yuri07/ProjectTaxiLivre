@@ -33,6 +33,9 @@
                 android:id="@+id/nav_legal"
                 android:title="Legal" />
             <!--android:icon="@drawable/ic_menu_send"-->
+            <item
+                android:id="@+id/nav_sair"
+                android:title="Sair" />
         </menu>
     </item>
 

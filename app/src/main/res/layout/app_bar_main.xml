@@ -21,9 +21,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!--<include
-        android:id="@+id/include"
-        layout="@layout/content_main" />-->
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -35,11 +38,6 @@
         app:srcCompat="@drawable/ic_car_request2"
         />
 
-    <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

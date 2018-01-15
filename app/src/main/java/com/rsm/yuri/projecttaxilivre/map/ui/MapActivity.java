@@ -1,6 +1,8 @@
 package com.rsm.yuri.projecttaxilivre.map.ui;
 
 import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,11 +27,16 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivre.R;
+import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
+import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MapActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapView {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -39,13 +47,24 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
+    @Inject
+    MapPresenter presenter;
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private Location lastLocation;
+    private TaxiLivreApp app;
+
+    private final static int PERMISSIONS_REQUEST_LOCATION = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
+
+        app = (TaxiLivreApp) getApplication();
 
         setSupportActionBar(toolbar);
 
@@ -71,8 +90,13 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 .add(R.id.content_frame,mapFragment)
                 .commit();
 
+        setupInjection();
+        presenter.onCreate();
+        presenter.checkForSession();
 
-        //getLastKnowLocation();
+    }
+
+    private void setupInjection(){
 
     }
 
@@ -87,6 +111,15 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+            int permissionLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+            }
+            if ( permissionLocation != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
+            }
             return;
         }
         Log.d("Fragment", "Nao caiu no if");
@@ -105,39 +138,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 });
     }
 
-    private void displayFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
-    }
-    /*private void getLastLocation() {
-        FusedLocationProviderClient mFusedLocationClient;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            lastLocation = location;
-                        }
-                    }
-                });
-    }*/
-
-    /*@Override
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION:
@@ -149,7 +150,14 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
                 break;
         }
-    }*/
+    }
+
+    private void displayFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -174,6 +182,8 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
         } else if (id == R.id.nav_legal) {
 
+        } else if (id == R.id.nav_sair) {
+            logout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -189,5 +199,44 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         } else {
             super.onBackPressed();
         }
+    }
+
+
+    @Override
+    public void setUIVisibility(boolean enabled) {
+        drawerLayout.setVisibility( enabled ? View.VISIBLE : View.INVISIBLE );
+    }
+
+    @Override
+    public void navigateToLoginScreen() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    public void setUserEmail(String email) {
+        if (email != null) {
+            String key = app.getEmailKey();
+            sharedPreferences.edit().putString(key, email).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
+        }
+    }
+
+    @Override
+    public void logout() {
+        presenter.logout();
+        sharedPreferences.edit().clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    public void checkForSession() {
+        presenter.checkForSession();
     }
 }
