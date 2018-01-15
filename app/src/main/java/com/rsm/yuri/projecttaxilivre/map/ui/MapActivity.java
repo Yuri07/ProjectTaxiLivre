@@ -47,9 +47,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
-    @Inject
+    //@Inject
     MapPresenter presenter;
-    @Inject
+    //@Inject
     SharedPreferences sharedPreferences;
 
     private Location lastLocation;
@@ -91,8 +91,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 .commit();
 
         setupInjection();
-        presenter.onCreate();
-        presenter.checkForSession();
+        //presenter.onCreate();
+        //presenter.checkForSession();
+
+        setUIVisibility(true);
+        //getLastKnowLocation();
 
     }
 
@@ -100,7 +103,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     }
 
-    private void getLastKnowLocation() {
+    private void getLastKnowLocation() {//usado no mapfragment
         FusedLocationProviderClient mFusedLocationClient;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

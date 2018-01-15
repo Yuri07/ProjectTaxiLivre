@@ -86,95 +86,65 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
-    /*private void getLastKnowLocation() {
-        FusedLocationProviderClient mFusedLocationClient;
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        map = googleMap;
+        map.setInfoWindowAdapter(this);
+        getLastKnowLocation();
+
+
+    }
+
+    private void getLastKnowLocation() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            int permissionLocation = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+            }
+            if ( permissionLocation != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
+            }
             return;
         }
-        Log.d("Fragment", "Nao caiu no if");
-        //lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        map.setMyLocationEnabled(true);
+
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                     @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
+                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             // Logic to handle location object
                             Log.d("Fragment", "onSuccess");
                             lastLocation = location;
+                            LatLng position = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                         }
                     }
                 });
-    }*/
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        //getLastKnowLocation();
-        map = googleMap;
-        map.setInfoWindowAdapter(this);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
-        } else {
-            map.setMyLocationEnabled(true);
-            //LatLng location = null;
-            /*for (Photo photo : photoList) {
-                location = new LatLng(photo.getLatitutde(), photo.getLongitude());
-                Marker marker = map.addMarker(new MarkerOptions().position(location));
-                markers.put(marker, photo);
-            }*/
-            //location = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
-            
-            //if (location != null) map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
-            //FusedLocationProviderClient mFusedLocationClient;
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                // Logic to handle location object
-                                Log.d("Fragment", "onSuccess");
-                                lastLocation = location;
-                                LatLng position = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
-                            }
-                        }
-                    });
-        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (map != null) {
-                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        map.setMyLocationEnabled(true);
-                    }
+            case PERMISSIONS_REQUEST_LOCATION:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    getLastKnowLocation();
                 }
-                return;
-            }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+
         }
     }
 
