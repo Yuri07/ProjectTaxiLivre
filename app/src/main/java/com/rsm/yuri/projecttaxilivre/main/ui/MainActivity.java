@@ -1,42 +1,36 @@
-package com.rsm.yuri.projecttaxilivre.map.ui;
+package com.rsm.yuri.projecttaxilivre.main.ui;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
-import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
+import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
+import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapView {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -46,16 +40,22 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+    //@BindView(R.id.emailtextView)
+    //TextView emailTextView;
 
-    //@Inject
-    MapPresenter presenter;
-    //@Inject
+    @Inject
+    MainPresenter presenter;
+    @Inject
+    MapFragment mapFragment;
+    @Inject
+    FragmentManager fragmentManager;
+    @Inject
     SharedPreferences sharedPreferences;
 
     private Location lastLocation;
     private TaxiLivreApp app;
 
-    private final static int PERMISSIONS_REQUEST_LOCATION = 11;
+    //private final static int PERMISSIONS_REQUEST_LOCATION = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,27 +83,34 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        setupInjection();
+
         //displayFragment(new MapFragment());
-        MapFragment mapFragment = new MapFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        //MapFragment mapFragment = new MapFragment();
+        //FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(R.id.content_frame,mapFragment)
+                .add(R.id.content_frame, mapFragment)
                 .commit();
 
-        setupInjection();
-        //presenter.onCreate();
-        //presenter.checkForSession();
 
-        setUIVisibility(true);
+        presenter.onCreate();
+        presenter.checkForSession();
+
+        //setUIVisibility(true);
         //getLastKnowLocation();
 
     }
 
     private void setupInjection(){
 
+        MapFragment mapFragment = new MapFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        MainComponent mainComponent = app.getMainComponent(this, fragmentManager, mapFragment);
+        mainComponent.inject(this);
     }
 
-    private void getLastKnowLocation() {//usado no mapfragment
+    /*private void getLastKnowLocation() {//usado no mapfragment
         FusedLocationProviderClient mFusedLocationClient;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -125,7 +132,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             }
             return;
         }
-        Log.d("Fragment", "Nao caiu no if");
+        Log.d("Activity", "Nao caiu no if");
         //lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -134,14 +141,14 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             // Logic to handle location object
-                            Log.d("Fragment", "onSuccess");
+                            Log.d("Activity", "onSuccess");
                             lastLocation = location;
                         }
                     }
                 });
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION:
@@ -153,7 +160,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
                 break;
         }
-    }
+    }*/
 
     private void displayFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -175,7 +182,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         } else if (id == R.id.nav_viagens) {
             //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             //startActivity(intent);
-        } else if (id == R.id.nav_ajuda) {
+        } else if(id == R.id.nav_historico_chats){
+
+        }else if (id == R.id.nav_ajuda) {
 
         } else if (id == R.id.nav_viagens_descontos) {
 

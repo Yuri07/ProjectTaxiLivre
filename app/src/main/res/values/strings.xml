@@ -15,5 +15,14 @@
 
     <string name="contactlist.menu.action.signoff">Sign out</string>
     <string name="contactlist.title">Contacts</string>
+    <string name="draw_nav_item_pagamento">Pagamento</string>
+    <string name="draw_nav_item_suas_viagens">Suas viagens</string>
+    <string name="draw_nav_item_historico_de_conversas">Histórico de Conversas</string>
+    <string name="draw_nav_item_ajuda">Ajuda</string>
+    <string name="draw_nav_item_viagens_com_desconto">Viagens com desconto</string>
+    <string name="draw_nav_item_configuraces">Configurações</string>
+    <string name="draw_nav_item_dirija_com_taxilivre">Dirija com TaxiLivre</string>
+    <string name="draw_nav_item_legal">Legal</string>
+    <string name="draw_nav_item_sair">Sair</string>
 
 </resources>

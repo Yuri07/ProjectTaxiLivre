@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivre.map.events;
+package com.rsm.yuri.projecttaxilivre.main.events;
 
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
@@ -6,7 +6,7 @@ import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
  * Created by yuri_ on 15/01/2018.
  */
 
-public class MapEvent {
+public class MainEvent {
 
     private int eventType;
 

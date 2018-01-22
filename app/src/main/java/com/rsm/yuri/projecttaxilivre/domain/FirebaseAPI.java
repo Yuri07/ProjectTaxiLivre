@@ -5,9 +5,14 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -23,11 +28,11 @@ public class FirebaseAPI {
     private final static String SEPARATOR = "___";
 
 
-    private DatabaseReference mPhotoDatabaseReference;//private Firebase firebase; Firebase trocado por DatabaseReference
-    private ChildEventListener photosEventListener;
+    private DatabaseReference dataReference;
+
 
     public FirebaseAPI(DatabaseReference databaseReference){
-        mPhotoDatabaseReference = databaseReference;//FirebaseDatabase.getInstance().getReference();
+        dataReference = databaseReference;//FirebaseDatabase.getInstance().getReference();
     }
 
     public void checkForData(final FirebaseActionListenerCallback listener){
@@ -44,16 +49,16 @@ public class FirebaseAPI {
                 Log.d("FIREBASE API", databaseError.getMessage());
             }
         };
-        mPhotoDatabaseReference.addValueEventListener(postListener);
+        dataReference.addValueEventListener(postListener);
     }
 
-    public String getAuthEmail(){
+    /*public String getAuthEmail(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             return user.getEmail();
         }
         return null;
-    }
+    }*/
 
     public void checkForSession(FirebaseActionListenerCallback listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -66,6 +71,95 @@ public class FirebaseAPI {
 
     public void logout() {
         FirebaseAuth.getInstance().signOut();
+        //notifyContactsOfConnectionChange(User.OFFLINE, true);
+        changeUserConnectionStatus(User.OFFLINE);
     }
+
+    public DatabaseReference getMyUserReference(){
+        return getUserReference(getAuthUserEmail());
+    }
+
+    public String getAuthUserEmail(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String email = null;
+        if(user!=null)
+            email = user.getEmail();
+
+        return email;
+    }
+
+    public DatabaseReference getUserReference(String email){
+        DatabaseReference userReference = null;
+        if(email!=null){
+            String emailKey = email.replace(".","_");
+            userReference = dataReference.getRoot().child(USERS_PATH).child(emailKey);
+        }
+        return userReference;
+    }
+
+    public DatabaseReference getContactsReference(String email){
+        return getUserReference(email).child(HISTORICCHATS_PATH);
+    }
+
+    public DatabaseReference getMyContactsReference(){
+        return getContactsReference(getAuthUserEmail());
+    }
+
+    public DatabaseReference getOneContactReference(String mainEmail, String childEmail){
+        String childKey = childEmail.replace(".","_");
+        return getUserReference(mainEmail).child(HISTORICCHATS_PATH).child(childKey);
+    }
+
+    public DatabaseReference getChatsReference(String receiver){
+        String keySender = getAuthUserEmail().replace(".","_");
+        String keyReceiver = receiver.replace(".","_");
+
+        String keyChat = keySender + SEPARATOR + keyReceiver;
+        if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
+            keyChat = keyReceiver + SEPARATOR + keySender;//sempre o primeiro em ordem alfabetica vem primeiro
+        }
+        return dataReference.getRoot().child(CHATS_PATH).child(keyChat);
+    }
+
+    public void changeUserConnectionStatus(boolean online) {
+        if (getMyUserReference() != null) {
+            Map<String, Object> updates = new HashMap<String, Object>();
+            updates.put("online", online);
+            getMyUserReference().updateChildren(updates);
+
+            notifyContactsOfConnectionChange(online);
+        }
+    }
+
+    public void notifyContactsOfConnectionChange(final boolean online, final boolean signoff) {
+        final String myEmail = getAuthUserEmail();
+        getMyContactsReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String email = child.getKey();//um email de um contato meu
+                    DatabaseReference reference = getOneContactReference(email, myEmail);//pegando a
+                    // referencia do meu contato para  avisa-lo que estou online ou offline(tornar true
+                    // ou false o valor de 'users/email/contacts/myEmail').
+                    reference.setValue(online);
+                }
+                if (signoff){
+                    FirebaseAuth.getInstance().signOut();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+            }
+        });
+    }
+
+    public void notifyContactsOfConnectionChange(boolean online) {
+        notifyContactsOfConnectionChange(online, false);
+    }
+
+    /*public void signOff(){
+        notifyContactsOfConnectionChange(User.OFFLINE, true);
+    }*/
 
 }

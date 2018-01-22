@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivre.map.ui;
+package com.rsm.yuri.projecttaxilivre.main.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -51,21 +51,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //setupGoogleAPIClient();
-        //getLastKnowLocation();
-        //Log.d("Fragment", lastLocation.toString());
+
 
     }
-
-    /*private void setupGoogleAPIClient() {
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -158,8 +146,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
 
         }
-
-        //getLastKnowLocation();
 
     }
 

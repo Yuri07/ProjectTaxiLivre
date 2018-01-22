@@ -1,10 +1,10 @@
-package com.rsm.yuri.projecttaxilivre.map;
+package com.rsm.yuri.projecttaxilivre.main;
 
 /**
  * Created by yuri_ on 15/01/2018.
  */
 
-public interface MapInteractor {
+public interface MainInteractor {
 
 
     void setRecipient(String recipient);

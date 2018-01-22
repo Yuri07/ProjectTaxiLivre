@@ -1,10 +1,10 @@
-package com.rsm.yuri.projecttaxilivre.map.ui;
+package com.rsm.yuri.projecttaxilivre.main.ui;
 
 /**
  * Created by yuri_ on 15/01/2018.
  */
 
-public interface MapView {
+public interface MainView {
 
     void setUIVisibility(boolean enabled);
 

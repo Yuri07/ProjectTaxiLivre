@@ -1,9 +1,8 @@
-package com.rsm.yuri.projecttaxilivre.map;
+package com.rsm.yuri.projecttaxilivre.main;
 
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
-import com.rsm.yuri.projecttaxilivre.login.events.LoginEvent;
-import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
-import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
+import com.rsm.yuri.projecttaxilivre.main.events.MainEvent;
+import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -11,17 +10,17 @@ import org.greenrobot.eventbus.Subscribe;
  * Created by yuri_ on 15/01/2018.
  */
 
-public class MapPresenterImpl implements MapPresenter {
+public class MainPresenterImpl implements MainPresenter {
 
     EventBus eventBus;
-    MapView mapView;
-    MapInteractor mapInteractor;
+    MainView mainView;
+    MainInteractor mainInteractor;
     SessionInteractor sessionInteractor;
 
-    public MapPresenterImpl(EventBus eventBus, MapView mapView, MapInteractor mapInteractor, SessionInteractor sessionInteractor) {
+    public MainPresenterImpl(EventBus eventBus, MainView mainView, MainInteractor mainInteractor, SessionInteractor sessionInteractor) {
         this.eventBus = eventBus;
-        this.mapView = mapView;
-        this.mapInteractor = mapInteractor;
+        this.mainView = mainView;
+        this.mainInteractor = mainInteractor;
         this.sessionInteractor = sessionInteractor;
     }
 
@@ -32,34 +31,34 @@ public class MapPresenterImpl implements MapPresenter {
 
     @Override
     public void onDestroy() {
-        mapView = null;
+        mainView = null;
         eventBus.unregister(this);
 
     }
 
     @Override
     @Subscribe
-    public void onEventMainThread(MapEvent event) {
+    public void onEventMainThread(MainEvent event) {
         switch (event.getEventType()) {
-            case MapEvent.onSuccessToRecoverSession:
+            case MainEvent.onSuccessToRecoverSession:
                 onSuccessToRecoverSession(event.getLoggedUserEmail());
                 break;
-            case LoginEvent.onFailedToRecoverSession:
+            case MainEvent.onFailedToRecoverSession:
                 onFailedToRecoverSession();
                 break;
         }
     }
 
     private void onSuccessToRecoverSession(String email) {
-        if (mapView != null) {
-            mapView.setUserEmail(email);
-            mapView.setUIVisibility(true);
+        if (mainView != null) {
+            mainView.setUserEmail(email);
+            mainView.setUIVisibility(true);
         }
     }
 
     private void onFailedToRecoverSession() {
-        if (mapView != null) {
-            mapView.navigateToLoginScreen();
+        if (mainView != null) {
+            mainView.navigateToLoginScreen();
         }
     }
 

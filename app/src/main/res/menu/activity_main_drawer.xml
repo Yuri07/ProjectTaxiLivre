@@ -4,38 +4,41 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_pagemento"
-            android:title="Pagamento" />
+            android:title="@string/draw_nav_item_pagamento" />
         <!--android:icon="@drawable/ic_menu_camera"-->
         <item
             android:id="@+id/nav_viagens"
-            android:title="Suas viagens" />
+            android:title="@string/draw_nav_item_suas_viagens" />
         <!--android:icon="@drawable/ic_menu_gallery"-->
         <item
+            android:id="@+id/nav_historico_chats"
+            android:title="@string/draw_nav_item_historico_de_conversas" />
+        <item
             android:id="@+id/nav_ajuda"
-            android:title="Ajuda" />
+            android:title="@string/draw_nav_item_ajuda" />
         <!--android:icon="@drawable/ic_menu_slideshow"-->
         <item
             android:id="@+id/nav_viagens_descontos"
-            android:title="Viagens com desconto" />
+            android:title="@string/draw_nav_item_viagens_com_desconto" />
         <!--android:icon="@drawable/ic_menu_manage"-->
         <item
             android:id="@+id/nav_config"
-            android:title="Configurações" />
+            android:title="@string/draw_nav_item_configuraces" />
     </group>
 
     <item android:title="">
         <menu>
             <item
                 android:id="@+id/nav_dirija_taxilivre"
-                android:title="Dirija com TaxiLivre"/>
+                android:title="@string/draw_nav_item_dirija_com_taxilivre"/>
             <!--android:icon="@drawable/ic_menu_share"-->
             <item
                 android:id="@+id/nav_legal"
-                android:title="Legal" />
+                android:title="@string/draw_nav_item_legal" />
             <!--android:icon="@drawable/ic_menu_send"-->
             <item
                 android:id="@+id/nav_sair"
-                android:title="Sair" />
+                android:title="@string/draw_nav_item_sair" />
         </menu>
     </item>
 
