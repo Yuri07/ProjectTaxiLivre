@@ -1,5 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.map.entities;
 
+import com.rsm.yuri.projecttaxilivre.R;
+
 import java.util.Map;
 
 /**
@@ -10,14 +12,15 @@ public class Driver {
 
     private String email;
 
+    private String nome;
+
     private String urlPhotoDriver;
     private double latitutde;
     private double longitude;
 
-    private Car[] car;
+    private Car[] cars;
 
-    private Map<String, String> coments;
-    private Map<String, Integer> ratings;
+    private Rating[] ratings;
 
     private double averageRating;
     private int totalRatings;
@@ -28,6 +31,8 @@ public class Driver {
     private int count2Stars;
     private int count1Stars;
 
+    public final static String DRIVER_NAME_DEFAULT = "Driver";//getResources().getString(R.string.DRIVER_NAME_DEFAULT);//nao funciona pq nao tem contexto nesta classe Driver.
+
     public String getEmail() {
         return email;
     }
@@ -36,12 +41,20 @@ public class Driver {
         this.email = email;
     }
 
-    public Car[] getCar() {
-        return car;
+    public String getNome() {
+        return nome;
     }
 
-    public void setCar(Car[] car) {
-        this.car = car;
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Car[] getCars() {
+        return cars;
+    }
+
+    public void setCars(Car[] cars) {
+        this.cars = cars;
     }
 
     public double getLatitutde() {
@@ -68,19 +81,11 @@ public class Driver {
         this.urlPhotoDriver = urlPhotoDriver;
     }
 
-    public Map<String, String> getComents() {
-        return coments;
-    }
-
-    public void setComents(Map<String, String> coments) {
-        this.coments = coments;
-    }
-
-    public Map<String, Integer> getRatings() {
+    public Rating[] getRatings() {
         return ratings;
     }
 
-    public void setRatings(Map<String, Integer> ratings) {
+    public void setRatings(Rating[] ratings) {
         this.ratings = ratings;
     }
 

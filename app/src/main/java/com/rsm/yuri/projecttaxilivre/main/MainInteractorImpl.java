@@ -17,18 +17,4 @@ public class MainInteractorImpl implements MainInteractor {
 
     }
 
-    @Override
-    public void subscribeForMapUpdates() {
-
-    }
-
-    @Override
-    public void unsubscribeForMapUpdates() {
-
-    }
-
-    @Override
-    public void destroyMapListener() {
-
-    }
 }

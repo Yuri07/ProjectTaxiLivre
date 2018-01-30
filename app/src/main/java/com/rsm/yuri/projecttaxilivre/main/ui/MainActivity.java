@@ -17,13 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
+import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 
 import javax.inject.Inject;
 
@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Location lastLocation;
     private TaxiLivreApp app;
 
-    //private final static int PERMISSIONS_REQUEST_LOCATION = 11;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,19 +83,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupInjection();
 
-        //displayFragment(new MapFragment());
-        //MapFragment mapFragment = new MapFragment();
-        //FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.content_frame, mapFragment)
                 .commit();
 
-
         presenter.onCreate();
         presenter.checkForSession();
-
-        //setUIVisibility(true);
-        //getLastKnowLocation();
 
     }
 
@@ -110,63 +101,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainComponent.inject(this);
     }
 
-    /*private void getLastKnowLocation() {//usado no mapfragment
-        FusedLocationProviderClient mFusedLocationClient;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-            int permissionLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED ) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
-            }
-            if ( permissionLocation != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
-
-            }
-            return;
-        }
-        Log.d("Activity", "Nao caiu no if");
-        //lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            Log.d("Activity", "onSuccess");
-                            lastLocation = location;
-                        }
-                    }
-                });
-    }*/
-
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION:
-                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    getLastKnowLocation();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                break;
-        }
-    }*/
-
     private void displayFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

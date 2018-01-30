@@ -65,7 +65,7 @@ public class LoginRepositoryImpl implements LoginRepository {
                             myUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
-                                    initSignIn(snapshot);//grava new User(currentUserEmail, true, null); no database users/currentUserEmail/
+                                    initSignIn(snapshot);//grava new User(currentUserEmail, true, null); no database users/currentUserEmail/ (se usuario ainda nao tiver sido criado no databse, ou seja, e a primeira vez que esse user faz login)
                                 }
                                 @Override
                                 public void onCancelled(DatabaseError firebaseError) {

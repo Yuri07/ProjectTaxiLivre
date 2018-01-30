@@ -13,7 +13,7 @@ import com.rsm.yuri.projecttaxilivre.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivre.main.di.MainModule;
-import com.rsm.yuri.projecttaxilivre.main.ui.MapFragment;
+import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 
 /**

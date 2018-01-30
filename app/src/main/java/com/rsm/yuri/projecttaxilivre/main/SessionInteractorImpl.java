@@ -21,4 +21,9 @@ public class SessionInteractorImpl implements SessionInteractor {
     public void checkForSession() {
         mainRepository.checkForSession();
     }
+
+    @Override
+    public void changeConnectionStatus(boolean online) {
+        mainRepository.changeUserConnectionStatus(online);
+    }
 }

@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivre.main.ui;
+package com.rsm.yuri.projecttaxilivre.map.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -28,12 +28,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivre.R;
+import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
 /**
  * Created by yuri_ on 07/01/2018.
  */
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleApiClient.ConnectionCallbacks,
+public class MapFragment extends Fragment implements MapView, OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
     private GoogleMap map;
@@ -50,8 +51,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
     }
 
@@ -74,7 +73,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
+    @Override
+    public void onDriverMoved(Driver driver) {
 
+    }
+
+    @Override
+    public void onDriverAdded(Driver driver) {
+
+    }
+
+    @Override
+    public void onDriverRemoved(Driver driver) {
+
+    }
+
+    @Override
+    public void onDriverError(String error) {
+
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -82,7 +99,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map = googleMap;
         map.setInfoWindowAdapter(this);
         getLastKnowLocation();
-
 
     }
 
@@ -185,4 +201,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Snackbar.make(getView(), connectionResult.getErrorMessage(), Snackbar.LENGTH_SHORT).show();
     }
+
 }

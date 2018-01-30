@@ -5,4 +5,28 @@ package com.rsm.yuri.projecttaxilivre.chat;
  */
 
 public class ChatIntarctorImpl implements ChatInteractor {
+    @Override
+    public void sendMessage(String msg) {
+
+    }
+
+    @Override
+    public void setRecipient(String recipient) {
+
+    }
+
+    @Override
+    public void destroyChatListener() {
+
+    }
+
+    @Override
+    public void subscribeForChatUpates() {
+
+    }
+
+    @Override
+    public void unSubscribeForChatUpates() {
+
+    }
 }

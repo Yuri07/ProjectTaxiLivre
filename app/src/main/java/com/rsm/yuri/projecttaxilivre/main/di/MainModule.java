@@ -13,7 +13,7 @@ import com.rsm.yuri.projecttaxilivre.main.MainRepository;
 import com.rsm.yuri.projecttaxilivre.main.MainRepositoryImpl;
 import com.rsm.yuri.projecttaxilivre.main.SessionInteractor;
 import com.rsm.yuri.projecttaxilivre.main.SessionInteractorImpl;
-import com.rsm.yuri.projecttaxilivre.main.ui.MapFragment;
+import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 
 import javax.inject.Singleton;
 

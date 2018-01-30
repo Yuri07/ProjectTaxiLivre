@@ -25,4 +25,8 @@
     <string name="draw_nav_item_legal">Legal</string>
     <string name="draw_nav_item_sair">Sair</string>
 
+    <string name="DRIVER_NAME_DEFAULT">Driver</string>
+    <string name="USER_NAME_DEFAULT">Usuario</string>
+
+
 </resources>

@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.main;
 
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.main.events.MainEvent;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
@@ -30,9 +31,22 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
+    public void onResume() {
+        sessionInteractor.changeConnectionStatus(User.ONLINE);
+        //mainInteractor.subscribeForDriversEvents();//essa função vai ser implementada por mapfragment
+    }
+
+    @Override
+    public void onPause() {
+        sessionInteractor.changeConnectionStatus(User.OFFLINE);
+        //mainInteractor.unSubscribeForDriversEvents();//essa função vai ser implementada por mapfragment
+    }
+
+    @Override
     public void onDestroy() {
         mainView = null;
         eventBus.unregister(this);
+        //mainInteractor.destroyDriversListListener();//essa função vai ser implementada por mapfragment
 
     }
 
@@ -64,6 +78,7 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void logout() {
+        sessionInteractor.changeConnectionStatus(User.OFFLINE);
         sessionInteractor.logout();
     }
 

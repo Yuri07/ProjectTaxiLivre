@@ -6,11 +6,6 @@ package com.rsm.yuri.projecttaxilivre.main;
 
 public interface MainInteractor {
 
-
     void setRecipient(String recipient);
-
-    void subscribeForMapUpdates();
-    void unsubscribeForMapUpdates();
-    void destroyMapListener();
 
 }

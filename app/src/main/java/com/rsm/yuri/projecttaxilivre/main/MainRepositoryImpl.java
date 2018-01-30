@@ -63,9 +63,24 @@ public class MainRepositoryImpl implements MainRepository {
     private void initSignIn(DataSnapshot snapshot){
         User currentUser = snapshot.getValue(User.class);
 
+        registerNewUser();
+
         firebase.changeUserConnectionStatus(User.ONLINE);
         String email = firebase.getAuthUserEmail();
         post(MainEvent.onSuccessToRecoverSession, null, email);
+    }
+
+    private void registerNewUser() {
+        String email = firebase.getAuthUserEmail();
+        if (email != null) {
+            User currentUser = new User(email, true, null);
+            myUserReference.setValue(currentUser);
+        }
+    }
+
+    @Override
+    public void changeUserConnectionStatus(boolean online) {
+        firebase.changeUserConnectionStatus(online);
     }
 
     private void post(int type) {
