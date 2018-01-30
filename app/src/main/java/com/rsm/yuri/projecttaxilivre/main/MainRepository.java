@@ -8,6 +8,6 @@ public interface MainRepository {
 
     void logout();
     void checkForSession();
-    void changeUserConnectionStatus(boolean online);
+    void changeUserConnectionStatus(int status);
 
 }

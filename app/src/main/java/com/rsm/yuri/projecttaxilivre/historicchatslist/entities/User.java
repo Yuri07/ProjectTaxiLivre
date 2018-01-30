@@ -12,19 +12,22 @@ public class User {
 
     private String email;
     private String nome;
-    private boolean online;
+    private int status;
     private String urlPhotoUser;
     private Map<String, Boolean> historicChats;
 
     public final static String USER_NAME_DEFAULT = "Usuário";
-    public final static boolean ONLINE = true;
-    public final static boolean OFFLINE = false;
+    public final static int OFFLINE = 0;
+    public final static int ONLINE = 1;
+    public final static int LOOKING_FOR_CAR = 2;
+    public final static int WAITING_CAR = 3;
+    public final static int IN_CAR = 4;
 
     public User(){ }
 
-    public User(String email, boolean online, Map<String, Boolean> historicChats){
+    public User(String email, int status, Map<String, Boolean> historicChats){
         this.email = email;
-        this.online = online;
+        this.status = status;
         this.historicChats = historicChats;
         this.nome = "Usuario";
         this.urlPhotoUser = "";
@@ -62,12 +65,11 @@ public class User {
         this.urlPhotoUser = urlPhotoUser;
     }
 
-    public boolean isOnline() {
-        return online;
+    public int getStatus() {
+        return status;
     }
 
-    public void setOnline(boolean online) {
-        this.online = online;
+    public void setStatus(int status) {
+        this.status = status;
     }
-
 }

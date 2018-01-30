@@ -8,6 +8,6 @@ public interface SessionInteractor {
 
     void logout();
     void checkForSession();
-    void changeConnectionStatus(boolean online);
+    void changeConnectionStatus(int status);
 
 }

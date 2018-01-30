@@ -5,4 +5,10 @@ package com.rsm.yuri.projecttaxilivre.map;
  */
 
 public interface MapPresenter {
+
+    void onPause();
+    void onResume();
+    void onCreate();
+    void onDestroy();
+
 }

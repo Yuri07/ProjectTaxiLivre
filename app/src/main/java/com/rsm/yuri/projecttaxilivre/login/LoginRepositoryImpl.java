@@ -98,7 +98,7 @@ public class LoginRepositoryImpl implements LoginRepository {
     private void registerNewUser() {
         String email = firebase.getAuthUserEmail();
         if (email != null) {
-            User currentUser = new User(email, true, null);
+            User currentUser = new User(email, 1, null);
             myUserReference.setValue(currentUser);
         }
     }

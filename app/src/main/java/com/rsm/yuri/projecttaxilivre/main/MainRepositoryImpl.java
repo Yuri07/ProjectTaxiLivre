@@ -73,14 +73,14 @@ public class MainRepositoryImpl implements MainRepository {
     private void registerNewUser() {
         String email = firebase.getAuthUserEmail();
         if (email != null) {
-            User currentUser = new User(email, true, null);
+            User currentUser = new User(email, 1, null);
             myUserReference.setValue(currentUser);
         }
     }
 
     @Override
-    public void changeUserConnectionStatus(boolean online) {
-        firebase.changeUserConnectionStatus(online);
+    public void changeUserConnectionStatus(int status) {
+        firebase.changeUserConnectionStatus(status);
     }
 
     private void post(int type) {

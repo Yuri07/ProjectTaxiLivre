@@ -51,7 +51,6 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -91,6 +90,16 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Override
     public void onDriverError(String error) {
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override

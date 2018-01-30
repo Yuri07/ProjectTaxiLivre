@@ -15,8 +15,10 @@ public class Driver {
     private String nome;
 
     private String urlPhotoDriver;
-    private double latitutde;
-    private double longitude;
+
+    private Location location;
+
+    private int status;
 
     private Car[] cars;
 
@@ -32,6 +34,12 @@ public class Driver {
     private int count1Stars;
 
     public final static String DRIVER_NAME_DEFAULT = "Driver";//getResources().getString(R.string.DRIVER_NAME_DEFAULT);//nao funciona pq nao tem contexto nesta classe Driver.
+    public final static  int OFFLINE = 0;
+    public final static  int ONLINE = 1;
+    public final static  int WAITING_TRAVEL = 2;
+    public final static  int IN_TRAVEL = 3;
+
+
 
     public String getEmail() {
         return email;
@@ -49,28 +57,28 @@ public class Driver {
         this.nome = nome;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public Car[] getCars() {
         return cars;
     }
 
     public void setCars(Car[] cars) {
         this.cars = cars;
-    }
-
-    public double getLatitutde() {
-        return latitutde;
-    }
-
-    public void setLatitutde(double latitutde) {
-        this.latitutde = latitutde;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     public String getUrlPhotoDriver() {

@@ -25,6 +25,8 @@ public class FirebaseAPI {
     private final static String USERS_PATH = "users";
     private final static String CHATS_PATH = "chats";
     public final static String HISTORICCHATS_PATH = "historicchats";
+    private  final static String LOCATION_PATH = "location";
+    private  final static String RATINGS_PATH = "ratings";
     private final static String SEPARATOR = "___";
 
 
@@ -121,17 +123,17 @@ public class FirebaseAPI {
         return dataReference.getRoot().child(CHATS_PATH).child(keyChat);
     }
 
-    public void changeUserConnectionStatus(boolean online) {
+    public void changeUserConnectionStatus(int status) {
         if (getMyUserReference() != null) {
             Map<String, Object> updates = new HashMap<String, Object>();
-            updates.put("online", online);
+            updates.put("status", status);
             getMyUserReference().updateChildren(updates);
 
-            notifyContactsOfConnectionChange(online);
+            notifyContactsOfConnectionChange(status);
         }
     }
 
-    public void notifyContactsOfConnectionChange(final boolean online, final boolean signoff) {
+    public void notifyContactsOfConnectionChange(final int status, final boolean signoff) {
         final String myEmail = getAuthUserEmail();
         getMyContactsReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -141,7 +143,7 @@ public class FirebaseAPI {
                     DatabaseReference reference = getOneContactReference(email, myEmail);//pegando a
                     // referencia do meu contato para  avisa-lo que estou online ou offline(tornar true
                     // ou false o valor de 'users/email/contacts/myEmail').
-                    reference.setValue(online);
+                    reference.setValue(status);
                 }
                 if (signoff){
                     FirebaseAuth.getInstance().signOut();
@@ -154,8 +156,8 @@ public class FirebaseAPI {
         });
     }
 
-    public void notifyContactsOfConnectionChange(boolean online) {
-        notifyContactsOfConnectionChange(online, false);
+    public void notifyContactsOfConnectionChange(int status) {
+        notifyContactsOfConnectionChange(status, false);
     }
 
     /*public void signOff(){

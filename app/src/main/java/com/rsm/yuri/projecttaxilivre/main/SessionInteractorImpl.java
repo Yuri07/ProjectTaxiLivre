@@ -23,7 +23,7 @@ public class SessionInteractorImpl implements SessionInteractor {
     }
 
     @Override
-    public void changeConnectionStatus(boolean online) {
-        mainRepository.changeUserConnectionStatus(online);
+    public void changeConnectionStatus(int status) {
+        mainRepository.changeUserConnectionStatus(status);
     }
 }
