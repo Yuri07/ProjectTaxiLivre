@@ -7,7 +7,7 @@ package com.rsm.yuri.projecttaxilivre.map;
 public interface MapInteractor {
 
     void subscribeForDriversUpdates();
-    void unsubscribeForDriversUpdates();
+    void unSubscribeForDriversUpdates();
     void destroyDriversListener();
 
 

@@ -6,19 +6,25 @@ package com.rsm.yuri.projecttaxilivre.map;
 
 public class MapInteractorImpl implements MapInteractor {
 
-    @Override
-    public void subscribeForDriversUpdates() {
+    MapRepository mapRepository;
 
+    public MapInteractorImpl(MapRepository mapRepository) {
+        this.mapRepository = mapRepository;
     }
 
     @Override
-    public void unsubscribeForDriversUpdates() {
+    public void subscribeForDriversUpdates() {
+        mapRepository.subscribeForDriversEvents();
+    }
 
+    @Override
+    public void unSubscribeForDriversUpdates() {
+        mapRepository.unSubscribeForDriversEvents();
     }
 
     @Override
     public void destroyDriversListener() {
-
+        mapRepository.destroyDriversListener();
     }
 
 }

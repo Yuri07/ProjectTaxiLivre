@@ -1,0 +1,81 @@
+package com.rsm.yuri.projecttaxilivre.map.models;
+
+import static java.lang.Math.abs;
+
+/**
+ * Created by yuri_ on 03/02/2018.
+ */
+
+public class AreasHelper {
+
+
+    private final static double LAT_INI = -3.668985;
+    private final static double LONG_INI = -38.672476;
+    private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
+    private final static double SIZE_AREA_X[]= {0.04, 0.03, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.007, 0.01, 0.01, 0.02, 0.02, 0.04 };
+
+    public GroupAreas getGroupAreas(double latitude, double longitude){
+        GroupAreas groupAreas = new GroupAreas();
+
+        groupAreas.setMainArea(getAreaFromLatLong(latitude, longitude));
+
+        int sideAreaY = getSideCoordenadaArea(latitude, groupAreas.getMainArea().getaY(), LAT_INI, SIZE_AREA_Y);
+        int sideAreaX = getSideCoordenadaArea(longitude, groupAreas.getMainArea().getaX(), LONG_INI, SIZE_AREA_X);
+
+        groupAreas.setArea2( getAreaFromCoordenadasArea( sideAreaY, groupAreas.getMainArea().getaX() ) );
+
+        groupAreas.setArea3( getAreaFromCoordenadasArea( groupAreas.getMainArea().getaY(), sideAreaX ) );
+
+        groupAreas.setArea4(getAreaFromCoordenadasArea(sideAreaY, sideAreaX));
+
+        return groupAreas;
+    }
+
+    public Area getAreaFromLatLong(double latitude, double longitude){
+        return getAreaFromCoordenadasArea(getCoordenadaArea(latitude, SIZE_AREA_Y), getCoordenadaArea(longitude, SIZE_AREA_X));
+    }
+
+    public int getCoordenadaArea(double coordenadaGoogleMap, double sizeAreaCoordenada[]){
+        double c = 0.0;
+        for(int i = 0;i <sizeAreaCoordenada.length;i++) {
+            c += sizeAreaCoordenada[i];
+            if (c >= coordenadaGoogleMap) {
+                return i+1;
+            }
+        }
+        return 0;
+    }
+
+    private Area getAreaFromCoordenadasArea(int aY, int aX){
+        Area area = new Area();
+        area.setaY(aY);
+        area.setaX(aX);
+        area.setId(getAreaId(aX, aY));
+        return area;
+    }
+
+    private String getAreaId(int aX, int aY) {
+        int intId;
+        intId = aX+(aY-1)*16;
+        return "a" + intId;
+    }
+
+    private int getSideCoordenadaArea(double coordenadaGoogleMap, int coordenadaArea, double coordenadaGoogleMapIni, double[] sizeAreaCoordenada){
+        int sideAreaCoordenada;
+        double coordenadaGoogleMapAreaBase = coordenadaGoogleMapIni;
+        for( int i = 0 ; i < coordenadaArea -1 ; i++ ){
+            coordenadaGoogleMapAreaBase -= sizeAreaCoordenada[i];
+        }
+
+        double offsetInArea = abs(coordenadaGoogleMap - coordenadaGoogleMapAreaBase);
+
+        if(offsetInArea > (sizeAreaCoordenada[coordenadaArea])/2){
+            sideAreaCoordenada = coordenadaArea+1;
+        }else{
+            sideAreaCoordenada = coordenadaArea-1;
+        }
+
+        return sideAreaCoordenada;
+    }
+
+}

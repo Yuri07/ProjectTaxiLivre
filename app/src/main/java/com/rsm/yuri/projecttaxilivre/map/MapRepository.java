@@ -5,4 +5,9 @@ package com.rsm.yuri.projecttaxilivre.map;
  */
 
 public interface MapRepository {
+
+    void subscribeForDriversEvents();
+    void unSubscribeForDriversEvents();
+    void destroyDriversListener();
+
 }

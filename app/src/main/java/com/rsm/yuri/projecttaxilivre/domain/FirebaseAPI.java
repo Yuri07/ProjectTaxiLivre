@@ -24,20 +24,18 @@ public class FirebaseAPI {
     private  final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
     private final static String CHATS_PATH = "chats";
-    public final static String HISTORICCHATS_PATH = "historicchats";
+    private final static String HISTORICCHATS_PATH = "historicchats";
     private  final static String LOCATION_PATH = "location";
     private  final static String RATINGS_PATH = "ratings";
     private final static String SEPARATOR = "___";
 
-
     private DatabaseReference dataReference;
-
 
     public FirebaseAPI(DatabaseReference databaseReference){
         dataReference = databaseReference;//FirebaseDatabase.getInstance().getReference();
     }
 
-    public void checkForData(final FirebaseActionListenerCallback listener){
+    public void checkForData(final FirebaseActionListenerCallback listener){//checa se tem dados(era usado no PhotoFeed App para verificar se a lista de fotos estava vazia).
         ValueEventListener postListener = new ValueEventListener() {
             @Override public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() > 0) {
@@ -61,6 +59,8 @@ public class FirebaseAPI {
         }
         return null;
     }*/
+
+
 
     public void checkForSession(FirebaseActionListenerCallback listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
