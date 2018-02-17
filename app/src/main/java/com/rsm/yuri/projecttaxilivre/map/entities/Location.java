@@ -9,6 +9,14 @@ public class Location {
     private double latitutde;
     private double longitude;
 
+    public Location() {
+    }
+
+    public Location(double latitutde, double longitude) {
+        this.latitutde = latitutde;
+        this.longitude = longitude;
+    }
+
     public double getLatitutde() {
         return latitutde;
     }

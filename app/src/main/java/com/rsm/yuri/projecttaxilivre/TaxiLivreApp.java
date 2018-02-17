@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivre;
 
 import android.app.Application;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
@@ -13,8 +14,12 @@ import com.rsm.yuri.projecttaxilivre.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivre.main.di.MainModule;
+import com.rsm.yuri.projecttaxilivre.map.di.DaggerMapComponent;
+import com.rsm.yuri.projecttaxilivre.map.di.MapComponent;
+import com.rsm.yuri.projecttaxilivre.map.di.MapModule;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
+import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -60,6 +65,18 @@ public class TaxiLivreApp extends Application{
                 .domainModule(domainModule)
                 .libsModule(libsModule)
                 .mainModule(new MainModule(view, manager, mapFragment))
+                .build();
+    }
+
+    public MapComponent getMapComponent(Fragment fragment, MapView mapView){
+        libsModule.setFragment(fragment);
+
+        return DaggerMapComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .mapModule(new MapModule(mapView))
                 .build();
     }
 

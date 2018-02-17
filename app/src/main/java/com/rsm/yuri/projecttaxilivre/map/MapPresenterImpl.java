@@ -1,7 +1,10 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
+import android.util.Log;
+
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 
@@ -36,12 +39,13 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void onResume() {
+    public void subscribe() {
+        Log.d("d", "Presenter.subscribe()");
         mapInteractor.subscribeForDriversUpdates();
     }
 
     @Override
-    public void onPause() {
+    public void unsubscribe() {
         mapInteractor.unSubscribeForDriversUpdates();
     }
 
@@ -52,37 +56,37 @@ public class MapPresenterImpl implements MapPresenter {
         if (error != null) {
             mapView.onDriverError(error);
         } else {
-            Driver driver = event.getDriver();
+            NearDriver nearDriver = event.getNearDriver();
             switch (event.getEventType()) {
                 case MapEvent.onDriverAdded:
-                    onDriverAdded(driver);
+                    onDriverAdded(nearDriver);
                     break;
                 case MapEvent.onDriverMoved:
-                    onDriverMoved(driver);
+                    onDriverMoved(nearDriver);
                     break;
                 case MapEvent.onDriverRemoved:
-                    onDriverRemoved(driver);
+                    onDriverRemoved(nearDriver);
                     break;
             }
         }
 
     }
 
-    private void onDriverAdded(Driver driver) {
+    private void onDriverAdded(NearDriver nearDriver) {
         if(mapView!=null){
-            mapView.onDriverAdded(driver);
+            mapView.onDriverAdded(nearDriver);
         }
     }
 
-    private void onDriverMoved(Driver driver) {
+    private void onDriverMoved(NearDriver nearDriver) {
         if(mapView!=null){
-            mapView.onDriverMoved(driver);
+            mapView.onDriverMoved(nearDriver);
         }
     }
 
-    private void onDriverRemoved(Driver driver) {
+    private void onDriverRemoved(NearDriver nearDriver) {
         if(mapView!=null){
-            mapView.onDriverRemoved(driver);
+            mapView.onDriverRemoved(nearDriver);
         }
     }
 

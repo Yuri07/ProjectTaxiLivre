@@ -10,6 +10,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
+import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,19 +23,30 @@ import java.util.Map;
 
 public class FirebaseAPI {
 
-    private  final static String DRIVER_PATH = "drivers";
-    private  final static String CAR_PATH = "cars";
+    private final static String DRIVER_PATH = "drivers";
+    private final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
+    private final static String NEAR_DRIVERS_PATH = "neardrivers";
+    private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
-    private  final static String LOCATION_PATH = "location";
-    private  final static String RATINGS_PATH = "ratings";
+    private final static String LOCATION_PATH = "location";
+    private final static String RATINGS_PATH = "ratings";
     private final static String SEPARATOR = "___";
 
+    private AreasHelper areasHelper;
     private DatabaseReference dataReference;
 
-    public FirebaseAPI(DatabaseReference databaseReference){
-        dataReference = databaseReference;//FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference mainAreaDataReference;
+    private DatabaseReference areaVerticalSideDataReference;
+    private DatabaseReference areaHorizontalSideDataReference;
+    private DatabaseReference areaDiagonalDataReference;
+
+    private ChildEventListener areasEventListener;
+
+    public FirebaseAPI(DatabaseReference databaseReference, AreasHelper areasHelper){
+        dataReference = databaseReference;
+        this.areasHelper = areasHelper;
     }
 
     public void checkForData(final FirebaseActionListenerCallback listener){//checa se tem dados(era usado no PhotoFeed App para verificar se a lista de fotos estava vazia).
@@ -52,14 +66,82 @@ public class FirebaseAPI {
         dataReference.addValueEventListener(postListener);
     }
 
-    /*public String getAuthEmail(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            return user.getEmail();
-        }
-        return null;
-    }*/
+    public void subscribe(final FirebaseEventListenerCallback listener){
 
+        if(areasEventListener==null){
+            areasEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildAdded(dataSnapshot);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    listener.onChildRemoved(dataSnapshot);
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildMoved(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+            GroupAreas groupAreas = areasHelper.getGroupAreas(-3.740146, -38.606009);
+
+            /*GroupAreas groupAreas2 = areasHelper.getGroupAreas(-3.732142, -38.547071);
+            GroupAreas groupAreas3 = areasHelper.getGroupAreas(-3.742268, -38.608295);
+            GroupAreas groupAreas4 = areasHelper.getGroupAreas(-3.738567, -38.605725);
+            Log.d("d", "Driver1.mainarea: " + groupAreas2.getMainArea().getId());
+            Log.d("d", "Driver2.mainarea: " + groupAreas3.getMainArea().getId());
+            Log.d("d", "Driver3.mainarea: " + groupAreas4.getMainArea().getId());*/
+
+            //mainAreaDataReference = getAreaDataReference(groupAreas.getMainArea().getId());
+            //Log.d("d", "MainAreaDataReference: " + mainAreaDataReference.getKey());
+            //areaVerticalSideDataReference= getAreaDataReference(groupAreas.getAreaVerticalSide().getId());
+            //areaHorizontalSideDataReference = getAreaDataReference(groupAreas.getAreaHorizontalSide().getId());
+            //areaDiagonalDataReference = getAreaDataReference(groupAreas.getAreaDiagonal().getId());
+
+            //mainAreaDataReference.addChildEventListener(areasEventListener);
+            /*Log.d("d", "mainarea.addChildEvent");
+            areaVerticalSideDataReference.addChildEventListener(areasEventListener);
+            Log.d("d", "verticalsidearea.addChildEvent");
+            areaHorizontalSideDataReference.addChildEventListener(areasEventListener);
+            Log.d("d", "horizontalsidearea.addChildEvent");
+            areaDiagonalDataReference.addChildEventListener(areasEventListener);
+            Log.d("d", "diagonalarea.addChildEvent");*/
+
+            getAreaDataReference(groupAreas.getMainArea().getId()).addChildEventListener(areasEventListener);
+            getAreaDataReference(groupAreas.getAreaVerticalSide().getId()).addChildEventListener(areasEventListener);
+            getAreaDataReference(groupAreas.getAreaHorizontalSide().getId()).addChildEventListener(areasEventListener);
+            getAreaDataReference(groupAreas.getAreaDiagonal().getId()).addChildEventListener(areasEventListener);
+        }
+
+    }
+
+    public void unsubscribe(){
+        mainAreaDataReference.removeEventListener(areasEventListener);
+        areaVerticalSideDataReference.removeEventListener(areasEventListener);
+        areaHorizontalSideDataReference.removeEventListener(areasEventListener);
+        areaDiagonalDataReference.removeEventListener(areasEventListener);
+    }
+
+    private DatabaseReference getAreaDataReference(String id) {
+        DatabaseReference areaReference = null;
+        if(id!=null){
+            areaReference = dataReference.getRoot().child(AREAS_PATH).child(id);
+        }
+        return areaReference;
+
+    }
 
 
     public void checkForSession(FirebaseActionListenerCallback listener) {
@@ -160,8 +242,16 @@ public class FirebaseAPI {
         notifyContactsOfConnectionChange(status, false);
     }
 
-    /*public void signOff(){
-        notifyContactsOfConnectionChange(User.OFFLINE, true);
-    }*/
+    public NearDriver[] getNearDrivers(GroupAreas groupAreas, double latitude, double longitude) {
+        return new NearDriver[10];
+    }
+
+    public DatabaseReference getNearDriversReference(String email){
+        return getUserReference(email).child(NEAR_DRIVERS_PATH);
+    }
+
+    public DatabaseReference getMyNearDriversReference(){
+        return getContactsReference(getAuthUserEmail());
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.map.events;
 
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
 /**
  * Created by yuri_ on 30/01/2018.
@@ -8,20 +9,20 @@ import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
 public class MapEvent {
 
-    private Driver driver;
+    private NearDriver nearDriver;
     private int eventType;
     private String error;
 
     public final static int onDriverAdded = 0;
-    public final static int onDriverMoved = 1;
-    public final static int onDriverRemoved = 2;
+    public final static int onDriverMoved = 2;
+    public final static int onDriverRemoved = 3;
 
-    public Driver getDriver() {
-        return driver;
+    public NearDriver getNearDriver() {
+        return nearDriver;
     }
 
-    public void setDriver(Driver driver) {
-        this.driver = driver;
+    public void setNearDriver(NearDriver nearDriver) {
+        this.nearDriver = nearDriver;
     }
 
     public int getEventType() {

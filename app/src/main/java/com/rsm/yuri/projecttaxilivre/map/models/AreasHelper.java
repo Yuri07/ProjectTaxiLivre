@@ -22,24 +22,25 @@ public class AreasHelper {
         int sideAreaY = getSideCoordenadaArea(latitude, groupAreas.getMainArea().getaY(), LAT_INI, SIZE_AREA_Y);
         int sideAreaX = getSideCoordenadaArea(longitude, groupAreas.getMainArea().getaX(), LONG_INI, SIZE_AREA_X);
 
-        groupAreas.setArea2( getAreaFromCoordenadasArea( sideAreaY, groupAreas.getMainArea().getaX() ) );
+        groupAreas.setAreaVerticalSide( getAreaFromCoordenadasArea( sideAreaY, groupAreas.getMainArea().getaX() ) );
 
-        groupAreas.setArea3( getAreaFromCoordenadasArea( groupAreas.getMainArea().getaY(), sideAreaX ) );
+        groupAreas.setAreaHorizontalSide( getAreaFromCoordenadasArea( groupAreas.getMainArea().getaY(), sideAreaX ) );
 
-        groupAreas.setArea4(getAreaFromCoordenadasArea(sideAreaY, sideAreaX));
+        groupAreas.setAreaDiagonal( getAreaFromCoordenadasArea( sideAreaY, sideAreaX ) );
 
         return groupAreas;
     }
 
-    public Area getAreaFromLatLong(double latitude, double longitude){
-        return getAreaFromCoordenadasArea(getCoordenadaArea(latitude, SIZE_AREA_Y), getCoordenadaArea(longitude, SIZE_AREA_X));
+    private Area getAreaFromLatLong(double latitude, double longitude){
+        return getAreaFromCoordenadasArea(getCoordenadaArea(latitude,LAT_INI,SIZE_AREA_Y),getCoordenadaArea(longitude, LONG_INI,SIZE_AREA_X));
     }
 
-    public int getCoordenadaArea(double coordenadaGoogleMap, double sizeAreaCoordenada[]){
+    private int getCoordenadaArea(double coordenadaGoogleMap, double coordenadaGoogleMapIni, double sizeAreaCoordenada[] ){
         double c = 0.0;
+        double coordenadaInterna = abs(abs(coordenadaGoogleMap)-abs(coordenadaGoogleMapIni));
         for(int i = 0;i <sizeAreaCoordenada.length;i++) {
             c += sizeAreaCoordenada[i];
-            if (c >= coordenadaGoogleMap) {
+            if (c >= coordenadaInterna) {
                 return i+1;
             }
         }

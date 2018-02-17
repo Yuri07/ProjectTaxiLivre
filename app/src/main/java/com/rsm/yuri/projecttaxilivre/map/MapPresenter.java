@@ -8,8 +8,8 @@ import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 
 public interface MapPresenter {
 
-    void onPause();
-    void onResume();
+    void unsubscribe();
+    void subscribe();
     void onCreate();
     void onDestroy();
 

@@ -6,7 +6,7 @@ package com.rsm.yuri.projecttaxilivre.map.models;
 
 public class GroupAreas {
 
-    private Area mainArea, area2, area3, area4;
+    private Area mainArea, areaVerticalSide, areaHorizontalSide, areaDiagonal;
 
     public Area getMainArea() {
         return mainArea;
@@ -16,27 +16,27 @@ public class GroupAreas {
         this.mainArea = mainArea;
     }
 
-    public Area getArea2() {
-        return area2;
+    public Area getAreaVerticalSide() {
+        return areaVerticalSide;
     }
 
-    public void setArea2(Area area2) {
-        this.area2 = area2;
+    public void setAreaVerticalSide(Area areaVerticalSide) {
+        this.areaVerticalSide = areaVerticalSide;
     }
 
-    public Area getArea3() {
-        return area3;
+    public Area getAreaHorizontalSide() {
+        return areaHorizontalSide;
     }
 
-    public void setArea3(Area area3) {
-        this.area3 = area3;
+    public void setAreaHorizontalSide(Area areaHorizontalSide) {
+        this.areaHorizontalSide = areaHorizontalSide;
     }
 
-    public Area getArea4() {
-        return area4;
+    public Area getAreaDiagonal() {
+        return areaDiagonal;
     }
 
-    public void setArea4(Area area4) {
-        this.area4 = area4;
+    public void setAreaDiagonal(Area areaDiagonal) {
+        this.areaDiagonal = areaDiagonal;
     }
 }

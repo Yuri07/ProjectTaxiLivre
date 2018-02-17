@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.map.ui;
 
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
 /**
  * Created by yuri_ on 22/01/2018.
@@ -8,9 +9,9 @@ import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
 public interface MapView {
 
-    void onDriverMoved(Driver driver);
-    void onDriverAdded(Driver driver);
-    void onDriverRemoved(Driver driver);
+    void onDriverMoved(NearDriver neardriver);
+    void onDriverAdded(NearDriver neardriver);
+    void onDriverRemoved(NearDriver neardriver);
     void onDriverError(String error);
 
 }

@@ -1,5 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+
 /**
  * Created by yuri_ on 22/01/2018.
  */
@@ -25,6 +27,16 @@ public class MapInteractorImpl implements MapInteractor {
     @Override
     public void destroyDriversListener() {
         mapRepository.destroyDriversListener();
+    }
+
+    @Override
+    public void addNearDrivers() {
+        mapRepository.addNearDrivers();
+    }
+
+    @Override
+    public void removeNearDrivers() {
+        mapRepository.removeNearDrivers();
     }
 
 }
