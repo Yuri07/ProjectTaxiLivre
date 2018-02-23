@@ -5,4 +5,8 @@ package com.rsm.yuri.projecttaxilivre.historicchatslist;
  */
 
 public interface HistoricChatsListInteractor {
+    void subscribeForHistoricChatEvents();
+    void unSubscribeForHistoricChatEvents();
+    void destroyHistoricChatListListener();
+    void removeHistoricChat(String email);
 }

@@ -13,8 +13,10 @@ public class User {
     private String email;
     private String nome;
     private int status;
+    private double latitude;
+    private double longitude;
     private String urlPhotoUser;
-    private Map<String, Boolean> historicChats;
+    private Map<String, Integer> historicChats;
 
     public final static String USER_NAME_DEFAULT = "Usuário";
     public final static int OFFLINE = 0;
@@ -25,7 +27,7 @@ public class User {
 
     public User(){ }
 
-    public User(String email, int status, Map<String, Boolean> historicChats){
+    public User(String email, int status, Map<String, Integer> historicChats){
         this.email = email;
         this.status = status;
         this.historicChats = historicChats;
@@ -49,11 +51,27 @@ public class User {
         this.nome = nome;
     }
 
-    public Map<String, Boolean> getHistoricChats() {
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Map<String, Integer> getHistoricChats() {
         return historicChats;
     }
 
-    public void setHistoricChats(Map<String, Boolean> historicChats) {
+    public void setHistoricChats(Map<String, Integer> historicChats) {
         this.historicChats = historicChats;
     }
 

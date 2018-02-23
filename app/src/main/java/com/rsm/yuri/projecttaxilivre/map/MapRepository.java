@@ -12,7 +12,7 @@ public interface MapRepository {
     void unSubscribeForDriversEvents();
     void destroyDriversListener();
 
-    void addNearDrivers();
-    void removeNearDrivers();
+    //void addNearDrivers();//nao tem essas funções para o usuario na tela do mapfragment.
+    //void removeNearDrivers();
 
 }

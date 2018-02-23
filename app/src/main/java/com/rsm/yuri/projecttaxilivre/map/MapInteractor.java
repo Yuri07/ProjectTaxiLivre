@@ -12,7 +12,7 @@ public interface MapInteractor {
     void unSubscribeForDriversUpdates();
     void destroyDriversListener();
 
-    void addNearDrivers();
-    void removeNearDrivers();
+    /*void addNearDrivers();////nao tem essas funcoes disponiveis para o usuario na tela do mapfragment
+    void removeNearDrivers();*/
 
 }

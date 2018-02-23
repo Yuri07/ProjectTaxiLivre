@@ -29,7 +29,7 @@ public class MapInteractorImpl implements MapInteractor {
         mapRepository.destroyDriversListener();
     }
 
-    @Override
+    /*@Override//nao tem essas funcoes disponiveis para o usuario na tela do mapfragment
     public void addNearDrivers() {
         mapRepository.addNearDrivers();
     }
@@ -37,6 +37,6 @@ public class MapInteractorImpl implements MapInteractor {
     @Override
     public void removeNearDrivers() {
         mapRepository.removeNearDrivers();
-    }
+    }*/
 
 }

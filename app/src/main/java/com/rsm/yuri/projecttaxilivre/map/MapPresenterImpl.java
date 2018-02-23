@@ -40,7 +40,7 @@ public class MapPresenterImpl implements MapPresenter {
 
     @Override
     public void subscribe() {
-        Log.d("d", "Presenter.subscribe()");
+        //Log.d("d", "Presenter.subscribe()");
         mapInteractor.subscribeForDriversUpdates();
     }
 

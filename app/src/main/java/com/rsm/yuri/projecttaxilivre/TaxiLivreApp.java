@@ -1,10 +1,17 @@
 package com.rsm.yuri.projecttaxilivre;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListComponent;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListModule;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListActivity;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListView;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivre.lib.di.LibsModule;
 import com.rsm.yuri.projecttaxilivre.login.di.DaggerLoginComponent;
 import com.rsm.yuri.projecttaxilivre.login.di.LoginComponent;
@@ -69,7 +76,7 @@ public class TaxiLivreApp extends Application{
     }
 
     public MapComponent getMapComponent(Fragment fragment, MapView mapView){
-        libsModule.setFragment(fragment);
+        libsModule.setContext(fragment.getContext());//era libsModule.setFragment(fragment);(ainda nao testado alteracao)
 
         return DaggerMapComponent
                 .builder()
@@ -80,4 +87,18 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
+    public HistoricChatsListComponent getHistoricChatsListComponent(Context context,
+                                                                    HistoricChatsListView view,
+                                                                    OnItemClickListener onItemClickListener) {
+        libsModule.setContext(context);
+
+        return DaggerHistoricChatsListComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))
+                .build();
+
+    }
 }

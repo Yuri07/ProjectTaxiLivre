@@ -39,6 +39,7 @@ dependencies {
 
     implementation "com.google.firebase:firebase-database:$rootProject.ext.firebaseVersion"
     implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
+    implementation "com.google.firebase:firebase-storage:$rootProject.ext.firebaseVersion"
 
     implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
@@ -49,6 +50,7 @@ dependencies {
     // if you use the support libraries
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.ext.daggerVersion"
     implementation "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
+    implementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     implementation "de.hdodenhof:circleimageview:$rootProject.ext.circleImageViewVersion"
 
 }

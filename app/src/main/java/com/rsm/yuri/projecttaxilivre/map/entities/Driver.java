@@ -19,7 +19,7 @@ public class Driver {
     private double latitude;
     private double longitude;
 
-    private int status;
+    private long status;
 
     private Car[] cars;
 
@@ -27,6 +27,8 @@ public class Driver {
 
     private double averageRating;
     private int totalRatings;
+
+    private Map<String, Integer> historicChats;
 
     private int count5Stars;
     private int count4Stars;
@@ -58,11 +60,11 @@ public class Driver {
         this.nome = nome;
     }
 
-    public int getStatus() {
+    public long getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(long status) {
         this.status = status;
     }
 
@@ -72,6 +74,14 @@ public class Driver {
 
     public void setCars(Car[] cars) {
         this.cars = cars;
+    }
+
+    public Map<String, Integer> getHistoricChats() {
+        return historicChats;
+    }
+
+    public void setHistoricChats(Map<String, Integer> historicChats) {
+        this.historicChats = historicChats;
     }
 
     public String getUrlPhotoDriver() {

@@ -28,13 +28,13 @@ public class MapRepositoryImpl implements MapRepository {
 
     @Override
     public void subscribeForDriversEvents() {
-        Log.d("d", "MapRepository.subscribe()");
-        firebase.subscribe(new FirebaseEventListenerCallback(){
+        //Log.d("d", "MapRepository.subscribe()");
+        firebase.subscribeForNearDriversUpdate(new FirebaseEventListenerCallback(){
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot) {
                 NearDriver nearDriver = dataSnapshot.getValue(NearDriver.class);
-                Log.d("d", "post(addNearDriver, nearDriver); nearDriver.getemail(): " + nearDriver.getEmail());
+                //Log.d("d", "post(addNearDriver, nearDriver); nearDriver.getemail(): " + nearDriver.getEmail());
                 /*Log.d("d", "NearDriver.getemail(): " + nearDriver.getEmail());
                 Log.d("d", "NearDriver.getLatitude(): " + nearDriver.getLatitude());
                 Log.d("d", "NearDriver.getLongitude(): " + nearDriver.getLongitude());*/
@@ -56,7 +56,7 @@ public class MapRepositoryImpl implements MapRepository {
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot) {
                 NearDriver nearDriver = dataSnapshot.getValue(NearDriver.class);
-                post(MapEvent.onDriverRemoved, nearDriver);
+                post(MapEvent.onDriverMoved, nearDriver);
             }
 
             @Override
@@ -68,25 +68,12 @@ public class MapRepositoryImpl implements MapRepository {
 
     @Override
     public void unSubscribeForDriversEvents() {
-        firebase.unsubscribe();
-
+        firebase.unsubscribeForNearDriversUpdates();
     }
 
     @Override
     public void destroyDriversListener() {
-
-    }
-
-    @Override
-    public void addNearDrivers() {
-        //GroupAreas groupAreas = areasHelper.getGroupAreas(-3.740146, -38.606009 );
-        //NearDriver[] nearDrivers = firebase.getNearDrivers(groupAreas, -3.740146, -38.606009 );
-
-    }
-
-    @Override
-    public void removeNearDrivers() {
-
+        firebase.destroyDriversListener();
     }
 
     private void post(int type, NearDriver nearDriver){

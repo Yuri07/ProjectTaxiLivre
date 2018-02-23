@@ -20,6 +20,7 @@ import android.view.View;
 
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListActivity;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             //startActivity(intent);
         } else if(id == R.id.nav_historico_chats){
-
+            startActivity(new Intent(this, HistoricChatsListActivity.class));
         }else if (id == R.id.nav_ajuda) {
 
         } else if (id == R.id.nav_viagens_descontos) {

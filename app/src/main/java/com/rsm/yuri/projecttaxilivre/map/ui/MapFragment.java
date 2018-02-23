@@ -131,9 +131,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_black_24dp)));
         markers.put(marker, nearDriver);
 
-        for (NearDriver nearDrivert : nearDriversList) {
+        /*for (NearDriver nearDrivert : nearDriversList) {
             Log.d("d", "NearDriverList(i).getemail(): " + nearDrivert.getEmail());
-        }
+        }*/
     }
 
     @Override
@@ -185,10 +185,10 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     private boolean checkReady() {
         if (map == null) {
-            Log.d("d", "map checado como nulo.");
+            //Log.d("d", "map checado como nulo.");
             return false;
         }
-        Log.d("d", "map checado como diferente de nulo.");
+        //Log.d("d", "map checado como diferente de nulo.");
         return true;
     }
 
@@ -200,7 +200,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         map = googleMap;
         map.setInfoWindowAdapter(this);
 
-        Log.d("d", "Entrou no onMapReady");
+        //Log.d("d", "Entrou no onMapReady");
         moveCameraToLastKnowLocation();
 
         /*if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
