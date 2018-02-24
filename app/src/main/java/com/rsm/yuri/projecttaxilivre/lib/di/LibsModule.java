@@ -60,4 +60,10 @@ public class LibsModule {
         return this.fragment;
     }
 
+    @Provides
+    @Singleton
+    Context providesContext(){
+        return this.context;
+    }
+
 }

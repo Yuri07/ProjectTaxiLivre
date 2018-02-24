@@ -28,7 +28,7 @@ public class HistoricChatsListRepositoryImpl implements HistoricChatsListReposit
 
     @Override
     public void subscribeForHistoricChatListUpdates() {
-        firebase.checkForData(new FirebaseActionListenerCallback() {//addvalueEventListener
+        /*firebase.checkForData(new FirebaseActionListenerCallback() {//addvalueEventListener
             @Override
             public void onSuccess() {
             }
@@ -42,7 +42,7 @@ public class HistoricChatsListRepositoryImpl implements HistoricChatsListReposit
                 }
 
             }
-        });
+        });*/
         firebase.subscribeForHistoricChatsListUpdates(new FirebaseEventListenerCallback() {//addChildEventListener
             @Override public void onChildAdded(DataSnapshot dataSnapshot) {
                 String email = dataSnapshot.getKey();

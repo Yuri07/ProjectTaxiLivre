@@ -5,4 +5,5 @@ package com.rsm.yuri.projecttaxilivre.chat;
  */
 
 public interface ChatSessionInteractor {
+    void changeConnectionStatus(long status);
 }

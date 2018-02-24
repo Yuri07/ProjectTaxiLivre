@@ -5,6 +5,10 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.rsm.yuri.projecttaxilivre.chat.di.ChatComponet;
+import com.rsm.yuri.projecttaxilivre.chat.di.ChatModule;
+import com.rsm.yuri.projecttaxilivre.chat.di.DaggerChatComponet;
+import com.rsm.yuri.projecttaxilivre.chat.ui.ChatView;
 import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListComponent;
@@ -101,4 +105,17 @@ public class TaxiLivreApp extends Application{
                 .build();
 
     }
+
+    public ChatComponet getChatComponent(ChatView view, Context context){
+        libsModule.setContext(context);
+
+        return DaggerChatComponet
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .chatModule(new ChatModule(view))
+                .build();
+    }
+
 }

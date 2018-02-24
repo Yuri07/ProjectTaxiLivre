@@ -50,9 +50,9 @@ public class FirebaseAPI {
 
     private ChildEventListener areasEventListener;
     private ChildEventListener historicChatsListEventListener;
+    private ChildEventListener chatEventListener;
 
     private StorageReference storageReference;
-
     private StorageReference driversPhotosStorageReference;
     private StorageReference usersPhotosStorageReference;
 
@@ -125,13 +125,9 @@ public class FirebaseAPI {
             areaDiagonalDataReference = getAreaDataReference(groupAreas.getAreaDiagonal().getId());
 
             mainAreaDataReference.addChildEventListener(areasEventListener);
-            //Log.d("d", "mainarea.addChildEvent");
             areaVerticalSideDataReference.addChildEventListener(areasEventListener);
-            //Log.d("d", "verticalsidearea.addChildEvent");
             areaHorizontalSideDataReference.addChildEventListener(areasEventListener);
-            //Log.d("d", "horizontalsidearea.addChildEvent");
             areaDiagonalDataReference.addChildEventListener(areasEventListener);
-            //Log.d("d", "diagonalarea.addChildEvent");
 
             /*getAreaDataReference(groupAreas.getMainArea().getId()).addChildEventListener(areasEventListener);
             getAreaDataReference(groupAreas.getAreaVerticalSide().getId()).addChildEventListener(areasEventListener);
@@ -184,6 +180,44 @@ public class FirebaseAPI {
 
     public void unSubscribeForHistoricChatsListUpdates() {
         getMyHistoricChatsReference().removeEventListener(historicChatsListEventListener);
+    }
+
+    public void subscribeForChatUpdates(final String receiver,final FirebaseEventListenerCallback listener) {
+        if(chatEventListener==null) {
+            chatEventListener= new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildAdded(dataSnapshot);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            getChatsReference(receiver).addChildEventListener(chatEventListener);
+
+        }
+    }
+
+    public void unSubscribeForChatUpdates(String receiver) {
+        getChatsReference(receiver).removeEventListener(chatEventListener);
     }
 
     public DatabaseReference getMyHistoricChatsReference(){
@@ -278,7 +312,7 @@ public class FirebaseAPI {
         return databaseReference.getRoot().child(CHATS_PATH).child(keyChat);
     }
 
-    public void changeUserConnectionStatus(int status) {
+    public void changeUserConnectionStatus(long status) {
         if (getMyUserReference() != null) {
             Map<String, Object> updates = new HashMap<String, Object>();
             updates.put("status", status);
@@ -288,7 +322,7 @@ public class FirebaseAPI {
         }
     }
 
-    public void notifyContactsOfConnectionChange(final int status) {
+    public void notifyContactsOfConnectionChange(final long status) {
         final String myEmail = getAuthUserEmail();
         getMyHistoricChatsReference().addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -349,5 +383,8 @@ public class FirebaseAPI {
         historicChatsListEventListener = null;
     }
 
+    public void destroyChatListener() {
+        chatEventListener = null;
+    }
 
 }

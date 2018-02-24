@@ -28,11 +28,11 @@ public class TaxiLivreAppModule {
         return application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
-    @Provides
+    /*@Provides
     @Singleton
     Context providesContext(){
         return application.getApplicationContext();
-    }
+    }*/
 
     @Provides
     @Singleton
