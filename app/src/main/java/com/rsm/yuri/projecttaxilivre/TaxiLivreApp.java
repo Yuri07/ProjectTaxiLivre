@@ -39,6 +39,8 @@ import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 public class TaxiLivreApp extends Application{
 
     private final static String EMAIL_KEY = "email";
+    private final static String NOME_KEY = "nome";
+    private final static String URL_PHOTO_USER_KEY = "urlphotouser";
     private LibsModule libsModule;
     private DomainModule domainModule;
     private TaxiLivreAppModule taxiLivreAppModule;
@@ -59,6 +61,14 @@ public class TaxiLivreApp extends Application{
         return EMAIL_KEY;
     }
 
+    public static String getUrlPhotoUserKey() {
+        return URL_PHOTO_USER_KEY;
+    }
+
+    public static String getNomeKey() {
+        return NOME_KEY;
+    }
+
     public LoginComponent getLoginComponent(LoginView view) {
         return DaggerLoginComponent
                 .builder()
@@ -69,7 +79,9 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
-    public MainComponent getMainComponent(MainView view, FragmentManager manager, MapFragment mapFragment) {
+    public MainComponent getMainComponent(Context context, MainView view, FragmentManager manager, MapFragment mapFragment) {
+        libsModule.setContext(context);
+
         return DaggerMainComponent
                 .builder()
                 .taxiLivreAppModule(taxiLivreAppModule)

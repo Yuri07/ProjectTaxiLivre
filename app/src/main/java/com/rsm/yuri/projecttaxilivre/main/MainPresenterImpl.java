@@ -55,7 +55,7 @@ public class MainPresenterImpl implements MainPresenter {
     public void onEventMainThread(MainEvent event) {
         switch (event.getEventType()) {
             case MainEvent.onSuccessToRecoverSession:
-                onSuccessToRecoverSession(event.getLoggedUserEmail());
+                onSuccessToRecoverSession(event.getLoggedUser());
                 break;
             case MainEvent.onFailedToRecoverSession:
                 onFailedToRecoverSession();
@@ -63,9 +63,9 @@ public class MainPresenterImpl implements MainPresenter {
         }
     }
 
-    private void onSuccessToRecoverSession(String email) {
+    private void onSuccessToRecoverSession(User loggedUser) {
         if (mainView != null) {
-            mainView.setUserEmail(email);
+            mainView.setLoggedUser(loggedUser);
             mainView.setUIVisibility(true);
         }
     }

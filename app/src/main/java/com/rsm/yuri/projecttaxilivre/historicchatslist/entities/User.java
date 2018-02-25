@@ -32,7 +32,7 @@ public class User {
         this.status = status;
         this.historicChats = historicChats;
         this.nome = "Usuario";
-        this.urlPhotoUser = "";
+        this.urlPhotoUser = "defalut";
     }
 
     public String getEmail() {

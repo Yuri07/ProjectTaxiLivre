@@ -15,12 +15,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListActivity;
+import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
@@ -30,10 +34,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbar_app_bar_main)
     Toolbar toolbar;
     //@BindView(R.id.fab)
     //FloatingActionButton fab;
@@ -41,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
-    //@BindView(R.id.emailtextView)
-    //TextView emailTextView;
 
     @Inject
     MainPresenter presenter;
@@ -52,6 +55,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FragmentManager fragmentManager;
     @Inject
     SharedPreferences sharedPreferences;
+    @Inject
+    ImageLoader imageLoader;
+
+    HeaderViewHolder headerViewHolder;
+    View headerLayout;
 
     private Location lastLocation;
     private TaxiLivreApp app;
@@ -62,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        //TextView nomeTextView = (TextView) findViewById(R.id.nomeTextView);
 
         app = (TaxiLivreApp) getApplication();
 
@@ -82,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        headerLayout = navigationView.getHeaderView(0);
+
         setupInjection();
 
         fragmentManager.beginTransaction()
@@ -98,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MapFragment mapFragment = new MapFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        MainComponent mainComponent = app.getMainComponent(this, fragmentManager, mapFragment);
+        MainComponent mainComponent = app.getMainComponent(this,this, fragmentManager, mapFragment);
         mainComponent.inject(this);
     }
 
@@ -171,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
     @Override
     public void setUIVisibility(boolean enabled) {
         drawerLayout.setVisibility( enabled ? View.VISIBLE : View.INVISIBLE );
@@ -187,11 +198,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void setUserEmail(String email) {
-        if (email != null) {
-            String key = app.getEmailKey();
-            sharedPreferences.edit().putString(key, email).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
+    public void setLoggedUser(User loggedUser) {
+        if (loggedUser.getEmail() != null) {
+            String emailKey = app.getEmailKey();
+            String nomeKey = app.getNomeKey();
+            String urlPhotoUserKey = app.getUrlPhotoUserKey();
+            /*Log.d("d", "loggedUser.Nome: " + loggedUser.getNome());
+            Log.d("d", "loggedUser.UrlPhotoDriver: " + loggedUser.getUrlPhotoUser());*/
+            sharedPreferences.edit().putString(emailKey, loggedUser.getEmail()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
+            sharedPreferences.edit().putString(nomeKey, loggedUser.getNome()).apply();
+            sharedPreferences.edit().putString(urlPhotoUserKey, loggedUser.getUrlPhotoUser()).apply();
+            setupHeaderViewNavigation(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoUser());
+            
         }
+    }
+
+    private void setupHeaderViewNavigation(String email, String nome, String urlPhotoUser) {
+        headerViewHolder = new HeaderViewHolder(headerLayout);
+        /*String email = sharedPreferences.getString(app.getEmailKey(), "");
+        String nome = sharedPreferences.getString(app.getNomeKey(), "");
+        String urlPhotoUser = sharedPreferences.getString(app.getUrlPhotoUserKey(), "");*/
+        /*Log.d("d", "onCreate().loggedUser.Nome: " + nome);
+        Log.d("d", "onCreate().loggedUser.UrlPhotoDriver: " + urlPhotoUser);*/
+        imageLoader.load(headerViewHolder.imgAvatar, urlPhotoUser);
+        headerViewHolder.nomeTextView.setText(nome);
+        headerViewHolder.emailTextView.setText(email);
     }
 
     @Override
@@ -209,4 +240,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void checkForSession() {
         presenter.checkForSession();
     }
+
+    protected static class HeaderViewHolder {
+
+        @BindView(R.id.imgAvatar)
+        CircleImageView imgAvatar;
+        @BindView(R.id.nomeTextView)
+        TextView nomeTextView;
+        @BindView(R.id.emailTextView)
+        TextView emailTextView;
+
+        HeaderViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
 }

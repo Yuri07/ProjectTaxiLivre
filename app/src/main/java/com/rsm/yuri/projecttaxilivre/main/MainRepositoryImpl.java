@@ -63,19 +63,17 @@ public class MainRepositoryImpl implements MainRepository {
     private void initSignIn(DataSnapshot snapshot){
         User currentUser = snapshot.getValue(User.class);//null caso seja a primeira vez que o metodo e executado para esse usuario
         if (currentUser == null) {
-            registerNewUser();
+            currentUser = new User(firebase.getAuthUserEmail(), 1, null);
+            registerNewUser(currentUser);
         }
 
         firebase.changeUserConnectionStatus(User.ONLINE);
-        String email = firebase.getAuthUserEmail();
-        post(MainEvent.onSuccessToRecoverSession, null, email);
+        post(MainEvent.onSuccessToRecoverSession, null, currentUser);
     }
 
-    private void registerNewUser() {
-        String email = firebase.getAuthUserEmail();
-        if (email != null) {
-            User currentUser = new User(email, 1, null);
-            myUserReference.setValue(currentUser);
+    private void registerNewUser(User newUser) {
+        if (newUser.getEmail()!= null) {
+            myUserReference.setValue(newUser);
         }
     }
 
@@ -92,13 +90,13 @@ public class MainRepositoryImpl implements MainRepository {
         post(type, errorMessage, null);
     }
 
-    private void post(int type, String errorMessage, String loggedUserEmail) {
+    private void post(int type, String errorMessage, User loggedUser){//String loggedUserEmail) {
         MainEvent mainEvent = new MainEvent();
         mainEvent.setEventType(type);
         if (errorMessage != null) {
             mainEvent.setErrorMessage(errorMessage);
         }
-        mainEvent.setLoggedUserEmail(loggedUserEmail);
+        mainEvent.setLoggedUser(loggedUser);
         eventBus.post(mainEvent);
     }
 

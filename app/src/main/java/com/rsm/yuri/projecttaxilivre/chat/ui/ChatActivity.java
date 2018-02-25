@@ -32,7 +32,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
     TextView txtUser;
     @BindView(R.id.txtStatus)
     TextView txtStatus;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbar_act_chat)
     Toolbar toolbar;
     @BindView(R.id.messageRecyclerView)
     RecyclerView recyclerView;
