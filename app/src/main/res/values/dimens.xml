@@ -9,4 +9,7 @@
     <dimen name="user_avatar_size">64dp</dimen>
     <dimen name="avatar_size_marker">24dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="user_avatar_size_profile_activity">96dp</dimen>
+    <dimen name="elevationFrameLayout">2dp</dimen>
+    <dimen name="marginTopFrameLayout">4dp</dimen>
 </resources>

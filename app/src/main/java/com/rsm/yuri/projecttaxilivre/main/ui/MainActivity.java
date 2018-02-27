@@ -29,6 +29,7 @@ import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
+import com.rsm.yuri.projecttaxilivre.profile.ui.ProfileActivity;
 
 import javax.inject.Inject;
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_viagens_descontos) {
 
         } else if (id == R.id.nav_config) {
-
+            startActivity(new Intent(this, ProfileActivity.class));
         } else if (id == R.id.nav_dirija_taxilivre) {
 
         } else if (id == R.id.nav_legal) {

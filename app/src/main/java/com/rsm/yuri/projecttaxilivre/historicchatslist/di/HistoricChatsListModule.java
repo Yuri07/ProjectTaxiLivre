@@ -30,8 +30,8 @@ import dagger.Provides;
 @Module
 public class HistoricChatsListModule {
 
-    HistoricChatsListView view;
-    OnItemClickListener clickListener;
+    private HistoricChatsListView view;
+    private OnItemClickListener clickListener;
 
     public HistoricChatsListModule(HistoricChatsListView view, OnItemClickListener clickListener) {
         this.view = view;

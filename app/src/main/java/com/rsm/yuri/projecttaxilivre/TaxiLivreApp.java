@@ -5,6 +5,11 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogComponent;
+import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogModule;
+import com.rsm.yuri.projecttaxilivre.adddialog.di.DaggerAddDialogComponent;
+import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogFragment;
+import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogView;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatComponet;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatModule;
 import com.rsm.yuri.projecttaxilivre.chat.di.DaggerChatComponet;
@@ -31,6 +36,9 @@ import com.rsm.yuri.projecttaxilivre.map.di.MapModule;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
+import com.rsm.yuri.projecttaxilivre.profile.di.DaggerProfileComponent;
+import com.rsm.yuri.projecttaxilivre.profile.di.ProfileComponent;
+import com.rsm.yuri.projecttaxilivre.profile.di.ProfileModule;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -38,9 +46,9 @@ import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 
 public class TaxiLivreApp extends Application{
 
-    private final static String EMAIL_KEY = "email";
-    private final static String NOME_KEY = "nome";
-    private final static String URL_PHOTO_USER_KEY = "urlphotouser";
+    public final static String EMAIL_KEY = "email";
+    public final static String NOME_KEY = "nome";
+    public final static String URL_PHOTO_USER_KEY = "urlPhotoUser";
     private LibsModule libsModule;
     private DomainModule domainModule;
     private TaxiLivreAppModule taxiLivreAppModule;
@@ -65,7 +73,7 @@ public class TaxiLivreApp extends Application{
         return URL_PHOTO_USER_KEY;
     }
 
-    public static String getNomeKey() {
+    public final static String getNomeKey() {
         return NOME_KEY;
     }
 
@@ -130,4 +138,23 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
+    public ProfileComponent getProfileComponent() {
+        return DaggerProfileComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .profileModule(new ProfileModule())
+                .build();
+    }
+
+    public AddDialogComponent getAddDialogComponent(AddDialogView view) {
+        return DaggerAddDialogComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .addDialogModule(new AddDialogModule(view))
+                .build();
+    }
 }

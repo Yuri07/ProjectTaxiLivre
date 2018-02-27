@@ -51,6 +51,7 @@ public class FirebaseAPI {
     private ChildEventListener areasEventListener;
     private ChildEventListener historicChatsListEventListener;
     private ChildEventListener chatEventListener;
+    //private ValueEventListener userValueUpdateEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
@@ -109,7 +110,8 @@ public class FirebaseAPI {
                     listener.onCancelled(databaseError);
                 }
             };
-            GroupAreas groupAreas = areasHelper.getGroupAreas(-3.740146, -38.606009);
+            GroupAreas groupAreas = areasHelper.getGroupAreas(-3.740146, -38.606009);//futuramente levar
+            // areasHelper para mapFragment e passar groupAreas por argumento do metodo subscribeForDriverUpdates
 
             /*GroupAreas groupAreas2 = areasHelper.getGroupAreas(-3.732142, -38.547071);
             GroupAreas groupAreas3 = areasHelper.getGroupAreas(-3.742268, -38.608295);
@@ -182,7 +184,7 @@ public class FirebaseAPI {
         getMyHistoricChatsReference().removeEventListener(historicChatsListEventListener);
     }
 
-    public void subscribeForChatUpdates(final String receiver,final FirebaseEventListenerCallback listener) {
+    public void subscribeForChatUpdates(final String receiver, final FirebaseEventListenerCallback listener) {
         if(chatEventListener==null) {
             chatEventListener= new ChildEventListener() {
                 @Override
@@ -218,6 +220,19 @@ public class FirebaseAPI {
 
     public void unSubscribeForChatUpdates(String receiver) {
         getChatsReference(receiver).removeEventListener(chatEventListener);
+    }
+
+    public void updateKeyValueUser(final String key, final String value, final FirebaseActionListenerCallback listenerCallback) {
+
+        getMyUserReference().child(key).setValue(value, new DatabaseReference.CompletionListener() {
+            public void onComplete(DatabaseError error, DatabaseReference ref) {
+                if(error==null){
+                    listenerCallback.onSuccess();
+                }else{
+                    listenerCallback.onError(error);
+                }
+            }
+        });
     }
 
     public DatabaseReference getMyHistoricChatsReference(){

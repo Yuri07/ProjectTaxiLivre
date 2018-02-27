@@ -17,6 +17,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/imgAvatar"
+        android:src="@android:drawable/sym_def_app_icon"
         android:layout_width="@dimen/user_avatar_size"
         android:layout_height="@dimen/user_avatar_size"
         android:layout_marginRight="@dimen/appbar_padding_top"

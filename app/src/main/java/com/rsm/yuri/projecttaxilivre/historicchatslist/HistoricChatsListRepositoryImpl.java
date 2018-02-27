@@ -18,8 +18,8 @@ import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
 public class HistoricChatsListRepositoryImpl implements HistoricChatsListRepository {
 
-    private FirebaseAPI firebase;
-    private EventBus eventBus;
+    FirebaseAPI firebase;
+    EventBus eventBus;
 
     public HistoricChatsListRepositoryImpl(FirebaseAPI firebase, EventBus eventBus) {
         this.firebase = firebase;

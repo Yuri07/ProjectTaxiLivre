@@ -27,6 +27,14 @@
 
     <string name="DRIVER_NAME_DEFAULT">Driver</string>
     <string name="USER_NAME_DEFAULT">Usuario</string>
+    <string name="nome">Nome</string>
+
+    <string name="add.dialog.message.title">Add Dialog</string>
+    <string name="add.dialog.message.default.hint">Value</string>
+    <string name="add.dialog.message.add">Accept</string>
+    <string name="add.dialog.message.cancel">Cancel</string>
+    <string name="add.dialog.message.valueadded">Value has been added successfully</string>
+    <string name="add.dialog.error.message">Unable to add value</string>
 
 
 </resources>
