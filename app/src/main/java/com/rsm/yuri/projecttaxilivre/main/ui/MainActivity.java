@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Location lastLocation;
     private TaxiLivreApp app;
 
+    public final static int UPDATE_PROFILE = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         headerLayout = navigationView.getHeaderView(0);
+
+        headerViewHolder = new HeaderViewHolder(headerLayout);
+
 
         setupInjection();
 
@@ -160,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_viagens_descontos) {
 
         } else if (id == R.id.nav_config) {
-            startActivity(new Intent(this, ProfileActivity.class));
+            startActivityForResult(new Intent(this, ProfileActivity.class), UPDATE_PROFILE);
         } else if (id == R.id.nav_dirija_taxilivre) {
 
         } else if (id == R.id.nav_legal) {
@@ -215,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupHeaderViewNavigation(String email, String nome, String urlPhotoUser) {
-        headerViewHolder = new HeaderViewHolder(headerLayout);
         /*String email = sharedPreferences.getString(app.getEmailKey(), "");
         String nome = sharedPreferences.getString(app.getNomeKey(), "");
         String urlPhotoUser = sharedPreferences.getString(app.getUrlPhotoUserKey(), "");*/
@@ -240,6 +244,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void checkForSession() {
         presenter.checkForSession();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==UPDATE_PROFILE ){
+            String email = sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, "");
+            String nome = sharedPreferences.getString(TaxiLivreApp.NOME_KEY, "");
+            String urlPhotoUser = sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, "");
+            Log.d("d", "onActivityResult UPDATE_PROFILE");
+            setupHeaderViewNavigation(email, nome, urlPhotoUser);
+        }
     }
 
     protected static class HeaderViewHolder {

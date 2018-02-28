@@ -39,6 +39,7 @@ import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 import com.rsm.yuri.projecttaxilivre.profile.di.DaggerProfileComponent;
 import com.rsm.yuri.projecttaxilivre.profile.di.ProfileComponent;
 import com.rsm.yuri.projecttaxilivre.profile.di.ProfileModule;
+import com.rsm.yuri.projecttaxilivre.profile.ui.ProfileView;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -138,13 +139,13 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
-    public ProfileComponent getProfileComponent() {
+    public ProfileComponent getProfileComponent(ProfileView view) {
         return DaggerProfileComponent
                 .builder()
                 .taxiLivreAppModule(taxiLivreAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .profileModule(new ProfileModule())
+                .profileModule(new ProfileModule(view))
                 .build();
     }
 

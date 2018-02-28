@@ -36,5 +36,11 @@
     <string name="add.dialog.message.valueadded">Value has been added successfully</string>
     <string name="add.dialog.error.message">Unable to add value</string>
 
+    <string name="main.error.dispatch.camera">Error creating file</string>
+    <string name="main.message.picture.source">Select a photo</string>
+
+    <string name="profile.notice.upload.init">Photo is being processed &#8230;</string>
+
+
 
 </resources>

@@ -1,8 +1,12 @@
 package com.rsm.yuri.projecttaxilivre.domain;
 
+import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -11,6 +15,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
@@ -18,6 +24,7 @@ import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -28,6 +35,7 @@ public class FirebaseAPI {
     private final static String DRIVER_PATH = "drivers";
     private final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
+    private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
@@ -35,6 +43,7 @@ public class FirebaseAPI {
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
     private final static String SEPARATOR = "___";
+
 
     private static final String DRIVERS_PHOTOS_PATH = "drivers_photos";
     private static final String USERS_PHOTOS_PATH = "users_photos";
@@ -235,6 +244,8 @@ public class FirebaseAPI {
         });
     }
 
+
+
     public DatabaseReference getMyHistoricChatsReference(){
         return getHistoriChatsReferenceOfUser(getAuthUserEmail());
     }
@@ -370,9 +381,64 @@ public class FirebaseAPI {
         return getUserReference(email).child(NEAR_DRIVERS_PATH);
     }
 
+    public DatabaseReference getMyUrlPhotoReference() {
+        return getMyUserReference().child(URL_PHOTO_USER_PATH);
+    }
+
     /*public DatabaseReference getMyNearDriversReference(){
         return getHistoriChatsReferenceOfUser((getAuthUserEmail()));
     }*/
+
+    public void updateAvatarPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
+
+        //final StorageReference photoRef = getUsersPhotosStorageReference().child(selectedImageUri.getLastPathSegment());
+
+        StorageReference photoRef = getUsersPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
+
+        //StorageReference photoDeleteRef = getUsersPhotosStorageReference().child(previousImageUrl);
+
+        final DatabaseReference myUrlPhotoReference = getMyUrlPhotoReference();
+
+        photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                myUrlPhotoReference.setValue(downloadUrl.toString());
+                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                firebaseStorageFinishedListener.onError(e.getMessage());
+            }
+        });
+
+        /*photoDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        myUrlPhotoReference.setValue(downloadUrl.toString());
+                        firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        firebaseStorageFinishedListener.onError(e.getMessage());
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                firebaseStorageFinishedListener.onError(e.getMessage());
+            }
+        });*/
+
+
+    }
 
     public StorageReference getDriversPhotosStorageReference(){
         return storageReference.getRoot().child(DRIVERS_PHOTOS_PATH);
@@ -401,5 +467,6 @@ public class FirebaseAPI {
     public void destroyChatListener() {
         chatEventListener = null;
     }
+
 
 }
