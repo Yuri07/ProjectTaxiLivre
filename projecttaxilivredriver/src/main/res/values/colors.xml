@@ -4,7 +4,7 @@
     <color name="colorPrimary">#F44336</color>
     <color name="colorPrimaryDark">#D32F2F</color>
     <color name="primaryLight">#FFCDD2</color>
-    <color name="colorAccent">#448AFF</color>
+    <color name="colorAccent">#607D8B</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
@@ -15,7 +15,7 @@
 
     <color name="tab_disable">#979797</color>
     <color name="tab_enable">#FFFFFF</color>
-    <color name="tab_checked">#448AFF</color>
+    <color name="tab_checked">#607D8B</color>
     <color name="tab_unchecked">#FFFFFF</color>
 
     <!--<color name="colorPrimary">#354355</color>

@@ -33,7 +33,7 @@ ext {
     compileSdkVersion = 27
     buildToolsVersion = '27.0.2'
 
-    supportLibraryVersion = '27.0.2'
+    supportLibraryVersion = '27.1.0'
 
     playServicesLocationVersion = '11.0.4'//'11.8.0'//playservices e firebase tem que ter mesma versao
     firebaseVersion = '11.0.4'

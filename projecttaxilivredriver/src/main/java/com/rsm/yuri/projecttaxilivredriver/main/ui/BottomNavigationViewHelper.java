@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivredriver;
+package com.rsm.yuri.projecttaxilivredriver.main.ui;
 
 import android.annotation.SuppressLint;
 import android.support.design.internal.BottomNavigationItemView;
