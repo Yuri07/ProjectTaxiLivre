@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ProjectTaxiLivreDriver</string>
+    <string name="app_name">TaxiLivre Driver</string>
+    <string name="menu_home">HOME</string>
+    <string name="menu_money">GANHOS</string>
+    <string name="menu_avaliation">AVALIAÇÕES</string>
+    <string name="menu_profile">CONTA</string>
 </resources>
