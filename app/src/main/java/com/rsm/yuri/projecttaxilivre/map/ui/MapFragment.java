@@ -81,7 +81,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         markers = new HashMap<Marker, NearDriver>();
         nearDriversList = new ArrayList<>();
 
-        mapPresenter.onCreate();//trocar esse nome por algo parecido com registerInEventBus();
+        mapPresenter.onCreate();
         mapPresenter.subscribe();
     }
 
@@ -107,7 +107,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        moveCameraToLastKnowLocation();
+        //moveCameraToLastKnowLocation();
 
     }
 

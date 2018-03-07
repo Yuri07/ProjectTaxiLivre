@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         headerViewHolder = new HeaderViewHolder(headerLayout);
 
-
         setupInjection();
 
         fragmentManager.beginTransaction()
@@ -174,8 +173,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             logout();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //drawer.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -241,10 +241,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    @Override
+    /*@Override
     public void checkForSession() {
         presenter.checkForSession();
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

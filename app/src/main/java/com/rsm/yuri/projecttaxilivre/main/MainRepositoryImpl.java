@@ -55,7 +55,7 @@ public class MainRepositoryImpl implements MainRepository {
 
             @Override
             public void onError(DatabaseError error) {
-                post(MainEvent.onFailedToRecoverSession);
+                post(MainEvent.onFailedToRecoverSession,error.getMessage());
             }
         });
     }

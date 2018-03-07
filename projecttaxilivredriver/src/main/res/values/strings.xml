@@ -5,9 +5,46 @@
     <string name="menu_avaliation">AVALIAÇÕES</string>
     <string name="menu_profile">CONTA</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_home_fragment">Hello home fragment</string>
     <string name="hello_money_fragment">Hello money fragment</string>
     <string name="hello_avaliation_fragment">Hello avaliation fragment</string>
     <string name="hello_profile_fragment">Hello profile fragment</string>
+
+    <string name="draw_nav_item_suas_viagens">Suas viagens</string>
+    <string name="draw_nav_item_historico_de_conversas">Histórico de Conversas</string>
+    <string name="draw_nav_item_ajuda">Ajuda</string>
+    <string name="draw_nav_item_legal">Legal</string>
+    <string name="draw_nav_item_sair">Sair</string>
+
+    <string name="login.message.email">Email</string>
+    <string name="login.message.password">Password</string>
+    <string name="login.message.signin">Sign In</string>
+    <string name="login.message.signup">Sign Up</string>
+    <string name="login.notice.message.useradded">User was successfully registered</string>
+    <string name="login.error.message.signin">Error trying to signIn %s</string>
+    <string name="login.error.message.signup">Error registering new user %s</string>
+
+    <string name="DRIVER_NAME_DEFAULT">Driver</string>
+    <string name="USER_NAME_DEFAULT">Usuario</string>
+    <string name="nome">Nome</string>
+
+    <string name="add.dialog.message.title">Add Dialog</string>
+    <string name="add.dialog.message.default.hint">Value</string>
+    <string name="add.dialog.message.add">Accept</string>
+    <string name="add.dialog.message.cancel">Cancel</string>
+    <string name="add.dialog.message.valueadded">Value has been added successfully</string>
+    <string name="add.dialog.error.message">Unable to add value</string>
+
+    <string name="main.error.dispatch.camera">Error creating file</string>
+    <string name="main.message.picture.source">Select a photo</string>
+
+    <string name="profile.notice.upload.init">Photo is being processed &#8230;</string>
+
+    <string name="contactlist.menu.action.signoff">Sign out</string>
+    <string name="contactlist.title">Contacts</string>
+
 </resources>

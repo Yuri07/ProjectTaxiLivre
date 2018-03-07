@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -20,6 +21,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -44,5 +46,6 @@ ext {
     eventbusVersion = '3.1.1'
     daggerVersion = '2.14.1'
     glideVersion = '4.6.1'
+    mpandroidchartVersion = 'v3.0.3'
     jsr250Version = '1.0'
 }

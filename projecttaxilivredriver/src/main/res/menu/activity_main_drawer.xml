@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_viagens"
+            android:title="@string/draw_nav_item_suas_viagens" />
+        <!--android:icon="@drawable/ic_menu_gallery"-->
+        <item
+            android:id="@+id/nav_historico_chats"
+            android:title="@string/draw_nav_item_historico_de_conversas" />
+        <item
+            android:id="@+id/nav_ajuda"
+            android:title="@string/draw_nav_item_ajuda" />
+        <!--android:icon="@drawable/ic_menu_slideshow"-->
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_legal"
+                android:title="@string/draw_nav_item_legal" />
+            <!--android:icon="@drawable/ic_menu_send"-->
+            <item
+                android:id="@+id/nav_sair"
+                android:title="@string/draw_nav_item_sair" />
+        </menu>
+    </item>
+
+</menu>

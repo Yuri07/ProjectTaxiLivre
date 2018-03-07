@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ProjectTaxiLivre</string>
+    <string name="app_name">TaxiLivre</string>
     <string name="hello_fragmet_map">Futuro MapFragment</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

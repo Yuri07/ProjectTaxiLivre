@@ -59,5 +59,7 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     implementation "de.hdodenhof:circleimageview:$rootProject.ext.circleImageViewVersion"
 
+    implementation "com.github.PhilJay:MPAndroidChart:$rootProject.ext.mpandroidchartVersion"
+
 }
 apply plugin: 'com.google.gms.google-services'

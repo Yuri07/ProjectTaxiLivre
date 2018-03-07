@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:elevation="4dp"
+            android:elevation="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <android.support.constraint.ConstraintLayout
@@ -46,6 +46,7 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="8dp"
                     android:gravity="end"
+                    android:shadowColor="@color/tab_enable"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -450,10 +450,10 @@ public class FirebaseAPI {
 
     public void removeHistoricChat(String email) {
         Log.d("d", "firebase.removeHistoricChat");
-        /*String currentUserEmail = getAuthUserEmail();
+        String currentUserEmail = getAuthUserEmail();
         getOneContactReferenceofUser(currentUserEmail, email).removeValue();
         getOneContactReferenceofDriver(email, currentUserEmail).removeValue();//fazer alteracao para não remover historico do chat para no app do motorista
-        */
+
     }
 
     public void destroyDriversListener() {

@@ -10,7 +10,7 @@ public interface MainView {
 
     void setUIVisibility(boolean enabled);
 
-    void checkForSession();
+    //void checkForSession();
     void navigateToLoginScreen();
     void setLoggedUser(User loggedUser);
 
