@@ -2,9 +2,11 @@ package com.rsm.yuri.projecttaxilivre.map;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseAPI;
+import com.rsm.yuri.projecttaxilivre.domain.FirebaseActionListenerCallback;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseEventListenerCallback;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
@@ -27,9 +29,9 @@ public class MapRepositoryImpl implements MapRepository {
     }
 
     @Override
-    public void subscribeForDriversEvents() {
+    public void subscribeForDriversEvents(LatLng location) {
         //Log.d("d", "MapRepository.subscribe()");
-        firebase.subscribeForNearDriversUpdate(new FirebaseEventListenerCallback(){
+        firebase.subscribeForNearDriversUpdate(location, new FirebaseEventListenerCallback(){
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot) {
@@ -74,6 +76,22 @@ public class MapRepositoryImpl implements MapRepository {
     @Override
     public void destroyDriversListener() {
         firebase.destroyDriversListener();
+    }
+
+    @Override
+    public void updateMyLocation(LatLng location) {
+        firebase.updateMyLocation(location, new FirebaseActionListenerCallback(){
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError(DatabaseError error) {
+                post(error.getMessage());
+            }
+        });
     }
 
     private void post(int type, NearDriver nearDriver){

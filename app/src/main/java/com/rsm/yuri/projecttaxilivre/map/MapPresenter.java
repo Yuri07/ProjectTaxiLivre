@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 
 /**
@@ -9,9 +10,11 @@ import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 public interface MapPresenter {
 
     void unsubscribe();
-    void subscribe();
+    void subscribe(LatLng location);
     void onCreate();
     void onDestroy();
+
+    void updateMyLocation(LatLng location);
 
     void onEventMainThread(MapEvent event);
 

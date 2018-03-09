@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,6 +19,7 @@ import com.google.firebase.storage.UploadTask;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.main.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivredriver.main.models.GroupAreas;
 
@@ -41,6 +43,8 @@ public class FirebaseAPI {
     private final static String HISTORICCHATS_PATH = "historicchats";
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
+    private final static String LATITUDE_PATH = "latitude";
+    private final static String LONGITUDE_PATH = "longitude";
     private final static String SEPARATOR = "___";
 
 
@@ -161,6 +165,27 @@ public class FirebaseAPI {
         getChatsReference(receiver).removeEventListener(chatEventListener);
     }
 
+    public void updateMyLocation(final LatLng location, final FirebaseActionListenerCallback listenerCallback){
+        String authUserEmail = getAuthUserEmail();
+        GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
+        NearDriver nearDriver = new NearDriver(getAuthUserEmail(),location.latitude, location.longitude );
+        getAreaDataReference(groupAreas.getMainArea().getId()).child(authUserEmail.replace(".","_"))
+                .setValue(nearDriver, new DatabaseReference.CompletionListener(){
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if(databaseError==null){
+                            getMyUserReference().child(LATITUDE_PATH).setValue(location.latitude);
+                            getMyUserReference().child(LONGITUDE_PATH).setValue(location.longitude);
+                            listenerCallback.onSuccess();
+                        }else{
+                            listenerCallback.onError(databaseError);
+                        }
+                    }
+                });
+
+    }
+
     public void updateKeyValueUser(final String key, final String value, final FirebaseActionListenerCallback listenerCallback) {
 
         getMyUserReference().child(key).setValue(value, new DatabaseReference.CompletionListener() {
@@ -178,9 +203,11 @@ public class FirebaseAPI {
         ratingsEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Rating rating = dataSnapshot.getValue(Rating.class);
                 //Log.d("d", "FirebaseAPI.retrieveRatings().onDataChange(): "+rating.getEmail());
-                listenerCallback.onChildAdded(dataSnapshot);
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    listenerCallback.onChildAdded(postSnapshot);
+                }
+
             }
 
             @Override

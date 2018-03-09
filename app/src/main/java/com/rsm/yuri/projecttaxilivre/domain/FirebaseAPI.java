@@ -5,6 +5,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +43,8 @@ public class FirebaseAPI {
     private final static String HISTORICCHATS_PATH = "historicchats";
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
+    private final static String LATITUDE_PATH = "latitude";
+    private final static String LONGITUDE_PATH = "longitude";
     private final static String SEPARATOR = "___";
 
 
@@ -90,7 +93,14 @@ public class FirebaseAPI {
         databaseReference.addValueEventListener(postListener);
     }
 
-    public void subscribeForNearDriversUpdate(final FirebaseEventListenerCallback listener){
+    public void updateMyLocation(LatLng location, FirebaseActionListenerCallback listenerCallback) {
+
+        getMyUserReference().child(LATITUDE_PATH).setValue(location.latitude);
+        getMyUserReference().child(LONGITUDE_PATH).setValue(location.longitude);
+
+    }
+
+    public void subscribeForNearDriversUpdate(final LatLng location, final FirebaseEventListenerCallback listener){
 
         if(areasEventListener==null){
             areasEventListener = new ChildEventListener() {
@@ -119,7 +129,7 @@ public class FirebaseAPI {
                     listener.onCancelled(databaseError);
                 }
             };
-            GroupAreas groupAreas = areasHelper.getGroupAreas(-3.740146, -38.606009);//futuramente levar
+            GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);//-3.740146, -38.606009);//futuramente levar
             // areasHelper para mapFragment e passar groupAreas por argumento do metodo subscribeForDriverUpdates
 
             /*GroupAreas groupAreas2 = areasHelper.getGroupAreas(-3.732142, -38.547071);
@@ -467,6 +477,5 @@ public class FirebaseAPI {
     public void destroyChatListener() {
         chatEventListener = null;
     }
-
 
 }

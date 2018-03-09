@@ -82,7 +82,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         nearDriversList = new ArrayList<>();
 
         mapPresenter.onCreate();
-        mapPresenter.subscribe();
+        //mapPresenter.subscribe();
     }
 
     private void setupInjection() {
@@ -257,6 +257,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                             lastLocation = location;
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                            mapPresenter.subscribe(position);
+                            mapPresenter.updateMyLocation(position);
                         }
                     }
                 });

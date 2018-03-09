@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,21 +27,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivredriver.R;
+import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
+import com.rsm.yuri.projecttaxilivredriver.home.HomePresenter;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeView {
 
     @BindView(R.id.container)
     FrameLayout container;
     Unbinder unbinder;
 
+    @Inject
+    HomePresenter presenter;
+
     private GoogleMap map;
     private Location lastLocation;
     private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
 
     private final static int PERMISSIONS_REQUEST_LOCATION = 11;
 
@@ -49,6 +62,37 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setupInjection();
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        createLocationRequest();
+        createLocationCallback();
+
+    }
+
+    private void createLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                    presenter.updateLocation(position);
+                }
+            }
+        };
+    }
+
+    private void setupInjection() {
+        TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
+        app.getHomeComponent(this,this).inject(this);
+        //Log.d("d", "ProfileFragment.setupInjection:finalizada");
     }
 
     @Override
@@ -75,7 +119,45 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         moveCameraToLastKnowLocation();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        //}
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
     @Override
@@ -88,7 +170,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (!checkReady()) {
             return null;
         }
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -119,6 +201,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                 });
+
         return lastLocation;
     }
 
@@ -131,4 +214,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         return true;
     }
 
+    @Override
+    public void onLocationReadingError(String error) {
+        Snackbar.make(container, error, Snackbar.LENGTH_SHORT).show();
+    }
 }

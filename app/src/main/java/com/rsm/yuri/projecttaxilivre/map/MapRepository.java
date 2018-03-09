@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
 /**
@@ -8,9 +9,11 @@ import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
 public interface MapRepository {
 
-    void subscribeForDriversEvents();
+    void subscribeForDriversEvents(LatLng location);
     void unSubscribeForDriversEvents();
     void destroyDriversListener();
+
+    void updateMyLocation(LatLng location);
 
     //void addNearDrivers();//nao tem essas funções para o usuario na tela do mapfragment.
     //void removeNearDrivers();

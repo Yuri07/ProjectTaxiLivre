@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
 /**
@@ -15,8 +16,8 @@ public class MapInteractorImpl implements MapInteractor {
     }
 
     @Override
-    public void subscribeForDriversUpdates() {
-        mapRepository.subscribeForDriversEvents();
+    public void subscribeForDriversUpdates(LatLng location) {
+        mapRepository.subscribeForDriversEvents(location);
     }
 
     @Override
@@ -27,6 +28,11 @@ public class MapInteractorImpl implements MapInteractor {
     @Override
     public void destroyDriversListener() {
         mapRepository.destroyDriversListener();
+    }
+
+    @Override
+    public void updateMyLocation(LatLng location) {
+        mapRepository.updateMyLocation(location);
     }
 
     /*@Override//nao tem essas funcoes disponiveis para o usuario na tela do mapfragment

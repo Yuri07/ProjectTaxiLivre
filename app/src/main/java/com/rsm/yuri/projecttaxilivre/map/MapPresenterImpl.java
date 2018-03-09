@@ -2,6 +2,7 @@ package com.rsm.yuri.projecttaxilivre.map;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
@@ -39,14 +40,19 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void subscribe() {
+    public void subscribe(LatLng location) {
         //Log.d("d", "Presenter.subscribe()");
-        mapInteractor.subscribeForDriversUpdates();
+        mapInteractor.subscribeForDriversUpdates(location);
     }
 
     @Override
     public void unsubscribe() {
         mapInteractor.unSubscribeForDriversUpdates();
+    }
+
+    @Override
+    public void updateMyLocation(LatLng location) {
+        mapInteractor.updateMyLocation(location);
     }
 
     @Override

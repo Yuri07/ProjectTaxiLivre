@@ -19,6 +19,11 @@ import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsLis
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListModule;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.OnItemClickListener;
+import com.rsm.yuri.projecttaxilivredriver.home.di.DaggerHomeComponent;
+import com.rsm.yuri.projecttaxilivredriver.home.di.HomeComponent;
+import com.rsm.yuri.projecttaxilivredriver.home.di.HomeModule;
+import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
+import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeView;
 import com.rsm.yuri.projecttaxilivredriver.lib.di.LibsModule;
 import com.rsm.yuri.projecttaxilivredriver.login.di.DaggerLoginComponent;
 import com.rsm.yuri.projecttaxilivredriver.login.di.LoginComponent;
@@ -81,6 +86,39 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
+    public HomeComponent getHomeComponent(HomeView view, Fragment fragment){
+        libsModule.setContext(fragment.getContext());
+        return DaggerHomeComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .homeModule(new HomeModule(view))
+                .build();
+    }
+
+    public AvaliationComponent getAvaliationComponent(AvaliationView view, Fragment fragment){
+        libsModule.setContext(fragment.getContext());
+        return DaggerAvaliationComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .avaliationModule(new AvaliationModule(view))
+                .build();
+    }
+
+    public ProfileComponent getProfileComponent(ProfileView view, Fragment fragment){
+        libsModule.setContext(fragment.getContext());
+        return DaggerProfileComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .profileModule(new ProfileModule(view))
+                .build();
+    }
+
     public HistoricChatsListComponent getHistoricChatsListComponent(Context context,
                                                                     HistoricChatsListView view,
                                                                     OnItemClickListener onItemClickListener) {
@@ -107,26 +145,6 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
-    public AvaliationComponent getAvaliationComponent(AvaliationView view, Fragment fragment){
-        libsModule.setContext(fragment.getContext());
-        return DaggerAvaliationComponent
-                .builder()
-                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
-                .domainModule(domainModule)
-                .libsModule(libsModule)
-                .avaliationModule(new AvaliationModule(view))
-                .build();
-    }
 
-    public ProfileComponent getProfileComponent(ProfileView view, Fragment fragment){
-        libsModule.setContext(fragment.getContext());
-        return DaggerProfileComponent
-                .builder()
-                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
-                .domainModule(domainModule)
-                .libsModule(libsModule)
-                .profileModule(new ProfileModule(view))
-                .build();
-    }
 
 }
