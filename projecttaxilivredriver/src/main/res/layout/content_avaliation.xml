@@ -1,6 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imgAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@android:drawable/sym_def_app_icon"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/txtNomeUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Nome"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp" />
+
+    <ImageView
+        android:id="@+id/star1"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/icons8_estrela_preenchida_16"
+        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        android:layout_marginLeft="8dp" />
+    <ImageView
+        android:id="@+id/star2"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/icons8_estrela_gray_preenchida_16"
+        app:layout_constraintStart_toEndOf="@+id/star1"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        />
+    <ImageView
+        android:id="@+id/star3"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/icons8_estrela_gray_preenchida_16"
+        app:layout_constraintStart_toEndOf="@+id/star2"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        />
+    <ImageView
+        android:id="@+id/star4"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/icons8_estrela_gray_preenchida_16"
+        app:layout_constraintStart_toEndOf="@+id/star3"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        />
+    <ImageView
+        android:id="@+id/star5"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/icons8_estrela_gray_preenchida_16"
+        app:layout_constraintStart_toEndOf="@+id/star4"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        />
+
+    <TextView
+        android:id="@+id/txtData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="07/03/2018"
+        app:layout_constraintStart_toEndOf="@+id/star5"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/txtComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Não consigo colocar a forma de pagamento em dinheiro , o que eu faço ? Me ajudem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp" />
 
 </android.support.constraint.ConstraintLayout>

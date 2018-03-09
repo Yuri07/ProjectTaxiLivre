@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities;
+package com.rsm.yuri.projecttaxilivredriver.avaliation.entities;
 
 /**
  * Created by yuri_ on 25/01/2018.
@@ -8,7 +8,7 @@ public class Rating {
 
     private String email;
     private String nome;
-    private int vote;
+    private long vote;
     private String comment;
     private String date;
     private String urlPhotoUser;
@@ -29,11 +29,11 @@ public class Rating {
         this.nome = nome;
     }
 
-    public int getVote() {
+    public long getVote() {
         return vote;
     }
 
-    public void setVote(int vote) {
+    public void setVote(long vote) {
         this.vote = vote;
     }
 

@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container_frag_avaliation"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment">
 
     <android.support.v7.widget.Toolbar
@@ -37,25 +39,69 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/totalTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="2"
-                android:textSize="24sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/averageTextView"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.58000004" />
+                app:layout_constraintVertical_bias="0.25" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/averageTextView"
+                app:layout_constraintTop_toBottomOf="@+id/averageTextView">
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutStars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/averageTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/averageTextView">
+
+                    <ImageView
+                        android:id="@+id/star1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icons8_estrela_preenchida_16" />
+
+                    <ImageView
+                        android:id="@+id/star2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icons8_estrela_preenchida_16" />
+
+                    <ImageView
+                        android:id="@+id/star3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icons8_estrela_preenchida_16" />
+
+                    <ImageView
+                        android:id="@+id/star4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icons8_estrela_preenchida_16" />
+
+                    <ImageView
+                        android:id="@+id/star5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icons8_estrela_preenchida_16" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/totalTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.234"
+                    android:layout_gravity="center"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
 
             <com.github.mikephil.charting.charts.HorizontalBarChart
                 android:id="@+id/barchart"
@@ -67,7 +113,7 @@
                 android:layout_marginTop="32dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/totalTextView"
+                app:layout_constraintStart_toEndOf="@+id/linearLayout"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>

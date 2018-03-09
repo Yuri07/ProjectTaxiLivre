@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.main.models.AreasHelper;
@@ -33,6 +34,7 @@ public class FirebaseAPI {
     private final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
     private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
+    private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
@@ -51,6 +53,8 @@ public class FirebaseAPI {
 
     private ChildEventListener historicChatsListEventListener;
     private ChildEventListener chatEventListener;
+
+    private ValueEventListener ratingsEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
@@ -170,6 +174,23 @@ public class FirebaseAPI {
         });
     }
 
+    public void retrieveRatings(final String email, final FirebaseEventListenerCallback listenerCallback){
+        ratingsEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Rating rating = dataSnapshot.getValue(Rating.class);
+                //Log.d("d", "FirebaseAPI.retrieveRatings().onDataChange(): "+rating.getEmail());
+                listenerCallback.onChildAdded(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listenerCallback.onCancelled(databaseError);
+            }
+        };
+        getMyRatingsReference().addListenerForSingleValueEvent(ratingsEventListener);
+    }
+
     /*public void getLoggedUser(final FirebaseActionListenerCallback listener){
         getMyUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -199,6 +220,23 @@ public class FirebaseAPI {
         if (newUser.getEmail()!= null) {
             myUserReference.setValue(newUser);
         }
+    }*/
+
+    public DatabaseReference getMyRatingsReference(){
+        //return getRatingsReference(getAuthUserEmail());
+        DatabaseReference ratingsReference = null;
+        String email = getAuthUserEmail();
+        if(email!=null){
+            String emailKey = email.replace(".","_");
+            ratingsReference = databaseReference.getRoot().child(RATINGS_PATH).child(emailKey);
+        }
+        Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
+        return ratingsReference;
+    }
+
+    /*public DatabaseReference getRatingsReference(String email){
+        //return getDriverReference(email).child(RATINGS_PATH).child();
+
     }*/
 
     public DatabaseReference getMyHistoricChatsReference(){
@@ -330,31 +368,13 @@ public class FirebaseAPI {
         });
     }
 
-
-
-    //public NearDriver[] getNearDrivers(GroupAreas groupAreas, double latitude, double longitude) {
-      //  return new NearDriver[10];
-    //}
-
-    /*public DatabaseReference getNearDriversReference(String email){
-        return getUserReference(email).child(NEAR_DRIVERS_PATH);
-    }*/
-
     public DatabaseReference getMyUrlPhotoReference() {
-        return getMyUserReference().child(URL_PHOTO_USER_PATH);
+        return getMyUserReference().child(URL_PHOTO_DRIVER_PATH);
     }
-
-    /*public DatabaseReference getMyNearDriversReference(){
-        return getHistoriChatsReferenceOfUser((getAuthUserEmail()));
-    }*/
 
     public void updateAvatarPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
 
-        //final StorageReference photoRef = getUsersPhotosStorageReference().child(selectedImageUri.getLastPathSegment());
-
         StorageReference photoRef = getDriversPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
-
-        //StorageReference photoDeleteRef = getUsersPhotosStorageReference().child(previousImageUrl);
 
         final DatabaseReference myUrlPhotoReference = getMyUrlPhotoReference();
 
@@ -371,31 +391,6 @@ public class FirebaseAPI {
                 firebaseStorageFinishedListener.onError(e.getMessage());
             }
         });
-
-        /*photoDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        myUrlPhotoReference.setValue(downloadUrl.toString());
-                        firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        firebaseStorageFinishedListener.onError(e.getMessage());
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                firebaseStorageFinishedListener.onError(e.getMessage());
-            }
-        });*/
-
 
     }
 

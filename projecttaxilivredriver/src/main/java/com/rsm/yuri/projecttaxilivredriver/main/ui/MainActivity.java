@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Inject
     ImageLoader imageLoader;
 
+    private OnSharedPreferencesReadyListener listener;
+
     public final static int FRAGMENT_HOME_IN_ARRAY = 0;
     public final static int FRAGMENT_MONEY_IN_ARRAY = 1;
     public final static int FRAGMENT_AVALIATION_IN_ARRAY = 2;
@@ -89,6 +91,16 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         navigationView.setNavigationItemSelectedListener(this);
 
         setupInjection();
+
+        if (fragments[FRAGMENT_PROFILE_IN_ARRAY] instanceof OnSharedPreferencesReadyListener) {
+            listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
+            Log.d("d", "MainActivity.onCreate():listener inicializado");
+        } else {
+            Log.d("d", "MainActivity.onCreate():listener nao inicializado");
+            throw new ClassCastException();
+
+        }
+        //listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
 
         fragmentManager.beginTransaction()
                 .add(R.id.content_frame, fragments[FRAGMENT_HOME_IN_ARRAY])
@@ -128,6 +140,11 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
                                 displayFragment(fragments[FRAGMENT_AVALIATION_IN_ARRAY]);
                                 break;
                             case R.id.action_profile:
+                                /*Bundle bundle = new Bundle();
+                                bundle.putString(TaxiLivreDriverApp.EMAIL_KEY, sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY,""));
+                                bundle.putString(TaxiLivreDriverApp.NOME_KEY, sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY,""));
+                                bundle.putString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY,""));
+                                fragments[FRAGMENT_PROFILE_IN_ARRAY].setArguments(bundle);*/
                                 displayFragment(fragments[FRAGMENT_PROFILE_IN_ARRAY]);
                                 break;
                         }
@@ -165,7 +182,13 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             sharedPreferences.edit().putString(emailKey, loggedUser.getEmail()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
             sharedPreferences.edit().putString(nomeKey, loggedUser.getNome()).apply();
             sharedPreferences.edit().putString(urlPhotoUserKey, loggedUser.getUrlPhotoDriver()).apply();
+            Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
+            Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
+            //listener.onSharedPreferencesReady(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoDriver());
         }
+    }
+    public interface OnSharedPreferencesReadyListener {
+        public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser);
     }
 
     @Override
@@ -210,4 +233,5 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             super.onBackPressed();
         }
     }
+
 }

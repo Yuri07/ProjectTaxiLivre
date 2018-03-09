@@ -5,6 +5,10 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationComponent;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationModule;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationView;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatComponet;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatModule;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.DaggerChatComponet;
@@ -24,6 +28,10 @@ import com.rsm.yuri.projecttaxilivredriver.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainModule;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainView;
+import com.rsm.yuri.projecttaxilivredriver.profile.di.DaggerProfileComponent;
+import com.rsm.yuri.projecttaxilivredriver.profile.di.ProfileComponent;
+import com.rsm.yuri.projecttaxilivredriver.profile.di.ProfileModule;
+import com.rsm.yuri.projecttaxilivredriver.profile.ui.ProfileView;
 
 /**
  * Created by yuri_ on 02/03/2018.
@@ -96,6 +104,28 @@ public class TaxiLivreDriverApp extends Application {
                 .domainModule(domainModule)
                 .libsModule(libsModule)
                 .chatModule(new ChatModule(view))
+                .build();
+    }
+
+    public AvaliationComponent getAvaliationComponent(AvaliationView view, Fragment fragment){
+        libsModule.setContext(fragment.getContext());
+        return DaggerAvaliationComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .avaliationModule(new AvaliationModule(view))
+                .build();
+    }
+
+    public ProfileComponent getProfileComponent(ProfileView view, Fragment fragment){
+        libsModule.setContext(fragment.getContext());
+        return DaggerProfileComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .profileModule(new ProfileModule(view))
                 .build();
     }
 
