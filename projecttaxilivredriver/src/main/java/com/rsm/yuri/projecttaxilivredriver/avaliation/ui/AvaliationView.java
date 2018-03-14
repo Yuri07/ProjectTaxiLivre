@@ -9,4 +9,5 @@ import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 public interface AvaliationView {
     void onRatingAdded(Rating rating);
     void onRatingError(String error);
+
 }

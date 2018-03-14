@@ -47,5 +47,6 @@ ext {
     daggerVersion = '2.14.1'
     glideVersion = '4.6.1'
     mpandroidchartVersion = 'v3.0.3'
+    materialratingbarVersion = '1.2.0'
     jsr250Version = '1.0'
 }

@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigation;
 
-
     @Inject
     MainPresenter presenter;
     @Inject
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Inject
     ImageLoader imageLoader;
 
-    private OnSharedPreferencesReadyListener listener;
+    //private OnSharedPreferencesReadyListener listener;
 
     public final static int FRAGMENT_HOME_IN_ARRAY = 0;
     public final static int FRAGMENT_MONEY_IN_ARRAY = 1;
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         setupInjection();
 
-        if (fragments[FRAGMENT_PROFILE_IN_ARRAY] instanceof OnSharedPreferencesReadyListener) {
+        /*if (fragments[FRAGMENT_PROFILE_IN_ARRAY] instanceof OnSharedPreferencesReadyListener) {
             listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
             Log.d("d", "MainActivity.onCreate():listener inicializado");
         } else {
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             throw new ClassCastException();
 
         }
-        //listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
+        listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];*/
 
         fragmentManager.beginTransaction()
                 .add(R.id.content_frame, fragments[FRAGMENT_HOME_IN_ARRAY])
@@ -179,17 +178,34 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             String emailKey = TaxiLivreDriverApp.EMAIL_KEY;
             String nomeKey = TaxiLivreDriverApp.NOME_KEY;
             String urlPhotoUserKey = TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY;
+            String averagRatingKey = TaxiLivreDriverApp.AVERAG_RATING_KEY;
+            String totalRatingsKey = TaxiLivreDriverApp.TOTAL_RATINGS_KEY;
+            String count1StarsKey = TaxiLivreDriverApp.COUNT_1_STARS_KEY;
+            String count2StarsKey = TaxiLivreDriverApp.COUNT_2_STARS_KEY;
+            String count3StarsKey = TaxiLivreDriverApp.COUNT_3_STARS_KEY;
+            String count4StarsKey = TaxiLivreDriverApp.COUNT_4_STARS_KEY;
+            String count5StarsKey = TaxiLivreDriverApp.COUNT_5_STARS_KEY;
             sharedPreferences.edit().putString(emailKey, loggedUser.getEmail()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
             sharedPreferences.edit().putString(nomeKey, loggedUser.getNome()).apply();
             sharedPreferences.edit().putString(urlPhotoUserKey, loggedUser.getUrlPhotoDriver()).apply();
-            Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
-            Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
+            sharedPreferences.edit().putFloat(averagRatingKey, (float)loggedUser.getAverageRating()).apply();
+            sharedPreferences.edit().putInt(totalRatingsKey, loggedUser.getTotalRatings()).apply();
+            sharedPreferences.edit().putInt(count1StarsKey, loggedUser.getCount1Stars()).apply();
+            sharedPreferences.edit().putInt(count2StarsKey, loggedUser.getCount2Stars()).apply();
+            sharedPreferences.edit().putInt(count3StarsKey, loggedUser.getCount3Stars()).apply();
+            sharedPreferences.edit().putInt(count4StarsKey, loggedUser.getCount4Stars()).apply();
+            sharedPreferences.edit().putInt(count5StarsKey, loggedUser.getCount5Stars()).apply();
+            Log.d("d", "MainActivity. loggedUser.getaverageRating(): "+ loggedUser.getAverageRating());
+            Log.d("d", "MainActivity. loggedUser.getTotalRating(): "+ loggedUser.getTotalRatings());
+            Log.d("d", "MainActivity. loggedUser.getCount1Stars(): "+ loggedUser.getCount1Stars());
+            //Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
+            //Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
             //listener.onSharedPreferencesReady(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoDriver());
         }
     }
-    public interface OnSharedPreferencesReadyListener {
+    /*public interface OnSharedPreferencesReadyListener {
         public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser);
-    }
+    }*/
 
     @Override
     public void logout() {

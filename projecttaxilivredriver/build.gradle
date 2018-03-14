@@ -61,5 +61,7 @@ dependencies {
 
     implementation "com.github.PhilJay:MPAndroidChart:$rootProject.ext.mpandroidchartVersion"
 
+    implementation "me.zhanghai.android.materialratingbar:library:$rootProject.ext.materialratingbarVersion"
+
 }
 apply plugin: 'com.google.gms.google-services'

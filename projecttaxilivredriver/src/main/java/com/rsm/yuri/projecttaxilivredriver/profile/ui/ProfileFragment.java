@@ -52,7 +52,7 @@ import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ProfileFragment extends Fragment implements ProfileView, MainActivity.OnSharedPreferencesReadyListener {
+public class ProfileFragment extends Fragment implements ProfileView{//, MainActivity.OnSharedPreferencesReadyListener {
 
     @BindView(R.id.imgAvatarProfileAct)
     CircleImageView imgAvatarProfileAct;
@@ -118,10 +118,10 @@ public class ProfileFragment extends Fragment implements ProfileView, MainActivi
         String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "");
         String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "");
         Log.d("d", "ProfileFragment. onSharedPreferencesReady()urlPhoto: "+ urlPhotoUser);
+        nomeUserProfileAct.setText(nome);
+        emailUserProfileAct.setText(email);
         if(!urlPhotoUser.equals("default"))
             imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
-            nomeUserProfileAct.setText(nome);
-        emailUserProfileAct.setText(email);
 
     }
 
@@ -157,8 +157,8 @@ public class ProfileFragment extends Fragment implements ProfileView, MainActivi
 
     }
 
-    @Override
-    public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser) {
+    //@Override
+    //public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser) {
         /*String email = sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "");
         String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "");
         String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "");
@@ -167,5 +167,5 @@ public class ProfileFragment extends Fragment implements ProfileView, MainActivi
             //imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
         nomeUserProfileAct.setText(nome);
         emailUserProfileAct.setText(email);*/
-    }
+    //}
 }

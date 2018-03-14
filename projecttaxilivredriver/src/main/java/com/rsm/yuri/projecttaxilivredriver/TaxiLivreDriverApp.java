@@ -51,6 +51,13 @@ public class TaxiLivreDriverApp extends Application {
     public final static String EMAIL_KEY = "email";
     public final static String NOME_KEY = "nome";
     public final static String URL_PHOTO_DRIVER_KEY = "urlPhotoDriver";
+    public final static String AVERAG_RATING_KEY = "averagRating";
+    public final static String TOTAL_RATINGS_KEY = "totalRatings";
+    public final static String COUNT_1_STARS_KEY = "count1Stars";
+    public final static String COUNT_2_STARS_KEY = "count2Stars";
+    public final static String COUNT_3_STARS_KEY = "count3Stars";
+    public final static String COUNT_4_STARS_KEY = "count4Stars";
+    public final static String COUNT_5_STARS_KEY = "count5Stars";
 
     @Override
     public void onCreate() {
