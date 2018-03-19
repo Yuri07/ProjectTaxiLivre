@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivredriver.main.ui;
 
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 
@@ -17,4 +18,6 @@ public interface MainView {
 
     void logout();
 
+    void setMyCar(Car myCar);
+    void onFailedToRecoverMyCar(String errorMessage);
 }

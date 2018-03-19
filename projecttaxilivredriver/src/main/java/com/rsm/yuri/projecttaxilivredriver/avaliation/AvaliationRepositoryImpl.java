@@ -31,7 +31,7 @@ public class AvaliationRepositoryImpl implements AvaliationRepository {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot) {
                 Rating rating = dataSnapshot.getValue(Rating.class);
-                Log.d("d", "AvaliationRepository.retrieveRatings(): "+rating.getEmail());
+                //Log.d("d", "AvaliationRepository.retrieveRatings(): "+rating.getEmail());
                 post(AvaliationEvent.READ_EVENT, rating);
             }
 

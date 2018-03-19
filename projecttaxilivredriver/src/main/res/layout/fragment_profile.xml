@@ -9,39 +9,44 @@
     android:id="@+id/profileFragmentContainer"
     tools:context="com.rsm.yuri.projecttaxilivredriver.profile.ui.ProfileFragment">
 
-    <android.support.v7.widget.Toolbar
-        android:background="?attr/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"/>
-
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
     <FrameLayout
         android:id="@+id/frameLayoutContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="#fff"
         android:clickable="true"
         android:elevation="@dimen/elevationFrameLayout"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="Motorista"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
             <FrameLayout
                 android:id="@+id/frameLayoutImgAvatar"
                 android:layout_width="match_parent"
@@ -51,14 +56,12 @@
                     android:id="@+id/imgAvatarProfileAct"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="center|start"
+                    android:layout_gravity="center"
                     android:src="@android:drawable/sym_def_app_icon"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="1dp"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginBottom="@dimen/activity_vertical_margin" />
             </FrameLayout>
 
             <View
@@ -86,9 +89,8 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:text="Nome"
-                        android:textSize="24sp"
                         android:textStyle="bold" />
-
+                        <!--android:textSize="24sp"-->
 
                     <TextView
                         android:id="@+id/nomeUserProfileAct"
@@ -96,8 +98,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
-                        android:text="Usuario"
-                        android:textSize="24sp" />
+                        android:text="Usuario"/>
+                        <!--android:textSize="24sp" />-->
                 </LinearLayout>
             </FrameLayout>
 
@@ -125,7 +127,6 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
                         android:text="Email"
-                        android:textSize="24sp"
                         android:textStyle="bold"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
                         app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +139,221 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
                         android:text="usuario@email.com"
-                        android:textSize="24sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="Carro"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutCarModelo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/modeloLabelCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:text="Modelo"
+                        android:textStyle="bold" />
+
+
+                    <TextView
+                        android:id="@+id/modeloCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="modelo" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutCarMarca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/marcaLabelCarProfileAct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="Marca"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/nomeUserProfileAct" />
+
+                <TextView
+                    android:id="@+id/marcaCarProfileAct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="marca"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
+            </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutCarCor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/corLabelCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Cor"
+                        android:textStyle="bold"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/nomeUserProfileAct" />
+
+                    <TextView
+                        android:id="@+id/corCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="cor"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutCarAno"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/anoLabelCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Ano"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/nomeUserProfileAct" />
+
+                    <TextView
+                        android:id="@+id/anoCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="01/01/2018"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutCarPlaca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/placaLabelCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Placa"
+                        android:textStyle="bold"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/nomeUserProfileAct" />
+
+                    <TextView
+                        android:id="@+id/placaCarProfileAct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="XXX-0000"
                         android:layout_marginBottom="@dimen/activity_vertical_margin"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
@@ -149,7 +364,40 @@
 
     </FrameLayout>
 
-    <FrameLayout
+            <FrameLayout
+                android:id="@+id/frameLayoutEditarPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:clickable="true"
+                android:background="#fff"
+                android:elevation="@dimen/elevationFrameLayout">
+
+                <LinearLayout
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                        android:src="@drawable/icons8_editar_propriedade_24"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Editar perfil"/>
+
+                </LinearLayout>
+            </FrameLayout>
+
+    <!--<FrameLayout
         android:id="@+id/frameLayoutCarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -387,8 +635,11 @@
                 android:layout_height="56dp"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:background="@color/colorLightGray"
-                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>-->
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
         </LinearLayout>
 
     </ScrollView>

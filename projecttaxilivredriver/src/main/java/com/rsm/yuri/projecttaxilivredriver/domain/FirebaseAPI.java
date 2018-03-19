@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
@@ -35,6 +36,7 @@ public class FirebaseAPI {
     private final static String DRIVER_PATH = "drivers";
     private final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
+    private final static String NOME_PATH = "nome";
     private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
     private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
@@ -59,6 +61,7 @@ public class FirebaseAPI {
     private ChildEventListener chatEventListener;
 
     private ValueEventListener ratingsEventListener;
+    private ValueEventListener carEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
@@ -199,6 +202,42 @@ public class FirebaseAPI {
         });
     }
 
+    public void updateProfile(Driver driver, Car car, final FirebaseActionListenerCallback listener) {
+
+        Map<String, Object> carValues = car.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/"+DRIVER_PATH+"/"+ driver.getEmail().replace(".","_") +"/"+NOME_PATH, driver.getNome());
+        childUpdates.put("/"+CAR_PATH+"/" + car.getEmail().replace(".","_") , carValues);
+
+        databaseReference.updateChildren(childUpdates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError error, DatabaseReference databaseReference) {
+                if(error==null){
+                    listener.onSuccess();
+                }else{
+                    listener.onError(error);
+                }
+            }
+        });
+
+    }
+
+    public void getMyCar(final FirebaseEventListenerCallback listenerCallback) {
+        carEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listenerCallback.onChildAdded(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listenerCallback.onCancelled(databaseError);
+            }
+        };
+        getMyCarReference().addListenerForSingleValueEvent(carEventListener);
+
+    }
+
     public void retrieveRatings(final String email, final FirebaseEventListenerCallback listenerCallback){
         ratingsEventListener = new ValueEventListener() {
             @Override
@@ -249,6 +288,17 @@ public class FirebaseAPI {
         }
     }*/
 
+    public DatabaseReference getMyCarReference(){
+        DatabaseReference carReference = null;
+        String email = getAuthUserEmail();
+        if(email!=null){
+            String emailKey = email.replace(".","_");
+             carReference = databaseReference.getRoot().child(CAR_PATH).child(emailKey);
+        }
+        //Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
+        return carReference;
+    }
+
     public DatabaseReference getMyRatingsReference(){
         //return getRatingsReference(getAuthUserEmail());
         DatabaseReference ratingsReference = null;
@@ -257,7 +307,7 @@ public class FirebaseAPI {
             String emailKey = email.replace(".","_");
             ratingsReference = databaseReference.getRoot().child(RATINGS_PATH).child(emailKey);
         }
-        Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
+        //Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
         return ratingsReference;
     }
 
@@ -444,6 +494,5 @@ public class FirebaseAPI {
     public void destroyChatListener() {
         chatEventListener = null;
     }
-
 
 }

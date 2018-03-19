@@ -14,6 +14,10 @@ import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatModule;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.DaggerChatComponet;
 import com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatView;
 import com.rsm.yuri.projecttaxilivredriver.domain.di.DomainModule;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.di.DaggerEditProfileComponent;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.di.EditProfileComponent;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.di.EditProfileModule;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.ui.EditProfileView;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListModule;
@@ -58,6 +62,12 @@ public class TaxiLivreDriverApp extends Application {
     public final static String COUNT_3_STARS_KEY = "count3Stars";
     public final static String COUNT_4_STARS_KEY = "count4Stars";
     public final static String COUNT_5_STARS_KEY = "count5Stars";
+
+    public final static String MODELO_KEY = "modelo";
+    public final static String MARCA_KEY = "marca";
+    public final static String COR_KEY = "cor";
+    public final static String ANO_KEY = "ano";
+    public final static String PLACA_KEY = "placa";
 
     @Override
     public void onCreate() {
@@ -152,6 +162,15 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
-
+    public EditProfileComponent getEditProfileComponent(EditProfileView view, Context context){
+        libsModule.setContext(context);
+        return DaggerEditProfileComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .editProfileModule(new EditProfileModule(view))
+                .build();
+    }
 
 }

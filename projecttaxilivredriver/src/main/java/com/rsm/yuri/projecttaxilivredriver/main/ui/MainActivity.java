@@ -19,10 +19,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListActivity;
@@ -132,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
                             case R.id.action_home:
                                 displayFragment(fragments[FRAGMENT_HOME_IN_ARRAY]);
                                 break;
-                            case R.id.action_money:
+                            /*case R.id.action_money:
                                 displayFragment(fragments[FRAGMENT_MONEY_IN_ARRAY]);
-                                break;
+                                break;*/
                             case R.id.action_avaliation:
                                 displayFragment(fragments[FRAGMENT_AVALIATION_IN_ARRAY]);
                                 break;
@@ -201,8 +203,26 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             //Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
             //Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
             //listener.onSharedPreferencesReady(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoDriver());
+
+            presenter.getMyCar();
+
         }
     }
+
+    @Override
+    public void setMyCar(Car myCar) {
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.MODELO_KEY, myCar.getModelo()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.MARCA_KEY, myCar.getMarca()).apply();
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.COR_KEY, myCar.getCor()).apply();
+        sharedPreferences.edit().putLong(TaxiLivreDriverApp.ANO_KEY, myCar.getAno()).apply();
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.PLACA_KEY, myCar.getPlaca()).apply();
+    }
+
+    @Override
+    public void onFailedToRecoverMyCar(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
     /*public interface OnSharedPreferencesReadyListener {
         public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser);
     }*/
@@ -249,5 +269,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             super.onBackPressed();
         }
     }
+
+
 
 }

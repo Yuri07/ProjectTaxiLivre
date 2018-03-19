@@ -7,5 +7,6 @@ package com.rsm.yuri.projecttaxilivredriver.main;
 public interface MainInteractor {
 
     void setRecipient(String recipient);
+    void getMyCar();
 
 }

@@ -17,4 +17,9 @@ public class MainInteractorImpl implements MainInteractor {
 
     }
 
+    @Override
+    public void getMyCar() {
+        mainRepository.getMyCar();
+    }
+
 }

@@ -52,11 +52,11 @@ public class ProfilePresenterImpl implements ProfilePresenter {
         if (this.view != null) {
             switch (event.getType()) {
                 case ProfileEvent.UPLOAD_INIT:
-                    Log.d("d", "view.onUploadInit");
+                    //Log.d("d", "view.onUploadInit");
                     view.onUploadInit();
                     break;
                 case ProfileEvent.UPLOAD_COMPLETE:
-                    Log.d("d", "view.onUploadComplte(event.getUrlPhotoUser), " + event.getUlrPhotoUser());
+                    //Log.d("d", "view.onUploadComplte(event.getUrlPhotoUser), " + event.getUlrPhotoUser());
                     view.onUploadComplete(event.getUlrPhotoUser());
                     break;
                 case ProfileEvent.UPLOAD_ERROR:

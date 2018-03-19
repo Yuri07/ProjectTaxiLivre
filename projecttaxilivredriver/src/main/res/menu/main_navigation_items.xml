@@ -4,9 +4,9 @@
     <item android:id="@+id/action_home"
         android:title="@string/menu_home"
         android:icon="@drawable/icons8_casa_24" />
-    <item android:id="@+id/action_money"
+    <!--<item android:id="@+id/action_money"
         android:title="@string/menu_money"
-        android:icon="@drawable/icons8_notas_de_dinheiro_26" />
+        android:icon="@drawable/icons8_notas_de_dinheiro_26" />-->
     <item android:id="@+id/action_avaliation"
         android:title="@string/menu_avaliation"
         android:icon="@drawable/icons8_estrela_preenchida_24" />

@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String email = sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, "");
             String nome = sharedPreferences.getString(TaxiLivreApp.NOME_KEY, "");
             String urlPhotoUser = sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, "");
-            Log.d("d", "onActivityResult UPDATE_PROFILE");
+            //Log.d("d", "onActivityResult UPDATE_PROFILE");
             setupHeaderViewNavigation(email, nome, urlPhotoUser);
         }
     }

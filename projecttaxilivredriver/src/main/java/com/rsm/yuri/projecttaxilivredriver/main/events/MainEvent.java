@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivredriver.main.events;
 
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 
@@ -9,18 +10,21 @@ import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 
 public class MainEvent {
 
+
     private int eventType;
 
     private Driver loggedUser;
 
-    private String errorMessage;
+    private Car myCar;
 
-   // private String loggedUserEmail;
+    private String errorMessage;
 
     public final static int READ_DRIVER_EVENT = 0;
 
     public final static int onSuccessToRecoverSession = 10;
     public final static int onFailedToRecoverSession = 11;
+    public final static int onSuccessToRecoverMyCar = 12;
+    public final static int onFailedToRecoverMyCar = 13;
 
     public Driver getLoggedUser() {
         return loggedUser;
@@ -28,6 +32,14 @@ public class MainEvent {
 
     public void setLoggedUser(Driver loggedUser) {
         this.loggedUser = loggedUser;
+    }
+
+    public Car getMyCar() {
+        return myCar;
+    }
+
+    public void setMyCar(Car myCar) {
+        this.myCar = myCar;
     }
 
     public int getEventType() {

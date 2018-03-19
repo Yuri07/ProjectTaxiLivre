@@ -1,47 +1,21 @@
 package com.rsm.yuri.projecttaxilivredriver.profile.ui;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
-import com.rsm.yuri.projecttaxilivredriver.adddialog.ui.AddDialogFragment;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.ui.EditProfileActivity;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.ImageLoader;
-import com.rsm.yuri.projecttaxilivredriver.main.ui.MainActivity;
 import com.rsm.yuri.projecttaxilivredriver.profile.ProfilePresenter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -52,7 +26,7 @@ import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ProfileFragment extends Fragment implements ProfileView{//, MainActivity.OnSharedPreferencesReadyListener {
+public class ProfileFragment extends Fragment implements ProfileView {//, MainActivity.OnSharedPreferencesReadyListener {
 
     @BindView(R.id.imgAvatarProfileAct)
     CircleImageView imgAvatarProfileAct;
@@ -60,14 +34,18 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
     TextView nomeUserProfileAct;
     @BindView(R.id.emailUserProfileAct)
     TextView emailUserProfileAct;
-    @BindView(R.id.frameLayoutEmail)
-    FrameLayout frameLayoutEmail;
-    @BindView(R.id.frameLayoutImgAvatar)
-    FrameLayout frameLayoutImgAvatar;
-    @BindView(R.id.frameLayoutNome)
-    FrameLayout frameLayoutNome;
-    @BindView(R.id.profileFragmentContainer)
-    LinearLayout profileFragmentContainer;
+    @BindView(R.id.modeloCarProfileAct)
+    TextView modeloCarProfileAct;
+    @BindView(R.id.marcaCarProfileAct)
+    TextView marcaCarProfileAct;
+    @BindView(R.id.corCarProfileAct)
+    TextView corCarProfileAct;
+    @BindView(R.id.anoCarProfileAct)
+    TextView anoCarProfileAct;
+    @BindView(R.id.placaCarProfileAct)
+    TextView placaCarProfileAct;
+    @BindView(R.id.frameLayoutEditarPerfil)
+    FrameLayout frameLayoutEditarPerfil;
     Unbinder unbinder;
 
     @Inject
@@ -76,6 +54,8 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
     SharedPreferences sharedPreferences;
     @Inject
     ImageLoader imageLoader;
+
+    public final static int UPDATE_PROFILE = 0;
 
     private String photoPath;
     private final static int REQUEST_PICTURE = 0;
@@ -96,8 +76,8 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
 
     private void setupInjection() {
         TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
-        app.getProfileComponent(this,this).inject(this);
-        Log.d("d", "ProfileFragment.setupInjection:finalizada");
+        app.getProfileComponent(this, this).inject(this);
+        //Log.d("d", "ProfileFragment.setupInjection:finalizada");
     }
 
     @Override
@@ -114,17 +94,48 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String email = sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "");
-        String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "");
-        String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "");
-        Log.d("d", "ProfileFragment. onSharedPreferencesReady()urlPhoto: "+ urlPhotoUser);
-        nomeUserProfileAct.setText(nome);
-        emailUserProfileAct.setText(email);
-        if(!urlPhotoUser.equals("default"))
-            imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
+        setTextViews();
+        setPhoto();
 
     }
 
+    private void setTextViews() {
+        String email = sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr");
+        String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "nome_sh_pr");
+
+        String modelo = sharedPreferences.getString(TaxiLivreDriverApp.MODELO_KEY, "modelo_sh_pr");
+        String marca = sharedPreferences.getString(TaxiLivreDriverApp.MARCA_KEY, "marca_sh_pr");
+        String cor = sharedPreferences.getString(TaxiLivreDriverApp.COR_KEY, "cor_sh_pr");
+        long ano = sharedPreferences.getLong(TaxiLivreDriverApp.ANO_KEY, 2000);
+        String placa = sharedPreferences.getString(TaxiLivreDriverApp.PLACA_KEY, "placa_sh_pr");
+
+        //Log.d("d", "ProfileFragment. onSharedPreferencesReady()urlPhoto: "+ urlPhotoUser);
+        nomeUserProfileAct.setText(nome);
+        emailUserProfileAct.setText(email);
+
+        modeloCarProfileAct.setText(modelo);
+        marcaCarProfileAct.setText(marca);
+        corCarProfileAct.setText(cor);
+        anoCarProfileAct.setText(ano+"");
+        placaCarProfileAct.setText(placa);
+    }
+
+    private void setPhoto() {
+        String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_sh_pr");
+        if (!urlPhotoUser.equals("default"))
+            imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
+    }
+
+    @OnClick(R.id.frameLayoutEditarPerfil)
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.frameLayoutEditarPerfil:
+                startActivityForResult(new Intent(getActivity(), EditProfileActivity.class),UPDATE_PROFILE);
+
+                break;
+        }
+    }
+    
     /*@Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -138,8 +149,16 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        super.onDestroyView();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setTextViews();
+        setPhoto();
     }
 
     @Override
@@ -156,6 +175,8 @@ public class ProfileFragment extends Fragment implements ProfileView{//, MainAct
     public void onUploadError(String error) {
 
     }
+
+
 
     //@Override
     //public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser) {

@@ -1,27 +1,33 @@
 package com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by yuri_ on 15/01/2018.
  */
 
 public class Car {
 
-    private String id;//gerado por push no firebase
-
     private String email;//dono do carro
-    private boolean ativo;//carro ativo no momento
     private String marca;
     private String modelo;
     private String cor;
-    private String ano;
+    private Long ano;
     private String placa;
 
-    public String getId() {
-        return id;
+    public Car() {
+        // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Car(String marca, String modelo, String cor, Long ano, String placa) {
+        this.marca = marca;
+        this.modelo = modelo;
+        this.cor = cor;
+        this.ano = ano;
+        this.placa = placa;
     }
 
     public String getEmail() {
@@ -30,14 +36,6 @@ public class Car {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
     }
 
     public String getMarca() {
@@ -64,11 +62,11 @@ public class Car {
         this.cor = cor;
     }
 
-    public String getAno() {
+    public Long getAno() {
         return ano;
     }
 
-    public void setAno(String ano) {
+    public void setAno(Long ano) {
         this.ano = ano;
     }
 
@@ -79,4 +77,18 @@ public class Car {
     public void setPlaca(String placa) {
         this.placa = placa;
     }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("email", email);
+        result.put("modelo", modelo);
+        result.put("marca", marca);
+        result.put("cor", cor);
+        result.put("ano", ano);
+        result.put("placa", placa);
+
+        return result;
+    }
+
 }

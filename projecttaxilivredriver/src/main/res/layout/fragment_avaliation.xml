@@ -8,12 +8,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment">
 
-    <android.support.v7.widget.Toolbar
-        android:background="?attr/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"/>
-
     <FrameLayout
         android:id="@+id/headerFrame"
         android:layout_width="match_parent"
@@ -145,5 +139,9 @@
 
             />
     </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
 
 </LinearLayout>

@@ -115,7 +115,6 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
         switch (view.getId()) {
             case R.id.frameLayoutImgAvatar:
                 takePicture();
-
                 break;
             case R.id.frameLayoutNome:
                 AddDialogFragment frag = new AddDialogFragment();
@@ -292,14 +291,14 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
     @Override
     public void onUploadInit() {
         Snackbar.make(constraintLayout, R.string.profile_notice_upload_init, Snackbar.LENGTH_SHORT).show();
-        Log.d("d", "onUploadInit");
+        //Log.d("d", "onUploadInit");
     }
 
     @Override
     public void onUploadComplete(String urlPhotoUser) {
         sharedPreferences.edit().putString(TaxiLivreApp.URL_PHOTO_USER_KEY, urlPhotoUser).apply();
         imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
-        Log.d("d", "onUploadComplete");
+        //Log.d("d", "onUploadComplete");
     }
 
     @Override

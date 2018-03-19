@@ -17,4 +17,6 @@ public interface MainPresenter {
     void logout();
     void checkForSession();
 
+    void getMyCar();
+
 }

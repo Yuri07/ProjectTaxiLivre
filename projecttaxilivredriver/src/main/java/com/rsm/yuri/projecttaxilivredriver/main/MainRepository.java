@@ -9,5 +9,6 @@ public interface MainRepository {
     void logout();
     void checkForSession();
     void changeUserConnectionStatus(int status);
+    void getMyCar();
 
 }

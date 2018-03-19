@@ -8,6 +8,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseActionListenerCallback;
+import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseEventListenerCallback;
+import com.rsm.yuri.projecttaxilivredriver.editprofile.events.EditProfileEvent;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivredriver.main.events.MainEvent;
@@ -53,15 +56,15 @@ public class MainRepositoryImpl implements MainRepository {
                     @Override
                     public void onCancelled(DatabaseError firebaseError) {
                         post(MainEvent.onFailedToRecoverSession, firebaseError.getMessage());
-                        Log.d("d", "Nao conseguio ler na referencia para meu usuario: " + firebaseError.getMessage());
+                        //Log.d("d", "Nao conseguio ler na referencia para meu usuario: " + firebaseError.getMessage());
                     }
                 });
             }
 
             @Override
             public void onError(DatabaseError error) {
-                Log.d("d", "Nao existe sessao aberta no servidor: metodo post");
-                post(MainEvent.onFailedToRecoverSession);
+                //Log.d("d", "Nao existe sessao aberta no servidor: metodo post");
+                post(MainEvent.onFailedToRecoverSession, error.getMessage());
             }
         });
     }
@@ -72,9 +75,9 @@ public class MainRepositoryImpl implements MainRepository {
             currentUser = new Driver(firebase.getAuthUserEmail(), 1, null);
             registerNewUser(currentUser);
         }
-
         firebase.changeUserConnectionStatus(Driver.ONLINE);
-        post(MainEvent.onSuccessToRecoverSession, null, currentUser);
+        post(MainEvent.onSuccessToRecoverSession, null, currentUser, null);
+
     }
 
     private void registerNewUser(Driver newUser) {
@@ -84,25 +87,61 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
+    public void getMyCar() {
+        firebase.getMyCar(new FirebaseEventListenerCallback() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot) {
+                Car car = dataSnapshot.getValue(Car.class);
+                post(MainEvent.onSuccessToRecoverMyCar,null, null, car);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                post(MainEvent.onFailedToRecoverMyCar, error.getMessage());
+            }
+        });
+    }
+
+    @Override
     public void changeUserConnectionStatus(int status) {
         firebase.changeUserConnectionStatus(status);
     }
 
-    private void post(int type) {
-        post(type, null);
-    }
-
     private void post(int type, String errorMessage) {
-        post(type, errorMessage, null);
+        post(type, errorMessage, null, null);
     }
 
-    private void post(int type, String errorMessage, Driver loggedUser){//String loggedUserEmail) {
+    private void post(int type, Driver loggedUser){
+        post(type, null, loggedUser, null);
+    }
+
+    private void post(int type, Car myCar) {
+        post(type, null, null, myCar);
+    }
+
+    private void post(int type, String errorMessage, Driver loggedUser, Car myCar){
         MainEvent mainEvent = new MainEvent();
         mainEvent.setEventType(type);
         if (errorMessage != null) {
             mainEvent.setErrorMessage(errorMessage);
         }
         mainEvent.setLoggedUser(loggedUser);
+        mainEvent.setMyCar(myCar);
         eventBus.post(mainEvent);
     }
 

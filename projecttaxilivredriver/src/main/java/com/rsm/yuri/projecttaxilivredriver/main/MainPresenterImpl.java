@@ -2,6 +2,7 @@ package com.rsm.yuri.projecttaxilivredriver.main;
 
 import android.util.Log;
 
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
@@ -61,8 +62,14 @@ public class MainPresenterImpl implements MainPresenter {
                 onSuccessToRecoverSession(event.getLoggedUser());
                 break;
             case MainEvent.onFailedToRecoverSession:
-                Log.d("d", "onEventMainThread:onFailedToRecoverSession " );
+                //Log.d("d", "onEventMainThread:onFailedToRecoverSession " );
                 onFailedToRecoverSession();
+                break;
+            case MainEvent.onSuccessToRecoverMyCar:
+                onSuccessToRecoverMyCar(event.getMyCar());
+                break;
+            case MainEvent.onFailedToRecoverMyCar:
+                onFailedToRecoverMyCar(event.getErrorMessage());
                 break;
         }
     }
@@ -76,8 +83,20 @@ public class MainPresenterImpl implements MainPresenter {
 
     private void onFailedToRecoverSession() {
         if (mainView != null) {
-            Log.d("d", "onFailedToRecoverSession() " );
+            //Log.d("d", "onFailedToRecoverSession() " );
             mainView.navigateToLoginScreen();
+        }
+    }
+
+    private void onSuccessToRecoverMyCar(Car myCar) {
+        if (mainView != null) {
+            mainView.setMyCar(myCar);
+        }
+    }
+
+    private void onFailedToRecoverMyCar(String errorMessage) {
+        if (mainView != null) {
+            mainView.onFailedToRecoverMyCar(errorMessage);
         }
     }
 
@@ -90,5 +109,10 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void checkForSession() {
         sessionInteractor.checkForSession();
+    }
+
+    @Override
+    public void getMyCar() {
+        mainInteractor.getMyCar();
     }
 }
