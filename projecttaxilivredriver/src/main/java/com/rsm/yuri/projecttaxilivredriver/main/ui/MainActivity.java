@@ -2,21 +2,30 @@ package com.rsm.yuri.projecttaxilivredriver.main.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rsm.yuri.projecttaxilivredriver.R;
@@ -49,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     Switch switchMain;
     @BindView(R.id.main_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.custom_toolbar_title)
+    TextView customToolbaTitle;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigation;
 
@@ -65,10 +76,15 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     private OnSwitchButtonClickedListener listener;
 
+    private ActionBar actionBar;
+
     public final static int FRAGMENT_HOME_IN_ARRAY = 0;
     public final static int FRAGMENT_MONEY_IN_ARRAY = 1;
     public final static int FRAGMENT_AVALIATION_IN_ARRAY = 2;
     public final static int FRAGMENT_PROFILE_IN_ARRAY = 3;
+
+    public final static String ONLINE = "ONLINE";
+    public final static String OFFLINE = "OFFLINE";
 
 
     @Override
@@ -80,7 +96,13 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         setupBottomNavigationView();
 
+        //toolbar.setTitle(OFFLINE);
         setSupportActionBar(toolbar);
+
+        customToolbaTitle.setText(OFFLINE);
+
+        //actionBar = getSupportActionBar();
+        //actionBar.setCustomView(R.layout.app_bar_main);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, main_container, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -100,6 +122,12 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         }
         //listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
+
+        //if(getSupportActionBar()!=null) {
+            //getSupportActionBar().setDisplayShowTitleEnabled(true);
+            //getSupportActionBar().setTitle("OFFLINE");
+        //}
+
 
         fragmentManager.beginTransaction()
                 .add(R.id.content_frame, fragments[FRAGMENT_HOME_IN_ARRAY])
@@ -292,15 +320,36 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         super.onPause();
     }
 
+
     @OnClick(R.id.switch_main)
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.switch_main:
+
                 if(switchMain.isChecked()){
+                    //getSupportActionBar().setTitle("ONLINE");
+                    //toolbar.setTitle(ONLINE);
+                    //setTitle(ONLINE);
+                    customToolbaTitle.setText(ONLINE);
+
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        Drawable color = new ColorDrawable(Color.parseColor("#FF9800"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
+                        getSupportActionBar().setBackgroundDrawable(color);
+                        changeStatusBarColor(true);
+                    }
                     sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.WAITING_TRAVEL).apply();
                     presenter.startWaitingTravel();
                     listener.onSwitchButtonClicked(true);
                 }else{
+                    //getSupportActionBar().setTitle("OFFLINE");
+                    //toolbar.setTitle(OFFLINE);
+                    customToolbaTitle.setText(OFFLINE);
+
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        Drawable color = new ColorDrawable(Color.parseColor("#009688"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
+                        getSupportActionBar().setBackgroundDrawable(color);
+                        changeStatusBarColor(false);
+                    }
                     sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
                     presenter.stopWaitingTravel();
                     listener.onSwitchButtonClicked(false);
@@ -315,4 +364,19 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         //presenter.changeToOfflineStatus();
         super.onDestroy();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    void changeStatusBarColor(boolean status){
+        Window window = getWindow();
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // finally change the color
+        if(status)
+            window.setStatusBarColor(getResources().getColor(R.color.colorAccent));
+        else
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+    }
+
 }
