@@ -8,4 +8,5 @@ import com.google.android.gms.maps.model.LatLng;
 
 public interface HomeRepository {
     void updateLocation(LatLng location);
+    void removeDriverFromArea();
 }

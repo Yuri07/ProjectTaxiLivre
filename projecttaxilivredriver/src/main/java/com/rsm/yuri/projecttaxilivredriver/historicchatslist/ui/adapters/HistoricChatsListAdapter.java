@@ -57,7 +57,11 @@ public class HistoricChatsListAdapter extends RecyclerView.Adapter<HistoricChats
         holder.txtStatus.setText(status);
         holder.txtStatus.setTextColor(color);
 
-        //imageLoader.load(holder.imgAvatar, AvatarHelper.getAvatarUrl(email));
+        String url = user.getUrlPhotoUser();
+        if(url!=null) {
+            if (!url.equals("Default"))
+                imageLoader.load(holder.imgAvatar, user.getUrlPhotoUser());
+        }
     }
 
     @Override

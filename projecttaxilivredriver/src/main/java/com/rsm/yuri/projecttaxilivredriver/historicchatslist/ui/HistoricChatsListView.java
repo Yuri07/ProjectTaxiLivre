@@ -14,4 +14,6 @@ public interface HistoricChatsListView {
     void onHistoricChatRemoved(User user);
     void onHistoricChatError(String error);
 
+    void onUrlPhotoUserRetrived(User user);
+
 }

@@ -93,10 +93,39 @@ public class HistoricChatsListRepositoryImpl implements HistoricChatsListReposit
         firebase.changeUserConnectionStatus(status);
     }
 
-    /*@Override//essa funcao esta implementada na MainActivity
-    public void changeUserConnectionStatus(int status) {
-        firebase.changeUserConnectionStatus(status);
-    }*/
+    @Override
+    public void getUrlPhotoUser(final User user) {
+        firebase.getUrlPhotoDriver(user.getEmail(), new FirebaseEventListenerCallback(){
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot) {
+                String url = (String) dataSnapshot.getValue();
+                User userUrlUpdated = user;
+                userUrlUpdated.setUrlPhotoUser(url);
+                post(HistoricChatsListEvent.onUrlPhotoDriverRetrived, userUrlUpdated);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                post(HistoricChatsListEvent.ERROR_EVENT, error.getMessage());
+            }
+        });
+    }
 
     @Override
     public void removeHistoricChat(String email) {

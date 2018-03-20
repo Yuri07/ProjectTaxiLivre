@@ -22,4 +22,9 @@ public class MainInteractorImpl implements MainInteractor {
         mainRepository.getMyCar();
     }
 
+    @Override
+    public void changeWaitingTravelStatus(int status) {
+        mainRepository.changeUserConnectionStatus(status);
+    }
+
 }

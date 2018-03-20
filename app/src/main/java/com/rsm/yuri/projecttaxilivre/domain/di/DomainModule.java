@@ -20,8 +20,8 @@ public class DomainModule {
 
     @Provides
     @Singleton
-    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, AreasHelper areasHelper) {
-        return new FirebaseAPI(databaseReference, storageReference, areasHelper);
+    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference) {
+        return new FirebaseAPI(databaseReference, storageReference);
     }
 
     @Provides
@@ -36,10 +36,6 @@ public class DomainModule {
         return FirebaseStorage.getInstance().getReference();
     }
 
-    @Provides
-    @Singleton
-    AreasHelper providesAreasHelper(){
-        return new AreasHelper();
-    }
+
 
 }

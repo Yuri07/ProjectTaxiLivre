@@ -7,6 +7,7 @@ import com.rsm.yuri.projecttaxilivredriver.home.HomePresenter;
 import com.rsm.yuri.projecttaxilivredriver.home.HomePresenterImpl;
 import com.rsm.yuri.projecttaxilivredriver.home.HomeRepository;
 import com.rsm.yuri.projecttaxilivredriver.home.HomeRepositoryImpl;
+import com.rsm.yuri.projecttaxilivredriver.home.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeView;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
 
@@ -47,8 +48,14 @@ public class HomeModule {
 
     @Provides
     @Singleton
-    HomeRepository providesHomeRepository(FirebaseAPI helper, EventBus eventBus){
-        return new HomeRepositoryImpl(helper, eventBus);
+    HomeRepository providesHomeRepository(FirebaseAPI helper, EventBus eventBus, AreasHelper areasHelper){
+        return new HomeRepositoryImpl(helper, eventBus, areasHelper);
+    }
+
+    @Provides
+    @Singleton
+    AreasHelper providesAreasHelper(){
+        return new AreasHelper();
     }
 
 }

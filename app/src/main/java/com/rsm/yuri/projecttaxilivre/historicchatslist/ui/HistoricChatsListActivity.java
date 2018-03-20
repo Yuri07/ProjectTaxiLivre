@@ -85,6 +85,7 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
         Intent i = new Intent(this, ChatActivity.class);
         i.putExtra(ChatActivity.EMAIL_KEY, driver.getEmail());
         i.putExtra(ChatActivity.STATUS_KEY, driver.getStatus());
+        i.putExtra(ChatActivity.URL_KEY, driver.getUrlPhotoDriver());
         startActivity(i);
     }
 
@@ -95,7 +96,7 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
 
     @Override
     public void onHistoricChatAdded(Driver driver) {
-        adapter.add(driver);
+        presenter.getUrlPhotoFromDriver(driver);
     }
 
     @Override
@@ -111,6 +112,11 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Override
     public void onHistoricChatError(String error) {
         Snackbar.make(container, error, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUrlPhotoDriverRetrived(Driver driver) {
+        adapter.add(driver);
     }
 
 

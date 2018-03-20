@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivredriver.historicchatslist;
 
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.events.HistoricChatsListEvent;
 
 /**
@@ -15,5 +16,7 @@ public interface HistoricChatsListPresenter {
 
     void removeHistoricChat(String email);
     void onEventMainThread(HistoricChatsListEvent event);
+
+    void getUrlPhotoFromUser(User user);
 
 }

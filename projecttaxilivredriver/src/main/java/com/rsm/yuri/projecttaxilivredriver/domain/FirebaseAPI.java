@@ -16,13 +16,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
-import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
-import com.rsm.yuri.projecttaxilivredriver.main.models.AreasHelper;
-import com.rsm.yuri.projecttaxilivredriver.main.models.GroupAreas;
+import com.rsm.yuri.projecttaxilivredriver.home.models.GroupAreas;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +50,7 @@ public class FirebaseAPI {
     private static final String DRIVERS_PHOTOS_PATH = "drivers_photos";
     private static final String USERS_PHOTOS_PATH = "users_photos";
 
-    private AreasHelper areasHelper;
+    //private AreasHelper areasHelper;
 
     private DatabaseReference databaseReference;
 
@@ -67,10 +64,10 @@ public class FirebaseAPI {
     private StorageReference driversPhotosStorageReference;
     private StorageReference usersPhotosStorageReference;
 
-    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, AreasHelper areasHelper){
+    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference){//, AreasHelper areasHelper){
         this.databaseReference = databaseReference;
         this.storageReference = storageReference;
-        this.areasHelper = areasHelper;
+        //this.areasHelper = areasHelper;
     }
 
     public void checkForData(final FirebaseActionListenerCallback listener){//checa se tem dados(era usado no PhotoFeed App para verificar se a lista de fotos estava vazia).
@@ -168,9 +165,9 @@ public class FirebaseAPI {
         getChatsReference(receiver).removeEventListener(chatEventListener);
     }
 
-    public void updateMyLocation(final LatLng location, final FirebaseActionListenerCallback listenerCallback){
+    public void updateMyLocation(final LatLng location, final GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback){
         String authUserEmail = getAuthUserEmail();
-        GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
+        //GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
         NearDriver nearDriver = new NearDriver(getAuthUserEmail(),location.latitude, location.longitude );
         getAreaDataReference(groupAreas.getMainArea().getId()).child(authUserEmail.replace(".","_"))
                 .setValue(nearDriver, new DatabaseReference.CompletionListener(){
@@ -187,6 +184,23 @@ public class FirebaseAPI {
                     }
                 });
 
+    }
+
+    public void removeDriverFromArea(GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback) {
+        //NearDriver nearDriver = new NearDriver();
+        String authUserEmail = getAuthUserEmail();
+        getAreaDataReference(groupAreas.getMainArea().getId()).child(authUserEmail.replace(".","_"))
+                .setValue(null, new DatabaseReference.CompletionListener(){
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if(databaseError==null){
+                            listenerCallback.onSuccess();
+                        }else{
+                            listenerCallback.onError(databaseError);
+                        }
+                    }
+                });
     }
 
     public void updateKeyValueUser(final String key, final String value, final FirebaseActionListenerCallback listenerCallback) {
@@ -255,6 +269,22 @@ public class FirebaseAPI {
             }
         };
         getMyRatingsReference().addListenerForSingleValueEvent(ratingsEventListener);
+    }
+
+    public void getUrlPhotoDriver(String email, final FirebaseEventListenerCallback listenerCallback) {
+        ValueEventListener urlPhotoDriverEventListener = new ValueEventListener(){
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listenerCallback.onChildAdded(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listenerCallback.onCancelled(databaseError);
+            }
+        } ;
+        getUserReference(email).child(URL_PHOTO_USER_PATH).addListenerForSingleValueEvent(urlPhotoDriverEventListener);
     }
 
     /*public void getLoggedUser(final FirebaseActionListenerCallback listener){

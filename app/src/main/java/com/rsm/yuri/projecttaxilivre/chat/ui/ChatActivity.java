@@ -43,12 +43,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
     ChatPresenter presenter;
     @Inject
     ChatAdapter adapter;
-    //@Inject
-    //ImageLoader imageLoader;
+    @Inject
+    ImageLoader imageLoader;
 
 
     public final static String EMAIL_KEY = "email";
     public final static String STATUS_KEY = "status";
+    public final static String URL_KEY = "url_photo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,11 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
         txtStatus.setText(status);
         txtStatus.setTextColor(color);
 
+        String url = i.getStringExtra(URL_KEY);
+        if(url!=null) {
+            if (!url.equals("Default"))
+                imageLoader.load(imgAvatar, url);
+        }
         /*AndroidChatApplication app = (AndroidChatApplication)getApplication();
         ImageLoader imageLoader = app.getImageLoader();
         imageLoader.load(imgAvatar, AvatarHelper.getAvatarUrl(recipient));*/

@@ -18,4 +18,9 @@ public class HomeInteractorImpl implements HomeInteractor {
     public void updateLocation(LatLng location) {
         repository.updateLocation(location);
     }
+
+    @Override
+    public void removeDriverFromArea() {
+        repository.removeDriverFromArea();
+    }
 }

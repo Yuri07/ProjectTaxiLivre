@@ -14,6 +14,7 @@ public interface HomePresenter {
     void onDestroy();
 
     void updateLocation(LatLng location);
+    void removeDriverFromArea();
 
     void onEventMainThread(MapHomeEvent event);
 

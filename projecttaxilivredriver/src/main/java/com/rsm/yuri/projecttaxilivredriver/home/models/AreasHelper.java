@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivredriver.main.models;
+package com.rsm.yuri.projecttaxilivredriver.home.models;
 
 import static java.lang.Math.abs;
 

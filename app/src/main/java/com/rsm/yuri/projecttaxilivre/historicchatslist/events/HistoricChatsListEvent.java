@@ -15,7 +15,8 @@ public class HistoricChatsListEvent {
     public final static int onHistoricChatAdded = 0;
     public final static int onHistoricChatChanged = 1;
     public final static int onHistoricChatRemoved = 2;
-    public final static int ERROR_EVENT = 3;
+    public final static int onUrlPhotoDriverRetrived = 3;
+    public final static int ERROR_EVENT = 4;
 
 
     public Driver getDriver() {

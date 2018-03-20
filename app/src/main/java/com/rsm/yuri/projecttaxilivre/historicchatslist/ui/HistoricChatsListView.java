@@ -14,4 +14,5 @@ public interface HistoricChatsListView {
     void onHistoricChatRemoved(Driver driver);
     void onHistoricChatError(String error);
 
+    void onUrlPhotoDriverRetrived(Driver driver);
 }

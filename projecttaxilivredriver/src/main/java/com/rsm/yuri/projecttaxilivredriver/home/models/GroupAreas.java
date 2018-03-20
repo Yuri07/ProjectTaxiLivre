@@ -1,4 +1,4 @@
-package com.rsm.yuri.projecttaxilivredriver.main.models;
+package com.rsm.yuri.projecttaxilivredriver.home.models;
 
 /**
  * Created by yuri_ on 03/02/2018.

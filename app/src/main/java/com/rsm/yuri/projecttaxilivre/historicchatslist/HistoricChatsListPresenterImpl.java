@@ -59,6 +59,11 @@ public class HistoricChatsListPresenterImpl implements HistoricChatsListPresente
     }
 
     @Override
+    public void getUrlPhotoFromDriver(Driver driver) {
+        historicChatsListInteractor.getUrlPhotoDriver(driver);
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(HistoricChatsListEvent event) {
         Driver driver = event.getDriver();
@@ -80,8 +85,18 @@ public class HistoricChatsListPresenterImpl implements HistoricChatsListPresente
                         Log.d("d", "event.type = historicchatRemoved"+driver.getEmail());
                         onHistoricChatRemoved(driver);
                         break;
+                    case HistoricChatsListEvent.onUrlPhotoDriverRetrived:
+                        Log.d("d", "event.type = historicchatRemoved"+driver.getEmail());
+                        onUrlPhotoDriverRetrived(driver);
+                        break;
                 }
             }
+        }
+    }
+
+    private void onUrlPhotoDriverRetrived(Driver driver) {
+        if (historicChatsListView != null) {
+            historicChatsListView.onUrlPhotoDriverRetrived(driver);
         }
     }
 

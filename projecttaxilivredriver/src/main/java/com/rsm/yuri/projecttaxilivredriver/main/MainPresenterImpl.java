@@ -35,15 +35,23 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void onResume() {
+    public void changeToOnlineStatus() {
         sessionInteractor.changeConnectionStatus(User.ONLINE);
-        //mainInteractor.subscribeForDriversEvents();//essa função vai ser implementada por mapfragment
     }
 
     @Override
-    public void onPause() {
+    public void changeToOfflineStatus() {
         sessionInteractor.changeConnectionStatus(User.OFFLINE);
-        //mainInteractor.unSubscribeForDriversEvents();//essa função vai ser implementada por mapfragment
+    }
+
+    @Override
+    public void startWaitingTravel() {
+        mainInteractor.changeWaitingTravelStatus(Driver.WAITING_TRAVEL);
+    }
+
+    @Override
+    public void stopWaitingTravel() {
+        mainInteractor.changeWaitingTravelStatus(Driver.ONLINE);
     }
 
     @Override
@@ -73,6 +81,8 @@ public class MainPresenterImpl implements MainPresenter {
                 break;
         }
     }
+
+
 
     private void onSuccessToRecoverSession(Driver loggedUser) {
         if (mainView != null) {

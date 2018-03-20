@@ -111,7 +111,6 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
 
     @OnClick({R.id.frameLayoutImgAvatar, R.id.frameLayoutNome, R.id.frameLayoutEmail})
     public void onViewClicked(View view) {
-
         switch (view.getId()) {
             case R.id.frameLayoutImgAvatar:
                 takePicture();

@@ -5,7 +5,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
-import com.rsm.yuri.projecttaxilivredriver.main.models.AreasHelper;
+import com.rsm.yuri.projecttaxilivredriver.home.models.AreasHelper;
 
 import javax.inject.Singleton;
 
@@ -20,8 +20,8 @@ public class DomainModule {
 
     @Provides
     @Singleton
-    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, AreasHelper areasHelper) {
-        return new FirebaseAPI(databaseReference, storageReference, areasHelper);
+    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference) {
+        return new FirebaseAPI(databaseReference, storageReference);
     }
 
     @Provides
@@ -34,12 +34,6 @@ public class DomainModule {
     @Singleton
     StorageReference providesStorageReference(){
         return FirebaseStorage.getInstance().getReference();
-    }
-
-    @Provides
-    @Singleton
-    AreasHelper providesAreasHelper(){
-        return new AreasHelper();
     }
 
 }

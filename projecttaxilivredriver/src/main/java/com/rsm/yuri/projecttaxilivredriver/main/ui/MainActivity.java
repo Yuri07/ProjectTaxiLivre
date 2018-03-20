@@ -3,9 +3,7 @@ package com.rsm.yuri.projecttaxilivredriver.main.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -26,7 +24,6 @@ import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
-import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListActivity;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.ImageLoader;
@@ -40,8 +37,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.main_container)
     DrawerLayout main_container;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Inject
     ImageLoader imageLoader;
 
-    //private OnSharedPreferencesReadyListener listener;
+    private OnSwitchButtonClickedListener listener;
 
     public final static int FRAGMENT_HOME_IN_ARRAY = 0;
     public final static int FRAGMENT_MONEY_IN_ARRAY = 1;
@@ -93,15 +91,15 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         setupInjection();
 
-        /*if (fragments[FRAGMENT_PROFILE_IN_ARRAY] instanceof OnSharedPreferencesReadyListener) {
-            listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
+        if (fragments[FRAGMENT_HOME_IN_ARRAY] instanceof OnSwitchButtonClickedListener) {
+            listener = (OnSwitchButtonClickedListener) fragments[FRAGMENT_HOME_IN_ARRAY];
             Log.d("d", "MainActivity.onCreate():listener inicializado");
         } else {
             Log.d("d", "MainActivity.onCreate():listener nao inicializado");
             throw new ClassCastException();
 
         }
-        listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];*/
+        //listener = (OnSharedPreferencesReadyListener) fragments[FRAGMENT_PROFILE_IN_ARRAY];
 
         fragmentManager.beginTransaction()
                 .add(R.id.content_frame, fragments[FRAGMENT_HOME_IN_ARRAY])
@@ -162,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     @Override
     public void setUIVisibility(boolean enabled) {
-        main_container.setVisibility( enabled ? View.VISIBLE : View.INVISIBLE );
+        main_container.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -180,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             String emailKey = TaxiLivreDriverApp.EMAIL_KEY;
             String nomeKey = TaxiLivreDriverApp.NOME_KEY;
             String urlPhotoUserKey = TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY;
+            String statusKey = TaxiLivreDriverApp.STATUS_KEY;
             String averagRatingKey = TaxiLivreDriverApp.AVERAG_RATING_KEY;
             String totalRatingsKey = TaxiLivreDriverApp.TOTAL_RATINGS_KEY;
             String count1StarsKey = TaxiLivreDriverApp.COUNT_1_STARS_KEY;
@@ -190,16 +189,17 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             sharedPreferences.edit().putString(emailKey, loggedUser.getEmail()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
             sharedPreferences.edit().putString(nomeKey, loggedUser.getNome()).apply();
             sharedPreferences.edit().putString(urlPhotoUserKey, loggedUser.getUrlPhotoDriver()).apply();
-            sharedPreferences.edit().putFloat(averagRatingKey, (float)loggedUser.getAverageRating()).apply();
+            sharedPreferences.edit().putLong(statusKey, Driver.ONLINE).apply();
+            sharedPreferences.edit().putFloat(averagRatingKey, (float) loggedUser.getAverageRating()).apply();
             sharedPreferences.edit().putInt(totalRatingsKey, loggedUser.getTotalRatings()).apply();
             sharedPreferences.edit().putInt(count1StarsKey, loggedUser.getCount1Stars()).apply();
             sharedPreferences.edit().putInt(count2StarsKey, loggedUser.getCount2Stars()).apply();
             sharedPreferences.edit().putInt(count3StarsKey, loggedUser.getCount3Stars()).apply();
             sharedPreferences.edit().putInt(count4StarsKey, loggedUser.getCount4Stars()).apply();
             sharedPreferences.edit().putInt(count5StarsKey, loggedUser.getCount5Stars()).apply();
-            Log.d("d", "MainActivity. loggedUser.getaverageRating(): "+ loggedUser.getAverageRating());
-            Log.d("d", "MainActivity. loggedUser.getTotalRating(): "+ loggedUser.getTotalRatings());
-            Log.d("d", "MainActivity. loggedUser.getCount1Stars(): "+ loggedUser.getCount1Stars());
+            Log.d("d", "MainActivity. loggedUser.getaverageRating(): " + loggedUser.getAverageRating());
+            Log.d("d", "MainActivity. loggedUser.getTotalRating(): " + loggedUser.getTotalRatings());
+            Log.d("d", "MainActivity. loggedUser.getCount1Stars(): " + loggedUser.getCount1Stars());
             //Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
             //Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
             //listener.onSharedPreferencesReady(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoDriver());
@@ -223,9 +223,10 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-    /*public interface OnSharedPreferencesReadyListener {
-        public void onSharedPreferencesReady(String email, String nome, String urlPhotoUser);
-    }*/
+    public interface OnSwitchButtonClickedListener {
+        public void onSwitchButtonClicked(boolean switchStatus);
+    }
+
 
     @Override
     public void logout() {
@@ -245,14 +246,14 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         if (id == R.id.nav_viagens) {
 
-        } else if(id == R.id.nav_historico_chats){
+        } else if (id == R.id.nav_historico_chats) {
             startActivity(new Intent(this, HistoricChatsListActivity.class));
-        }else if (id == R.id.nav_ajuda) {
+        } else if (id == R.id.nav_ajuda) {
 
         } else if (id == R.id.nav_legal) {
 
         } else if (id == R.id.nav_sair) {
-            Log.d("d", "MainActivityonNavigationItemSelected(),R.id.nav_sair " );
+            //Log.d("d", "MainActivityonNavigationItemSelected(),R.id.nav_sair " );
             logout();
         }
 
@@ -270,6 +271,48 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        long status = sharedPreferences.getLong(TaxiLivreDriverApp.STATUS_KEY, 0);
+        if (status==Driver.OFFLINE) {
+            sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
+            presenter.changeToOnlineStatus();
+        }
 
+    }
 
+    @Override
+    protected void onPause() {
+        long status = sharedPreferences.getLong(TaxiLivreDriverApp.STATUS_KEY, 0);
+        if(status==Driver.ONLINE) {//so fico offline se
+            sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.OFFLINE).apply();
+            presenter.changeToOfflineStatus();
+        }
+        super.onPause();
+    }
+
+    @OnClick(R.id.switch_main)
+    public void onViewClicked(View view) {
+        switch (view.getId()){
+            case R.id.switch_main:
+                if(switchMain.isChecked()){
+                    sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.WAITING_TRAVEL).apply();
+                    presenter.startWaitingTravel();
+                    listener.onSwitchButtonClicked(true);
+                }else{
+                    sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
+                    presenter.stopWaitingTravel();
+                    listener.onSwitchButtonClicked(false);
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        //sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.OFFLINE).apply();
+        //presenter.changeToOfflineStatus();
+        super.onDestroy();
+    }
 }

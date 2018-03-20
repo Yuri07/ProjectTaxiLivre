@@ -59,6 +59,11 @@ public class HistoricChatsListPresenterImpl implements HistoricChatsListPresente
     }
 
     @Override
+    public void getUrlPhotoFromUser(User user) {
+        historicChatsListInteractor.getUrlPhotoUser(user);
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(HistoricChatsListEvent event) {
         User user = event.getUser();
@@ -80,8 +85,18 @@ public class HistoricChatsListPresenterImpl implements HistoricChatsListPresente
                         Log.d("d", "event.type = historicchatRemoved"+user.getEmail());
                         onHistoricChatRemoved(user);
                         break;
+                    case HistoricChatsListEvent.onUrlPhotoDriverRetrived:
+                        Log.d("d", "event.type = historicchatRemoved"+user.getEmail());
+                        onUrlPhotoUserRetrived(user);
+                        break;
                 }
             }
+        }
+    }
+
+    private void onUrlPhotoUserRetrived(User user) {
+        if (historicChatsListView != null) {
+            historicChatsListView.onUrlPhotoUserRetrived(user);
         }
     }
 

@@ -41,6 +41,11 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     @Override
+    public void removeDriverFromArea() {
+        interactor.removeDriverFromArea();
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(MapHomeEvent event) {
         String error = event.getError();

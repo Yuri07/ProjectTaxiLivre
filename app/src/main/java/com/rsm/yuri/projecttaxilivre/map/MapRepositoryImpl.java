@@ -22,24 +22,23 @@ public class MapRepositoryImpl implements MapRepository {
 
     private FirebaseAPI firebase;
     private EventBus eventBus;
+    GroupAreas groupAreas;
+    private AreasHelper areasHelper;
 
-    public MapRepositoryImpl(FirebaseAPI firebase, EventBus eventBus) {
+    public MapRepositoryImpl(FirebaseAPI firebase, EventBus eventBus, AreasHelper areasHelper) {
         this.firebase = firebase;
         this.eventBus = eventBus;
+        this.areasHelper = areasHelper;
     }
 
     @Override
     public void subscribeForDriversEvents(LatLng location) {
-        //Log.d("d", "MapRepository.subscribe()");
-        firebase.subscribeForNearDriversUpdate(location, new FirebaseEventListenerCallback(){
+        groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
+        firebase.subscribeForNearDriversUpdate(groupAreas, new FirebaseEventListenerCallback(){
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot) {
                 NearDriver nearDriver = dataSnapshot.getValue(NearDriver.class);
-                //Log.d("d", "post(addNearDriver, nearDriver); nearDriver.getemail(): " + nearDriver.getEmail());
-                /*Log.d("d", "NearDriver.getemail(): " + nearDriver.getEmail());
-                Log.d("d", "NearDriver.getLatitude(): " + nearDriver.getLatitude());
-                Log.d("d", "NearDriver.getLongitude(): " + nearDriver.getLongitude());*/
                 post(MapEvent.onDriverAdded, nearDriver);
             }
 

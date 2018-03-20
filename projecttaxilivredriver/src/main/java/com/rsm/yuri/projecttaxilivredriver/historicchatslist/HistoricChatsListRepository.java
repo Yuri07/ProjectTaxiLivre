@@ -1,5 +1,8 @@
 package com.rsm.yuri.projecttaxilivredriver.historicchatslist;
 
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
+
 /**
  * Created by yuri_ on 13/01/2018.
  */
@@ -12,6 +15,6 @@ public interface HistoricChatsListRepository {
     void unSubscribeForHistoricChatListUpdates();
 
     void changeUserConnectionStatus(int status);
-    //void changeUserConnectionStatus(int status);//essa funcao esta implentada na MainActivity
+    void getUrlPhotoUser(User user);
 
 }

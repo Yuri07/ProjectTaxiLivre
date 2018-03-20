@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.home.HomePresenter;
+import com.rsm.yuri.projecttaxilivredriver.main.ui.MainActivity;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeView {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeView, MainActivity.OnSwitchButtonClickedListener {
 
     @BindView(R.id.container)
     FrameLayout container;
@@ -45,6 +46,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @Inject
     HomePresenter presenter;
+
+    //private MainActivity.OnSwitchButtonClickedListener listener;
 
     private GoogleMap map;
     private Location lastLocation;
@@ -125,7 +128,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     public void onResume() {
         super.onResume();
         //if (mRequestingLocationUpdates) {
-            startLocationUpdates();
+            //startLocationUpdates();
         //}
     }
 
@@ -153,11 +156,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     @Override
     public void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        presenter.removeDriverFromArea();
     }
 
     @Override
@@ -217,5 +221,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     @Override
     public void onLocationReadingError(String error) {
         Snackbar.make(container, error, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSwitchButtonClicked(boolean switchStatus) {
+        if(switchStatus)
+            startLocationUpdates();
+        else
+            stopLocationUpdates();
     }
 }
