@@ -9,14 +9,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
+import com.appolica.interactiveinfowindow.InfoWindow;
+import com.appolica.interactiveinfowindow.fragment.MapInfoWindowFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -24,7 +26,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -32,9 +33,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
+import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
 import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,21 +49,27 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by yuri_ on 07/01/2018.
  */
 
-public class MapFragment extends Fragment implements MapView, OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class MapFragment extends Fragment implements MapView, OnMapReadyCallback, //GoogleMap.InfoWindowAdapter,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     @BindView(R.id.container)
     FrameLayout container;
+    //@BindView(R.id.map_fragment_click_frame)
+    //FrameLayout clickFrameLayout;
     Unbinder unbinder;
 
     @Inject
     MapPresenter mapPresenter;
+    @Inject
+    ImageLoader imageLoader;
 
+    private MapInfoWindowFragment mapInfoWindowFragment;
     private GoogleMap map;
     private HashMap<Marker, NearDriver> markers;
     private List<NearDriver> nearDriversList;
@@ -103,11 +113,20 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        FragmentManager fm = getChildFragmentManager();
+        /*FragmentManager fm = getChildFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);*/
 
         //moveCameraToLastKnowLocation();
+
+        mapInfoWindowFragment =
+                (MapInfoWindowFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        mapInfoWindowFragment.getMapAsync(this);
+
+        //final InfoWindow infoWindow = new InfoWindow(marker, markerSpec, fragment);
+        // Shows the InfoWindow or hides it if it is already opened.
+        //mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
 
     }
 
@@ -192,14 +211,35 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         return true;
     }
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
-        map.setInfoWindowAdapter(this);
+        //map.setInfoWindowAdapter(this);
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
 
+                NearDriver nearDriver = markers.get(marker);
+                LatLng position = new LatLng(nearDriver.getLatitude()+0.007, nearDriver.getLongitude());
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+
+                //marker.showInfoWindow();
+
+                final int offsetX = (int) getResources().getDimension(R.dimen.marker_offset_x);
+                final int offsetY = (int) getResources().getDimension(R.dimen.marker_offset_y);
+
+                final InfoWindow.MarkerSpecification markerSpec =
+                        new InfoWindow.MarkerSpecification(offsetX, offsetY);
+
+                InfoWindowFragment infoWindowFragment = new InfoWindowFragment();
+
+                final InfoWindow infoWindow = new InfoWindow(marker, markerSpec, infoWindowFragment);
+                mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+                infoWindowFragment.render(nearDriver);
+                return true;
+            }
+        });
         //Log.d("d", "Entrou no onMapReady");
         moveCameraToLastKnowLocation();
 
@@ -305,14 +345,78 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         super.onStop();
     }
 
-    @Override
+    /*@Override
     public View getInfoWindow(Marker marker) {
         return null;
-    }
+    }*/
 
-    @Override
-    public View getInfoContents(Marker marker) {
-        return null;
+    /*@Override
+    public View getInfoContents(Marker marker) {*/
+
+        /*FrameLayout clickFrameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_click_frame);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        clickFrameLayout.setTranslationY(metrics.heightPixels);*/
+
+        /*try {
+            Interpolator interpolator = new DecelerateInterpolator();
+            clickFrameLayout.animate().setInterpolator(interpolator)
+                    .setDuration(300)
+                    .setStartDelay(500)
+                    .translationYBy(-metrics.heightPixels)
+                    .start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }*/
+        /*ViewGroup root = (ViewGroup) getActivity().findViewById(R.id.map_fragment_content_frame);
+        FrameLayout clickFrameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_click_frame);
+
+        TransitionSet set = new TransitionSet()
+                //.addTransition(new Scale(0.7f))
+                .addTransition(new Fade())
+                .setInterpolator(clickFrameLayout.getVisibility()==View.VISIBLE ? new LinearOutSlowInInterpolator() :
+                        new FastOutLinearInInterpolator());
+
+        TransitionManager.beginDelayedTransition(root, set);
+        clickFrameLayout.setVisibility(clickFrameLayout.getVisibility()==View.VISIBLE ? View.VISIBLE : View.INVISIBLE);*/
+        //text2.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);*/
+
+        /*TransitionManager.beginDelayedTransition(root, new android.support.transition.Fade());
+        FrameLayout clickFrameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_click_frame);
+        clickFrameLayout.setVisibility(View.VISIBLE);*/
+
+        /*View window = ((LayoutInflater) getActivity()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.info_window, null);
+        NearDriver nearDriver = markers.get(marker);
+        render(window, nearDriver);
+        return window;
+    }*/
+
+    private void render(View view, final NearDriver nearDriver) {
+
+        /*CircleImageView imgAvatar = (CircleImageView) view.findViewById(R.id.imgAvatar);
+        TextView txtUser = (TextView) view.findViewById(R.id.txtUser);
+        final ImageView imgMain = (ImageView) view.findViewById(R.id.imgMain);
+        String userEmail = !TextUtils.isEmpty(nearDriver.getEmail()) ? nearDriver.getEmail() : "";
+
+        imageLoader.load(imgMain, nearDriver.getUrlPhotoCar());
+        imageLoader.load(imgAvatar, nearDriver.getUrlPhotoDriver());
+        txtUser.setText(nearDriver.getEmail());*/
+
+        CircleImageView imgAvatar = (CircleImageView) view.findViewById(R.id.info_window_imgDriverAvatar);
+        CircleImageView imgCar = (CircleImageView) view.findViewById(R.id.info_window_imgCar);
+        TextView txtNome = (TextView) view.findViewById(R.id.info_window_NomeTextView);
+        TextView txtModelo = (TextView) view.findViewById(R.id.info_window_ModeloCarTextView);
+        TextView txtTotalTravels = (TextView) view.findViewById(R.id.info_window_TotalTravelsTextView);
+        TextView txtAverage = (TextView) view.findViewById(R.id.info_window_averageTextView);
+
+        imageLoader.load(imgAvatar, nearDriver.getUrlPhotoDriver());
+        imageLoader.load(imgCar, nearDriver.getUrlPhotoCar());
+        txtNome.setText(nearDriver.getNome());
+        txtModelo.setText(nearDriver.getModelo());
+        txtTotalTravels.setText(nearDriver.getTotalTravels()+"");
+        DecimalFormat df = new DecimalFormat("#.0");
+        txtAverage.setText(df.format(nearDriver.getAverageRatings())+"");
     }
 
     @Override
@@ -335,4 +439,6 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         super.onDestroyView();
         unbinder.unbind();
     }
+
+
 }

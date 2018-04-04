@@ -55,11 +55,20 @@ public class EditProfilePresenterImpl implements EditProfilePresenter {
         editprofileInteractor.updateCar(car);
     }
 
-
     @Override
     public void uploadPhoto(Uri selectedImageUri) {
         editprofileInteractor.uploadPhoto(selectedImageUri);
     }
+
+    /*@Override
+    public void uploadPhotoDriver(Uri selectedImageUri) {
+        editprofileInteractor.uploadPhotoDriver(selectedImageUri);
+    }
+
+    @Override
+    public void uploadPhotoCar(Uri selectedImageUri) {
+        editprofileInteractor.uploadPhotoCar(selectedImageUri);
+    }*/
 
     @Override
     @Subscribe
@@ -74,9 +83,13 @@ public class EditProfilePresenterImpl implements EditProfilePresenter {
                     //Log.d("d", "view.onUploadInit");
                     view.onUploadInit();
                     break;
-                case EditProfileEvent.UPLOAD_COMPLETE:
+                case EditProfileEvent.UPLOAD_PHOTO_DRIVER_COMPLETE:
                     //Log.d("d", "view.onUploadComplte(event.getUrlPhotoUser), " + event.getUlrPhotoUser());
-                    view.onUploadComplete(event.getUlrPhotoUser());
+                    view.onUploadPhotoDriverComplete(event.getUlrPhoto());
+                    break;
+                case EditProfileEvent.UPLOAD_PHOTO_CAR_COMPLETE:
+                    //Log.d("d", "view.onUploadComplte(event.getUrlPhotoUser), " + event.getUlrPhotoUser());
+                    view.onUploadPhotoCarComplete(event.getUlrPhoto());
                     break;
                 case EditProfileEvent.UPLOAD_ERROR:
                     view.onUploadError(error);

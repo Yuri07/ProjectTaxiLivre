@@ -36,6 +36,7 @@ public class FirebaseAPI {
     private final static String NOME_PATH = "nome";
     private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
     private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
+    private final static String URL_PHOTO_CAR_PATH = "urlPhotoCar";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
@@ -49,6 +50,7 @@ public class FirebaseAPI {
 
     private static final String DRIVERS_PHOTOS_PATH = "drivers_photos";
     private static final String USERS_PHOTOS_PATH = "users_photos";
+    private static final String CARS_PHOTOS_PATH = "cars_photos";
 
     //private AreasHelper areasHelper;
 
@@ -165,16 +167,32 @@ public class FirebaseAPI {
         getChatsReference(receiver).removeEventListener(chatEventListener);
     }
 
-    public void updateMyLocation(final LatLng location, final GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback){
+    public void uploadNearDriverData(final NearDriver nearDriver, final String idArea,final FirebaseActionListenerCallback listenerCallback) {
+        getAreaDataReference(idArea).child(nearDriver.getEmail().replace(".","_")).setValue(nearDriver, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError==null){
+                    listenerCallback.onSuccess();
+                }else{
+                    listenerCallback.onError(databaseError);
+                }
+            }
+        });
+    }
+
+    public void updateMyLocation(final LatLng location, final String idArea, final FirebaseActionListenerCallback listenerCallback){
         String authUserEmail = getAuthUserEmail();
         //GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
-        NearDriver nearDriver = new NearDriver(getAuthUserEmail(),location.latitude, location.longitude );
-        getAreaDataReference(groupAreas.getMainArea().getId()).child(authUserEmail.replace(".","_"))
-                .setValue(nearDriver, new DatabaseReference.CompletionListener(){
+        //NearDriver nearDriver = new NearDriver(getAuthUserEmail(),location.latitude, location.longitude );
+        final String emailKey = authUserEmail.replace(".","_");
+        getAreaDataReference(idArea).child(emailKey).
+                child(LATITUDE_PATH).setValue(location.latitude, new DatabaseReference.CompletionListener(){
 
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if(databaseError==null){
+                            getAreaDataReference(idArea).child(emailKey).
+                                        child(LONGITUDE_PATH).setValue(location.longitude);
                             getMyUserReference().child(LATITUDE_PATH).setValue(location.latitude);
                             getMyUserReference().child(LONGITUDE_PATH).setValue(location.longitude);
                             listenerCallback.onSuccess();
@@ -479,6 +497,7 @@ public class FirebaseAPI {
         return getMyUserReference().child(URL_PHOTO_DRIVER_PATH);
     }
 
+
     public void updateAvatarPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
 
         StorageReference photoRef = getDriversPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
@@ -501,12 +520,42 @@ public class FirebaseAPI {
 
     }
 
+    public DatabaseReference getMyCarUrlPhotoReference() {
+        return getMyCarReference().child(URL_PHOTO_CAR_PATH);
+    }
+
+    public void updateCarPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
+
+        StorageReference photoRef = getCarsPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
+
+        final DatabaseReference myCarUrlPhotoReference = getMyCarUrlPhotoReference();
+
+        photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                myCarUrlPhotoReference.setValue(downloadUrl.toString());
+                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                firebaseStorageFinishedListener.onError(e.getMessage());
+            }
+        });
+
+    }
+
     public StorageReference getDriversPhotosStorageReference(){
         return storageReference.getRoot().child(DRIVERS_PHOTOS_PATH);
     }
 
     public StorageReference getUsersPhotosStorageReference(){
         return storageReference.getRoot().child(USERS_PHOTOS_PATH);
+    }
+
+    public StorageReference getCarsPhotosStorageReference(){
+        return storageReference.getRoot().child(CARS_PHOTOS_PATH);
     }
 
     public void removeHistoricChat(String email) {

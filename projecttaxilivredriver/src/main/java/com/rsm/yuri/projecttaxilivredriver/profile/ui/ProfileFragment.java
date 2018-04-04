@@ -34,6 +34,8 @@ public class ProfileFragment extends Fragment implements ProfileView {//, MainAc
     TextView nomeUserProfileAct;
     @BindView(R.id.emailUserProfileAct)
     TextView emailUserProfileAct;
+    @BindView(R.id.imgCarProfileAct)
+    CircleImageView imgCarProfileAct;
     @BindView(R.id.modeloCarProfileAct)
     TextView modeloCarProfileAct;
     @BindView(R.id.marcaCarProfileAct)
@@ -95,7 +97,7 @@ public class ProfileFragment extends Fragment implements ProfileView {//, MainAc
         super.onActivityCreated(savedInstanceState);
 
         setTextViews();
-        setPhoto();
+        setPhotos();
 
     }
 
@@ -120,10 +122,13 @@ public class ProfileFragment extends Fragment implements ProfileView {//, MainAc
         placaCarProfileAct.setText(placa);
     }
 
-    private void setPhoto() {
-        String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_sh_pr");
+    private void setPhotos() {
+        String urlPhotoUser = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_driver_sh_pr");
         if (!urlPhotoUser.equals("default"))
             imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
+        String urlPhotoCar = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_car_sh_pr");
+        if (!urlPhotoUser.equals("default"))
+            imageLoader.load(imgCarProfileAct, urlPhotoCar);
     }
 
     @OnClick(R.id.frameLayoutEditarPerfil)
@@ -158,7 +163,7 @@ public class ProfileFragment extends Fragment implements ProfileView {//, MainAc
     public void onResume() {
         super.onResume();
         setTextViews();
-        setPhoto();
+        setPhotos();
     }
 
     @Override

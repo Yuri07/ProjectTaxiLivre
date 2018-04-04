@@ -15,5 +15,7 @@ public interface EditProfileRepository {
     void updateDriver(Driver driver);
     void updateCar(Car car);
     void uploadPhoto(Uri selectedImageUri);
+    /*void uploadPhotoDriver(Uri selectedImageUri);
+    void uploadPhotoCar(Uri selectedImageUri);*/
 
 }

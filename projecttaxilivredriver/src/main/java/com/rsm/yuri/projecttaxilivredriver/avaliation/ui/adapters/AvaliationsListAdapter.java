@@ -46,7 +46,9 @@ public class AvaliationsListAdapter extends RecyclerView.Adapter<AvaliationsList
         holder.txtComment.setText(rating.getComment());
         holder.txtNomeUser.setText(rating.getNome());
         holder.txtData.setText(rating.getDate());
-        //imageLoader.load(holder.imgAvatar, rating.getUrlPhotoUser());
+        String urlPhotoUser = rating.getUrlPhotoUser();
+        if ((!urlPhotoUser.equals("default"))&&!(urlPhotoUser.equals("url_sh_pr"))&&!(urlPhotoUser.isEmpty()))
+            imageLoader.load(holder.imgAvatar, urlPhotoUser);
         switch ((int) rating.getVote()) {
             case 1:
                 break;

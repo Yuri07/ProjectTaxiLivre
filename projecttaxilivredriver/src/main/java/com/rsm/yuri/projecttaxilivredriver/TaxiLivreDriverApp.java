@@ -65,6 +65,7 @@ public class TaxiLivreDriverApp extends Application {
     public final static String COUNT_5_STARS_KEY = "count5Stars";
 
     public final static String MODELO_KEY = "modelo";
+    public final static String URL_PHOTO_CAR_KEY = "urlPhotoCar";
     public final static String MARCA_KEY = "marca";
     public final static String COR_KEY = "cor";
     public final static String ANO_KEY = "ano";
@@ -163,14 +164,16 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
-    public EditProfileComponent getEditProfileComponent(EditProfileView view, Context context){
+    public EditProfileComponent getEditProfileComponent(EditProfileView view, Context context, int uploaderInjection){
         libsModule.setContext(context);
+        //EditProfileModule editProfileModule = new EditProfileModule(view, uploaderInjection);
+
         return DaggerEditProfileComponent
                 .builder()
                 .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .editProfileModule(new EditProfileModule(view))
+                .editProfileModule(new EditProfileModule(view, uploaderInjection))
                 .build();
     }
 

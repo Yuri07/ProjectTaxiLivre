@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
-
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/profileFragmentContainer"
     tools:context="com.rsm.yuri.projecttaxilivredriver.profile.ui.ProfileFragment">
@@ -163,6 +162,30 @@
                 android:layout_height="1dp"
                 android:background="@color/colorLightGray"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutImgCar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgCarProfileAct"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center"
+                    android:src="@android:drawable/sym_def_app_icon"
+                    app:civ_border_color="#FF000000"
+                    app:civ_border_width="1dp"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:background="@color/colorLightGray"
                 android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
             <FrameLayout
@@ -379,7 +402,6 @@
                 android:elevation="@dimen/elevationFrameLayout">
 
                 <LinearLayout
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -388,12 +410,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                         android:src="@drawable/icons8_editar_propriedade_24"/>
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Editar perfil"/>
-
                 </LinearLayout>
             </FrameLayout>
 

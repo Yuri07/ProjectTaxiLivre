@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseError;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseActionListenerCallback;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.events.MapHomeEvent;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivredriver.home.models.AreasHelper;
@@ -33,7 +34,7 @@ public class HomeRepositoryImpl implements HomeRepository {
     @Override
     public void updateLocation(LatLng location) {
         groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
-        firebase.updateMyLocation(location, groupAreas, new FirebaseActionListenerCallback() {
+        firebase.updateMyLocation(location, groupAreas.getMainArea().getId(), new FirebaseActionListenerCallback() {
             @Override
             public void onSuccess() {
                 Log.d("d", "HomeRepositoryImpl().updateLocation on Sucess()");
@@ -61,6 +62,22 @@ public class HomeRepositoryImpl implements HomeRepository {
             groupAreas = null;
         }
 
+    }
+
+    @Override
+    public void uploadNearDriverData(NearDriver nearDriver) {
+        groupAreas = areasHelper.getGroupAreas(nearDriver.getLatitude(), nearDriver.getLongitude());
+        firebase.uploadNearDriverData(nearDriver, groupAreas.getMainArea().getId(), new FirebaseActionListenerCallback(){
+
+            @Override
+            public void onSuccess() {
+                Log.d("d", "HomeRepositoryImpl().uploadNearDriverData on Sucess()");
+            }
+            @Override
+            public void onError(DatabaseError error) {
+                post(error.getMessage());
+            }
+        });
     }
 
     private void post(String error){

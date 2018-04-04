@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupInjection();
 
         fragmentManager.beginTransaction()
-                .add(R.id.content_frame, mapFragment)
+                .add(R.id.map_fragment_content_frame, mapFragment)
                 .commit();
 
         presenter.onCreate();
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void displayFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.map_fragment_content_frame, fragment)
                 .commit();
     }
 

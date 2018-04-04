@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivredriver.home;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 
 /**
  * Created by yuri_ on 09/03/2018.
@@ -15,12 +16,17 @@ public class HomeInteractorImpl implements HomeInteractor {
     }
 
     @Override
-    public void updateLocation(LatLng location) {
-        repository.updateLocation(location);
+    public void updateLocation(LatLng latLng) {
+        repository.updateLocation(latLng);
     }
 
     @Override
     public void removeDriverFromArea() {
         repository.removeDriverFromArea();
+    }
+
+    @Override
+    public void uploadNearDriverData(NearDriver nearDriver) {
+        repository.uploadNearDriverData(nearDriver);
     }
 }

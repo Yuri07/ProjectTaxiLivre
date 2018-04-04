@@ -32,9 +32,19 @@ public class EditProfileInteractorImpl implements EditProfileInteractor {
         repository.updateCar(car);
     }
 
-
     @Override
     public void uploadPhoto(Uri selectedImageUri) {
         repository.uploadPhoto(selectedImageUri);
     }
+
+
+    /*@Override
+    public void uploadPhotoDriver(Uri selectedImageUri) {
+        repository.uploadPhotoDriver(selectedImageUri);
+    }
+
+    @Override
+    public void uploadPhotoCar(Uri selectedImageUri) {
+        repository.uploadPhotoCar(selectedImageUri);
+    }*/
 }

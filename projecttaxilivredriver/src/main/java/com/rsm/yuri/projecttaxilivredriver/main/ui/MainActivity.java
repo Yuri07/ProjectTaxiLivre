@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Override
     public void setMyCar(Car myCar) {
         sharedPreferences.edit().putString(TaxiLivreDriverApp.MODELO_KEY, myCar.getModelo()).apply();//.commit();//commit() e o que tem no codigo original lesson4.edx
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, myCar.getUrlPhotoCar()).apply();
         sharedPreferences.edit().putString(TaxiLivreDriverApp.MARCA_KEY, myCar.getMarca()).apply();
         sharedPreferences.edit().putString(TaxiLivreDriverApp.COR_KEY, myCar.getCor()).apply();
         sharedPreferences.edit().putLong(TaxiLivreDriverApp.ANO_KEY, myCar.getAno()).apply();
@@ -325,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.switch_main:
-
                 if(switchMain.isChecked()){
                     //getSupportActionBar().setTitle("ONLINE");
                     //toolbar.setTitle(ONLINE);

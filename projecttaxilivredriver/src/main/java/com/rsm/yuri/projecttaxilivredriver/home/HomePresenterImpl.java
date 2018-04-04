@@ -2,6 +2,7 @@ package com.rsm.yuri.projecttaxilivredriver.home;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.events.HistoricChatsListEvent;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.events.MapHomeEvent;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeView;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
@@ -36,8 +37,13 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     @Override
-    public void updateLocation(LatLng location) {
-        interactor.updateLocation(location);
+    public void uploadDriverDataToArea(NearDriver nearDriver) {
+        interactor.uploadNearDriverData(nearDriver);
+    }
+
+    @Override
+    public void updateLocation(LatLng latLng) {
+        interactor.updateLocation(latLng);
     }
 
     @Override

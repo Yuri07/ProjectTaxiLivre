@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rsm.yuri.projecttaxilivre.R;
@@ -59,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
     @BindView(R.id.emailUserProfileAct)
     TextView emailUserProfileAct;
     @BindView(R.id.profileActivityContainer)
-    ConstraintLayout constraintLayout;
+    LinearLayout linearLayout;
 
 
     @Inject
@@ -190,7 +191,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
             photoPath = photoFile.getAbsolutePath();
             //Uri selectedImageUri = photoFile.ge
         } catch (IOException ex) {
-            Snackbar.make(constraintLayout, R.string.main_error_dispatch_camera, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(linearLayout, R.string.main_error_dispatch_camera, Snackbar.LENGTH_SHORT).show();
         }
         return photoFile;
     }
@@ -289,7 +290,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
 
     @Override
     public void onUploadInit() {
-        Snackbar.make(constraintLayout, R.string.profile_notice_upload_init, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(linearLayout, R.string.profile_notice_upload_init, Snackbar.LENGTH_SHORT).show();
         //Log.d("d", "onUploadInit");
     }
 
@@ -302,7 +303,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
 
     @Override
     public void onUploadError(String error) {
-        Snackbar.make(constraintLayout, error, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(linearLayout, error, Snackbar.LENGTH_SHORT).show();
 
     }
 }

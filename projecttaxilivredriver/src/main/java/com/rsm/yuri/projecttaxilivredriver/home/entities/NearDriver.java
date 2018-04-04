@@ -6,9 +6,16 @@ package com.rsm.yuri.projecttaxilivredriver.home.entities;
 
 public class NearDriver {
 
+
     private String email;
     private double latitude;
     private double longitude;
+    private String urlPhotoDriver;
+    private String urlPhotoCar;
+    private String nome;
+    private String modelo;
+    private long totalTravels;
+    private double averageRatings;
 
     public NearDriver() {
     }
@@ -41,6 +48,54 @@ public class NearDriver {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getUrlPhotoDriver() {
+        return urlPhotoDriver;
+    }
+
+    public void setUrlPhotoDriver(String urlPhotoDriver) {
+        this.urlPhotoDriver = urlPhotoDriver;
+    }
+
+    public String getUrlPhotoCar() {
+        return urlPhotoCar;
+    }
+
+    public void setUrlPhotoCar(String urlPhotoCar) {
+        this.urlPhotoCar = urlPhotoCar;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public long getTotalTravels() {
+        return totalTravels;
+    }
+
+    public void setTotalTravels(long totalTravels) {
+        this.totalTravels = totalTravels;
+    }
+
+    public double getAverageRatings() {
+        return averageRatings;
+    }
+
+    public void setAverageRatings(double averageRatings) {
+        this.averageRatings = averageRatings;
     }
 
 }

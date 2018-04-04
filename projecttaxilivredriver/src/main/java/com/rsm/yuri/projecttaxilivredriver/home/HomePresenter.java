@@ -2,6 +2,7 @@ package com.rsm.yuri.projecttaxilivredriver.home;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.events.HistoricChatsListEvent;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.events.MapHomeEvent;
 
 /**
@@ -18,4 +19,5 @@ public interface HomePresenter {
 
     void onEventMainThread(MapHomeEvent event);
 
+    void uploadDriverDataToArea(NearDriver nearDriver);
 }

@@ -30,6 +30,9 @@ import com.rsm.yuri.projecttaxilivre.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivre.main.di.MainModule;
+import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.DaggerInfoWindowComponent;
+import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.InfoWindowComponent;
+import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.InfoWindowModule;
 import com.rsm.yuri.projecttaxilivre.map.di.DaggerMapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapModule;
@@ -158,4 +161,15 @@ public class TaxiLivreApp extends Application{
                 .addDialogModule(new AddDialogModule(view))
                 .build();
     }
+
+    public InfoWindowComponent getInfoWindowComponent(){
+        return DaggerInfoWindowComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .infoWindowModule(new InfoWindowModule())
+                .build();
+    }
+
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 public class Car {
 
     private String email;//dono do carro
+    private String urlPhotoCar;
     private String marca;
     private String modelo;
     private String cor;
@@ -36,6 +37,14 @@ public class Car {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUrlPhotoCar() {
+        return urlPhotoCar;
+    }
+
+    public void setUrlPhotoCar(String urlPhotoCar) {
+        this.urlPhotoCar = urlPhotoCar;
     }
 
     public String getMarca() {
@@ -82,6 +91,7 @@ public class Car {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("email", email);
+        result.put("urlPhotoCar", urlPhotoCar);
         result.put("modelo", modelo);
         result.put("marca", marca);
         result.put("cor", cor);

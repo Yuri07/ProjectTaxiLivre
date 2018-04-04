@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/editProfileActivityContainer"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.rsm.yuri.projecttaxilivredriver.editprofile.ui.EditProfileActivity">
 
@@ -146,6 +147,19 @@
         android:background="@color/colorLightGray"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/imgCarEditarProfileAct"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/sym_def_app_icon"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="1dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

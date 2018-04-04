@@ -10,7 +10,8 @@ import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 public interface EditProfileView {
 
     void onUploadInit();
-    void onUploadComplete(String urlPhotoUser);
+    void onUploadPhotoDriverComplete(String urlPhotoDriver);
+    void onUploadPhotoCarComplete(String urlPhotoCar);
     void onUploadError(String error);
 
     void showInput();

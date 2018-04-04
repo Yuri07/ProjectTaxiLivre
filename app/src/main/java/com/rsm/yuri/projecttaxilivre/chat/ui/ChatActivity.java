@@ -46,7 +46,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
     @Inject
     ImageLoader imageLoader;
 
-
     public final static String EMAIL_KEY = "email";
     public final static String STATUS_KEY = "status";
     public final static String URL_KEY = "url_photo";

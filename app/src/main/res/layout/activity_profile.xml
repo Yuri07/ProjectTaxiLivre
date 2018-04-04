@@ -8,12 +8,6 @@
     android:id="@+id/profileActivityContainer"
     tools:context="com.rsm.yuri.projecttaxilivre.profile.ui.ProfileActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:background="?attr/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"/>
-
     <FrameLayout
         android:id="@+id/frameLayoutContainer"
         android:layout_width="match_parent"
@@ -33,6 +27,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="Motorista"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
             <FrameLayout
                 android:id="@+id/frameLayoutImgAvatar"
                 android:layout_width="match_parent"
@@ -42,7 +50,7 @@
                     android:id="@+id/imgAvatarProfileAct"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="center|start"
+                    android:layout_gravity="center"
                     android:src="@android:drawable/sym_def_app_icon"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="1dp"
@@ -77,7 +85,6 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:text="Nome"
-                        android:textSize="24sp"
                         android:textStyle="bold" />
 
 
@@ -87,8 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
-                        android:text="Usuario"
-                        android:textSize="24sp" />
+                        android:text="Usuario" />
                 </LinearLayout>
             </FrameLayout>
 
@@ -116,7 +122,6 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
                         android:text="Email"
-                        android:textSize="24sp"
                         android:textStyle="bold"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
                         app:layout_constraintStart_toStartOf="parent"
@@ -129,12 +134,18 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
                         android:text="usuario@email.com"
-                        android:textSize="24sp"
                         android:layout_marginBottom="@dimen/activity_vertical_margin"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/emailLabelUserProfileAct" />
                 </LinearLayout>
             </FrameLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLightGray"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"/>
 
         </LinearLayout>
 

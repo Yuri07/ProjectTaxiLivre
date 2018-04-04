@@ -11,14 +11,15 @@ public class EditProfileEvent {
 
     private Driver driver;
     private Car car;
-    private String ulrPhotoUser;
+    private String ulrPhoto;
     private int type;
     private String error;
     public final static int UPLOAD_INIT = 0;
-    public final static int UPLOAD_COMPLETE = 1;
-    public final static int UPLOAD_ERROR = 2;
-    public final static int SAVE_PROFILE_SUCESS = 3;
-    public final static int SAVE_PROFILE_ERROR = 4;
+    public final static int UPLOAD_PHOTO_DRIVER_COMPLETE = 1;
+    public final static int UPLOAD_PHOTO_CAR_COMPLETE = 2;
+    public final static int UPLOAD_ERROR = 3;
+    public final static int SAVE_PROFILE_SUCESS = 4;
+    public final static int SAVE_PROFILE_ERROR = 5;
 
     public Driver getDriver() {
         return driver;
@@ -36,12 +37,12 @@ public class EditProfileEvent {
         this.car = car;
     }
 
-    public String getUlrPhotoUser() {
-        return ulrPhotoUser;
+    public String getUlrPhoto() {
+        return ulrPhoto;
     }
 
-    public void setUlrPhotoUser(String ulrPhotoUser) {
-        this.ulrPhotoUser = ulrPhotoUser;
+    public void setUlrPhoto(String ulrPhoto) {
+        this.ulrPhoto = ulrPhoto;
     }
 
     public int getType() {

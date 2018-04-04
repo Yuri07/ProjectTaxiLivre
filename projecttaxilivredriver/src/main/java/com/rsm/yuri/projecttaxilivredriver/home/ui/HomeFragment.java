@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivredriver.home.ui;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.home.HomePresenter;
+import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainActivity;
 
 import javax.inject.Inject;
@@ -46,6 +48,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @Inject
     HomePresenter presenter;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     //private MainActivity.OnSwitchButtonClickedListener listener;
 
@@ -94,7 +98,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     private void setupInjection() {
         TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
-        app.getHomeComponent(this,this).inject(this);
+        app.getHomeComponent(this, this).inject(this);
         //Log.d("d", "ProfileFragment.setupInjection:finalizada");
     }
 
@@ -128,7 +132,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     public void onResume() {
         super.onResume();
         //if (mRequestingLocationUpdates) {
-            //startLocationUpdates();
+        //startLocationUpdates();
         //}
     }
 
@@ -225,9 +229,49 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @Override
     public void onSwitchButtonClicked(boolean switchStatus) {
-        if(switchStatus)
+        if (switchStatus) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                NearDriver nearDriver = new NearDriver();
+                                nearDriver.setEmail(sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr"));
+                                nearDriver.setUrlPhotoDriver(sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_sh_pr"));
+                                nearDriver.setUrlPhotoCar(sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_sh_pr"));
+                                nearDriver.setNome(sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "nome_sh_pr"));
+                                nearDriver.setModelo(sharedPreferences.getString(TaxiLivreDriverApp.MODELO_KEY, "modelo_sh_pr"));
+                                nearDriver.setTotalTravels(sharedPreferences.getInt(TaxiLivreDriverApp.TOTAL_RATINGS_KEY, -1));
+                                nearDriver.setAverageRatings(sharedPreferences.getFloat(TaxiLivreDriverApp.AVERAG_RATING_KEY, 5.5f));
+                                lastLocation = location;
+                                nearDriver.setLatitude(location.getLatitude());
+                                nearDriver.setLongitude(location.getLongitude());
+                                presenter.uploadDriverDataToArea(nearDriver);
+                                //LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                                //map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                            }
+                        }
+                    });
+
             startLocationUpdates();
-        else
+        }else {
             stopLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        stopLocationUpdates();
+        super.onDestroy();
     }
 }
