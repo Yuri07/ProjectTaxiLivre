@@ -17,4 +17,9 @@ public class MainInteractorImpl implements MainInteractor {
 
     }
 
+    @Override
+    public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
+        mainRepository.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }
+
 }

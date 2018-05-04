@@ -28,9 +28,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment;
+import com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatActivity;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListActivity;
@@ -47,6 +49,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatActivity.EMAIL_KEY;
+import static com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatActivity.STATUS_KEY;
+import static com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatActivity.URL_KEY;
 
 public class MainActivity extends AppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
@@ -85,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     public final static String ONLINE = "ONLINE";
     public final static String OFFLINE = "OFFLINE";
+
+    private static final String NOTIFICATION_MSG_KEY = "notificationMsg";
 
 
     @Override
@@ -234,6 +242,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
             presenter.getMyCar();
 
+            verifyToken();
+
+
         }
     }
 
@@ -247,9 +258,24 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         sharedPreferences.edit().putString(TaxiLivreDriverApp.PLACA_KEY, myCar.getPlaca()).apply();
     }
 
+    private void verifyToken() {
+        String firebaseNotificationToken = FirebaseInstanceId.getInstance().getToken();
+        presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }
+
     @Override
     public void onFailedToRecoverMyCar(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSucceessToSaveFirebaseTokenInServer() {
+
+    }
+
+    @Override
+    public void onFailedToSaveFirebaseTokenInServer(String errorMessage) {
+        Log.d("d", errorMessage );
     }
 
     public interface OnSwitchButtonClickedListener {
@@ -303,11 +329,37 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Override
     protected void onResume() {
         super.onResume();
-        long status = sharedPreferences.getLong(TaxiLivreDriverApp.STATUS_KEY, 0);
-        if (status==Driver.OFFLINE) {
-            sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
-            presenter.changeToOnlineStatus();
+        Intent intent = getIntent();
+        //boolean notificationMsg = intent.getBooleanExtra(NOTIFICATION_MSG_KEY, false);
+        String notificationMsg = intent.getStringExtra(NOTIFICATION_MSG_KEY);
+        if(notificationMsg!=null){
+            Log.d("d", "NotificationMsg: " + notificationMsg);
+            if(notificationMsg.equals("true")) {
+                String emailSender = intent.getStringExtra(EMAIL_KEY);
+                Log.d("d", "emailSender: " + emailSender);
+                String statusSender = intent.getStringExtra(STATUS_KEY);
+                Log.d("d", "statusSender: " + statusSender);
+                String urlSender = intent.getStringExtra(URL_KEY);
+                getIntent().removeExtra(NOTIFICATION_MSG_KEY);
+
+                Intent i = new Intent(this, ChatActivity.class);
+                i.putExtra(ChatActivity.EMAIL_KEY, emailSender);
+                long longStatus = Long.parseLong(statusSender);
+                i.putExtra(ChatActivity.STATUS_KEY, longStatus);
+                i.putExtra(ChatActivity.URL_KEY, urlSender);
+
+                startActivity(i);
+            }
+        }else {
+            long status = sharedPreferences.getLong(TaxiLivreDriverApp.STATUS_KEY, 0);
+            if (status == Driver.OFFLINE) {
+                sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
+                presenter.changeToOnlineStatus();
+            }
         }
+
+        verifyToken();
+
 
     }
 

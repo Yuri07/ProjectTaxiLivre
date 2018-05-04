@@ -46,6 +46,7 @@ dependencies {
     implementation "com.google.firebase:firebase-database:$rootProject.ext.firebaseVersion"
     implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
     implementation "com.google.firebase:firebase-storage:$rootProject.ext.firebaseVersion"
+    implementation "com.google.firebase:firebase-messaging:$rootProject.ext.firebaseVersion"
 
     implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"

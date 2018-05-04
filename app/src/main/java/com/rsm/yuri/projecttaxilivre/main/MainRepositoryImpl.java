@@ -55,7 +55,7 @@ public class MainRepositoryImpl implements MainRepository {
 
             @Override
             public void onError(DatabaseError error) {
-                post(MainEvent.onFailedToRecoverSession,error.getMessage());
+                post(MainEvent.onFailedToRecoverSession,"Falha em recuperar a sessao");
             }
         });
     }
@@ -80,6 +80,21 @@ public class MainRepositoryImpl implements MainRepository {
     @Override
     public void changeUserConnectionStatus(int status) {
         firebase.changeUserConnectionStatus(status);
+    }
+
+    @Override
+    public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
+        firebase.sendTokenToServer(firebaseNotificationToken, new FirebaseActionListenerCallback() {
+            @Override
+            public void onSuccess() {
+                post(MainEvent.onSucceessToSaveFirebaseTokenInServer);
+            }
+
+            @Override
+            public void onError(DatabaseError error) {
+                post(MainEvent.onFailedToSaveFirebaseTokenInServer, "Usuario nulo");
+            }
+        });
     }
 
     private void post(int type) {

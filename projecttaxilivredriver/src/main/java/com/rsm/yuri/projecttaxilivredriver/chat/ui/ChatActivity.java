@@ -102,6 +102,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
         recyclerView.scrollToPosition(adapter.getItemCount() - 1);
     }
 
+    @Override
+    public void onStatusChanged(long online){
+        String status = online == 1 ? "online" : "offline";
+        int color = online == 1 ? Color.GREEN : Color.RED;
+        txtStatus.setText(status);
+        txtStatus.setTextColor(color);
+    }
+
     @OnClick(R.id.btnSendMessage)
     public void sendMessage() {
         presenter.sendMessage(inputMessage.getText().toString());

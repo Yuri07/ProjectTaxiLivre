@@ -12,7 +12,10 @@ public interface ChatRepository {
     void destroyChatListener();
     void subscribeForChatUpates();
     void unSubscribeForChatUpates();
+    void subscribeForStatusReceiverUpdate();
+    void unSubscribeForStatusReceiverUpdate();
 
     void changeUserConnectionStatus(long status);
+
 
 }

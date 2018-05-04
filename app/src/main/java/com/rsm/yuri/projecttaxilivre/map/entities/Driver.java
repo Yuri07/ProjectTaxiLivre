@@ -37,12 +37,10 @@ public class Driver {
     private int count1Stars;
 
     public final static String DRIVER_NAME_DEFAULT = "Driver";//getResources().getString(R.string.DRIVER_NAME_DEFAULT);//nao funciona pq nao tem contexto nesta classe Driver.
-    public final static  int OFFLINE = 0;
-    public final static  int ONLINE = 1;
-    public final static  int WAITING_TRAVEL = 2;
-    public final static  int IN_TRAVEL = 3;
-
-
+    public final static  long OFFLINE = 0;
+    public final static  long ONLINE = 1;
+    public final static  long WAITING_TRAVEL = 2;
+    public final static  long IN_TRAVEL = 3;
 
     public String getEmail() {
         return email;

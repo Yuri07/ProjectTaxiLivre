@@ -36,6 +36,7 @@ public class FirebaseAPI {
     private final static String DRIVER_PATH = "drivers";
     private final static String CAR_PATH = "cars";
     private final static String USERS_PATH = "users";
+    private final static String STATUS_PATH = "status";
     private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
     private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
@@ -48,6 +49,8 @@ public class FirebaseAPI {
     private final static String LONGITUDE_PATH = "longitude";
     private final static String SEPARATOR = "___";
 
+    final static String NOTIFICATION_TOKEN_PATH = "notificationToken";
+    final static String TOKEN_PATH = "token";
 
     private static final String DRIVERS_PHOTOS_PATH = "drivers_photos";
     private static final String USERS_PHOTOS_PATH = "users_photos";
@@ -64,7 +67,8 @@ public class FirebaseAPI {
     private ChildEventListener areasEventListener;
     private ChildEventListener historicChatsListEventListener;
     private ChildEventListener chatEventListener;
-    //private ValueEventListener userValueUpdateEventListener;
+
+    private ValueEventListener statusReceiverChatEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
@@ -145,10 +149,12 @@ public class FirebaseAPI {
     }
 
     public void unsubscribeForNearDriversUpdates(){
-        mainAreaDataReference.removeEventListener(areasEventListener);
-        areaVerticalSideDataReference.removeEventListener(areasEventListener);
-        areaHorizontalSideDataReference.removeEventListener(areasEventListener);
-        areaDiagonalDataReference.removeEventListener(areasEventListener);
+        if(mainAreaDataReference!=null&&areaVerticalSideDataReference!=null&&areaHorizontalSideDataReference!=null&&areaDiagonalDataReference!=null) {
+            mainAreaDataReference.removeEventListener(areasEventListener);
+            areaVerticalSideDataReference.removeEventListener(areasEventListener);
+            areaHorizontalSideDataReference.removeEventListener(areasEventListener);
+            areaDiagonalDataReference.removeEventListener(areasEventListener);
+        }
     }
 
     public void subscribeForHistoricChatsListUpdates(final FirebaseEventListenerCallback listener) {
@@ -225,6 +231,44 @@ public class FirebaseAPI {
 
     public void unSubscribeForChatUpdates(String receiver) {
         getChatsReference(receiver).removeEventListener(chatEventListener);
+    }
+
+    public void subscribeForStatusReceiverUpdate(final String receiver, final FirebaseEventListenerCallback listener) {
+        if(statusReceiverChatEventListener==null) {
+            statusReceiverChatEventListener= new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            Log.d("d", "getStatusReceiverChatReference(receiver): " + getStatusReceiverChatReference(receiver));
+            getStatusReceiverChatReference(receiver).addValueEventListener(statusReceiverChatEventListener);
+
+        }
+    }
+
+    public void unSubscribeForStatusReceiverUpdate(String receiver) {
+        getStatusReceiverChatReference(receiver).removeEventListener(statusReceiverChatEventListener);
+    }
+
+    public void setMessageChatRead(String receiver, String msgId) {
+        getChatsReference(receiver).child(msgId).child("read").setValue(true);
+    }
+
+    public String createChatMessageId(String receiver) {
+        return getChatsReference(receiver).push().getKey();
+    }
+
+    public void setChatReceiver(String chatReceiver) {
+        getChatsReference(chatReceiver).child(DRIVER_PATH).setValue(chatReceiver);
+        getChatsReference(chatReceiver).child(USERS_PATH).setValue(getAuthUserEmail());
     }
 
     public void updateKeyValueUser(final String key, final String value, final FirebaseActionListenerCallback listenerCallback) {
@@ -341,11 +385,16 @@ public class FirebaseAPI {
         String keySender = getAuthUserEmail().replace(".","_");
         String keyReceiver = receiver.replace(".","_");
 
-        String keyChat = keySender + SEPARATOR + keyReceiver;
-        if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
+        String keyChat = keyReceiver + SEPARATOR + keySender;
+        /*if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
             keyChat = keyReceiver + SEPARATOR + keySender;//sempre o primeiro em ordem alfabetica vem primeiro
-        }
+        }*/
         return databaseReference.getRoot().child(CHATS_PATH).child(keyChat);
+    }
+
+    public DatabaseReference getStatusReceiverChatReference(String receiver){
+        String keyReceiver = receiver.replace(".","_");
+        return databaseReference.getRoot().child(DRIVER_PATH).child(keyReceiver).child(STATUS_PATH);
     }
 
     public void changeUserConnectionStatus(long status) {
@@ -477,5 +526,22 @@ public class FirebaseAPI {
     public void destroyChatListener() {
         chatEventListener = null;
     }
+
+    public void sendTokenToServer(String token, FirebaseActionListenerCallback listener) {
+        String userEmail = getAuthUserEmail();
+        if(userEmail!=null) {
+            String userEmailKey = userEmail.replace(".","_");
+            DatabaseReference myTokenReference = databaseReference.getRoot()
+                    .child(NOTIFICATION_TOKEN_PATH)
+                    .child(userEmailKey)
+                    .child(TOKEN_PATH);
+            myTokenReference.setValue(token);
+            listener.onSuccess();
+        }else{
+            listener.onError(null);
+        }
+
+    }
+
 
 }

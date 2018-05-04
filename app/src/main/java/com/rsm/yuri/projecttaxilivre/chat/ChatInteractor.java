@@ -12,5 +12,7 @@ public interface ChatInteractor {
     void destroyChatListener();
     void subscribeForChatUpates();
     void unSubscribeForChatUpates();
+    void subscribeForStatusReceiverUpdate();
+    void unSubscribeForStatusReceiverUpdate();
 
 }

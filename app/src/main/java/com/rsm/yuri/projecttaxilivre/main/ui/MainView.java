@@ -16,5 +16,6 @@ public interface MainView {
 
     void logout();
 
-
+    void onSucceessToSaveFirebaseTokenInServer();
+    void onFailedToSaveFirebaseTokenInServer(String errorMessage);
 }

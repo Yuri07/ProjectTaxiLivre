@@ -5,10 +5,11 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.rsm.yuri.projecttaxilivre.FirebaseService.di.DaggerFIIDServiceComponent;
+import com.rsm.yuri.projecttaxilivre.FirebaseService.di.FIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogModule;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.DaggerAddDialogComponent;
-import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogFragment;
 import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogView;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatComponet;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatModule;
@@ -18,7 +19,6 @@ import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListModule;
-import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListActivity;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivre.lib.di.LibsModule;
@@ -37,7 +37,6 @@ import com.rsm.yuri.projecttaxilivre.map.di.DaggerMapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapModule;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
-import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 import com.rsm.yuri.projecttaxilivre.profile.di.DaggerProfileComponent;
 import com.rsm.yuri.projecttaxilivre.profile.di.ProfileComponent;
@@ -53,6 +52,10 @@ public class TaxiLivreApp extends Application{
     public final static String EMAIL_KEY = "email";
     public final static String NOME_KEY = "nome";
     public final static String URL_PHOTO_USER_KEY = "urlPhotoUser";
+
+    public final static String FIREBASE_NOTIFICATION_TOKEN_KEY = "firebaseNotificationToken";
+    public final static String FIREBASE_NOTIFICATION_TOKEN_UPDATED_KEY = "firebaseNotificationUpdatedToken";
+
     private LibsModule libsModule;
     private DomainModule domainModule;
     private TaxiLivreAppModule taxiLivreAppModule;
@@ -80,6 +83,8 @@ public class TaxiLivreApp extends Application{
     public final static String getNomeKey() {
         return NOME_KEY;
     }
+
+
 
     public LoginComponent getLoginComponent(LoginView view) {
         return DaggerLoginComponent
@@ -162,13 +167,22 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
-    public InfoWindowComponent getInfoWindowComponent(){
+    public InfoWindowComponent getInfoWindowComponent(Fragment fragment){
+        libsModule.setContext(fragment.getContext());
         return DaggerInfoWindowComponent
                 .builder()
                 .taxiLivreAppModule(taxiLivreAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
                 .infoWindowModule(new InfoWindowModule())
+                .build();
+    }
+
+    public FIIDServiceComponent getFIIDServiceComponent(){
+        return DaggerFIIDServiceComponent
+                .builder()
+                .taxiLivreAppModule(taxiLivreAppModule)
+                .domainModule(domainModule)
                 .build();
     }
 

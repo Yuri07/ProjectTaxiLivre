@@ -17,4 +17,5 @@ public interface MainPresenter {
     void logout();
     void checkForSession();
 
+    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
 }

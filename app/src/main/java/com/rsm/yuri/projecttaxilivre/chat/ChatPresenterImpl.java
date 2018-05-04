@@ -31,12 +31,14 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onPause() {
         chatInteractor.unSubscribeForChatUpates();
+        chatInteractor.unSubscribeForStatusReceiverUpdate();
         chatSessionInteractor.changeConnectionStatus(User.OFFLINE);
     }
 
     @Override
     public void onResume() {
         chatInteractor.subscribeForChatUpates();
+        chatInteractor.subscribeForStatusReceiverUpdate();
         chatSessionInteractor.changeConnectionStatus(User.ONLINE);
     }
 
@@ -65,10 +67,14 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     @Subscribe
     public void onEventMainThread(ChatEvent event) {
-        Log.d("d", "postOnChildAdd = " + event.getMsg().getMsg());
+        //Log.d("d", "postOnChildAdd = " + event.getMsg().getMsg());
         if (chatView != null) {
-            ChatMessage msg = event.getMsg();
-            chatView.onMessageReceived(msg);
+            if (event.getEventType() == ChatEvent.READ_EVENT) {
+                ChatMessage msg = event.getMsg();
+                chatView.onMessageReceived(msg);
+            }else if(event.getEventType() == ChatEvent.READ_STATUS_RECEIVER_EVENT){
+                chatView.onStatusChanged(event.getStatusReceiver());
+            }
         }
     }
 }

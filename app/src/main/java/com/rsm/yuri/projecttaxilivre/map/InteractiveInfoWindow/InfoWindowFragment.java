@@ -44,7 +44,7 @@ public class InfoWindowFragment extends Fragment {
 
     private void setupInjection() {
         TaxiLivreApp app = (TaxiLivreApp) getActivity().getApplication();
-        app.getInfoWindowComponent().inject(this);
+        app.getInfoWindowComponent(this).inject(this);
     }
 
     @Nullable

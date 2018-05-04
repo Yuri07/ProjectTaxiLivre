@@ -10,5 +10,6 @@ public interface MainRepository {
     void checkForSession();
     void changeUserConnectionStatus(int status);
     void getMyCar();
+    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
 
 }

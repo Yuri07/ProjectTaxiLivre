@@ -25,6 +25,8 @@ public class MainEvent {
     public final static int onFailedToRecoverSession = 11;
     public final static int onSuccessToRecoverMyCar = 12;
     public final static int onFailedToRecoverMyCar = 13;
+    public final static int onSucceessToSaveFirebaseTokenInServer = 14;
+    public final static int onFailedToSaveFirebaseTokenInServer = 15;
 
     public Driver getLoggedUser() {
         return loggedUser;

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.rsm.yuri.projecttaxilivre.chat.ChatPresenter;
 import com.rsm.yuri.projecttaxilivre.chat.entities.ChatMessage;
 import com.rsm.yuri.projecttaxilivre.chat.ui.adapter.ChatAdapter;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
+import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 
 import javax.inject.Inject;
 
@@ -101,6 +103,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
         recyclerView.scrollToPosition(adapter.getItemCount() - 1);
     }
 
+    @Override
+    public void onStatusChanged(long online){
+        String status = online == 1 ? "online" : "offline";
+        int color = online == 1 ? Color.GREEN : Color.RED;
+        txtStatus.setText(status);
+        txtStatus.setTextColor(color);
+    }
+
     @OnClick(R.id.btnSendMessage)
     public void sendMessage() {
         presenter.sendMessage(inputMessage.getText().toString());
@@ -112,8 +122,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
         presenter.setChatRecipient(recipient);
 
         long online = i.getLongExtra(STATUS_KEY, 0);
-        String status = online == 1 ? "online" : "offline";
-        int color = online == 1 ? Color.GREEN : Color.RED;
+        Log.d("d", "ChatActivity.driver.getStatus(): "+online);
+        String status = (online == Driver.OFFLINE || online==Driver.IN_TRAVEL)? "offline" : "online";
+        int color = (online == Driver.OFFLINE || online==Driver.IN_TRAVEL) ? Color.RED : Color.GREEN;
 
         txtUser.setText(recipient);
         txtStatus.setText(status);
@@ -124,6 +135,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
             if (!url.equals("Default"))
                 imageLoader.load(imgAvatar, url);
         }
+
         /*AndroidChatApplication app = (AndroidChatApplication)getApplication();
         ImageLoader imageLoader = app.getImageLoader();
         imageLoader.load(imgAvatar, AvatarHelper.getAvatarUrl(recipient));*/

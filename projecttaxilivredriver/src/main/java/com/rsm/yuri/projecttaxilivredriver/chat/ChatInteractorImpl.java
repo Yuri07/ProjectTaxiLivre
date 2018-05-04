@@ -23,6 +23,16 @@ public class ChatInteractorImpl implements ChatInteractor {
     }
 
     @Override
+    public void subscribeForStatusReceiverUpdate() {
+        chatRepository.subscribeForStatusReceiverUpdate();
+    }
+
+    @Override
+    public void unSubscribeForStatusReceiverUpdate() {
+        chatRepository.unSubscribeForStatusReceiverUpdate();
+    }
+
+    @Override
     public void destroyChatListener() {
         chatRepository.destroyChatListener();
     }

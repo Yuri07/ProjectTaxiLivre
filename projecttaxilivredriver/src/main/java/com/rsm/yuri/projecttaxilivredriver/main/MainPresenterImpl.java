@@ -79,6 +79,12 @@ public class MainPresenterImpl implements MainPresenter {
             case MainEvent.onFailedToRecoverMyCar:
                 onFailedToRecoverMyCar(event.getErrorMessage());
                 break;
+            case MainEvent.onSucceessToSaveFirebaseTokenInServer:
+                onSuccessToSaveFirebaseTokenInServer();
+                break;
+            case MainEvent.onFailedToSaveFirebaseTokenInServer:
+                onFailedToSaveFirebaseTokenInServer(event.getErrorMessage());
+                break;
         }
     }
 
@@ -110,6 +116,14 @@ public class MainPresenterImpl implements MainPresenter {
         }
     }
 
+    private void onSuccessToSaveFirebaseTokenInServer(){
+        mainView.onSucceessToSaveFirebaseTokenInServer();
+    }
+
+    private void onFailedToSaveFirebaseTokenInServer(String errorMessage){
+        mainView.onFailedToSaveFirebaseTokenInServer(errorMessage);
+    }
+
     @Override
     public void logout() {
         sessionInteractor.changeConnectionStatus(User.OFFLINE);
@@ -124,5 +138,10 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void getMyCar() {
         mainInteractor.getMyCar();
+    }
+
+    @Override
+    public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
+        mainInteractor.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
     }
 }

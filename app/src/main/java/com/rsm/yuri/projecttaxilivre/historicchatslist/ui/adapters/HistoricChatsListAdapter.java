@@ -49,8 +49,10 @@ public class HistoricChatsListAdapter extends RecyclerView.Adapter<HistoricChats
         String email = driver.getEmail();
         long online = driver.getStatus();
         Log.d("d", "adapter.driver.getStatus(): "+driver.getStatus());
-        String status = online == 1 ? "online" : "offline";
-        int color = online == 1 ? Color.GREEN : Color.RED;
+        String status = (online == Driver.OFFLINE || online==Driver.IN_TRAVEL)? "offline" : "online";
+        int color = (online == Driver.OFFLINE || online==Driver.IN_TRAVEL) ? Color.RED : Color.GREEN;
+        /*String status = online == 1 ? "online" : "offline";
+        int color = online == 1 ? Color.GREEN : Color.RED;*/
 
         holder.txtUser.setText(email);
         holder.txtStatus.setText(status);

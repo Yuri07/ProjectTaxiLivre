@@ -60,6 +60,12 @@ public class MainPresenterImpl implements MainPresenter {
             case MainEvent.onFailedToRecoverSession:
                 onFailedToRecoverSession();
                 break;
+            case MainEvent.onSucceessToSaveFirebaseTokenInServer:
+                onSucceessToSaveFirebaseTokenInServer();
+                break;
+            case MainEvent.onFailedToSaveFirebaseTokenInServer:
+                onFailedToSaveFirebaseTokenInServer(event.getErrorMessage());
+                break;
         }
     }
 
@@ -76,6 +82,14 @@ public class MainPresenterImpl implements MainPresenter {
         }
     }
 
+    private void onSucceessToSaveFirebaseTokenInServer(){
+        mainView.onSucceessToSaveFirebaseTokenInServer();
+    }
+
+    private void onFailedToSaveFirebaseTokenInServer(String errorMessage){
+        mainView.onFailedToSaveFirebaseTokenInServer(errorMessage);
+    }
+
     @Override
     public void logout() {
         sessionInteractor.changeConnectionStatus(User.OFFLINE);
@@ -85,5 +99,10 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void checkForSession() {
         sessionInteractor.checkForSession();
+    }
+
+    @Override
+    public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
+        mainInteractor.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
     }
 }

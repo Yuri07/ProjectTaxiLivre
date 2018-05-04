@@ -8,4 +8,5 @@ import com.rsm.yuri.projecttaxilivre.chat.entities.ChatMessage;
 
 public interface ChatView  {
     void onMessageReceived(ChatMessage msg);
+    void onStatusChanged(long online);
 }

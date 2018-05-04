@@ -20,4 +20,7 @@ public interface MainView {
 
     void setMyCar(Car myCar);
     void onFailedToRecoverMyCar(String errorMessage);
+
+    void onSucceessToSaveFirebaseTokenInServer();
+    void onFailedToSaveFirebaseTokenInServer(String errorMessage);
 }

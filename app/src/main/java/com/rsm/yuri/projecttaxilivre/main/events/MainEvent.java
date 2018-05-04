@@ -21,6 +21,8 @@ public class MainEvent {
 
     public final static int onSuccessToRecoverSession = 10;
     public final static int onFailedToRecoverSession = 11;
+    public final static int onSucceessToSaveFirebaseTokenInServer = 12;
+    public final static int onFailedToSaveFirebaseTokenInServer = 13;
 
     public User getLoggedUser() {
         return loggedUser;

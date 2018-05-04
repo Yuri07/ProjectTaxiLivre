@@ -20,14 +20,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.chat.ui.ChatActivity;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListActivity;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
+import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.profile.ui.ProfileActivity;
 
@@ -36,6 +39,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.rsm.yuri.projecttaxilivre.chat.ui.ChatActivity.EMAIL_KEY;
+import static com.rsm.yuri.projecttaxilivre.chat.ui.ChatActivity.STATUS_KEY;
+import static com.rsm.yuri.projecttaxilivre.chat.ui.ChatActivity.URL_KEY;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
@@ -66,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TaxiLivreApp app;
 
     public final static int UPDATE_PROFILE = 0;
+
+    private static final String NOTIFICATION_MSG_KEY = "notificationMsg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +138,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.onResume();
+
+        Intent intent = getIntent();
+        //boolean notificationMsg = intent.getBooleanExtra(NOTIFICATION_MSG_KEY, false);
+        String notificationMsg = intent.getStringExtra(NOTIFICATION_MSG_KEY);
+        if(notificationMsg!=null){
+            Log.d("d", "NotificationMsg: " + notificationMsg);
+            if(notificationMsg.equals("true")) {
+                String emailSender = intent.getStringExtra(EMAIL_KEY);
+                Log.d("d", "emailSender: " + emailSender);
+                String statusSender = intent.getStringExtra(STATUS_KEY);
+                Log.d("d", "statusSender: " + statusSender);
+                String urlSender = intent.getStringExtra(URL_KEY);
+                getIntent().removeExtra(NOTIFICATION_MSG_KEY);
+
+                Intent i = new Intent(this, ChatActivity.class);
+                i.putExtra(ChatActivity.EMAIL_KEY, emailSender);
+                long longStatus = Long.parseLong(statusSender);
+                i.putExtra(ChatActivity.STATUS_KEY, longStatus);
+                i.putExtra(ChatActivity.URL_KEY, urlSender);
+
+                startActivity(i);
+            }
+        }else{
+            presenter.onResume();
+            verifyToken();
+        }
+
+
     }
 
     @Override
@@ -215,8 +251,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             sharedPreferences.edit().putString(nomeKey, loggedUser.getNome()).apply();
             sharedPreferences.edit().putString(urlPhotoUserKey, loggedUser.getUrlPhotoUser()).apply();
             setupHeaderViewNavigation(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoUser());
-            
+
+            verifyToken();
+
         }
+    }
+
+    private void verifyToken() {
+        String firebaseNotificationToken = FirebaseInstanceId.getInstance().getToken();
+        presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }
+
+    @Override
+    public void onSucceessToSaveFirebaseTokenInServer() {
+
+        //sharedPreferences.edit().putBoolean(TaxiLivreApp.FIREBASE_NOTIFICATION_TOKEN_UPDATED_KEY, true).apply();
+    }
+
+    @Override
+    public void onFailedToSaveFirebaseTokenInServer(String errorMessage) {
+        Log.d("d", errorMessage );
     }
 
     private void setupHeaderViewNavigation(String email, String nome, String urlPhotoUser) {

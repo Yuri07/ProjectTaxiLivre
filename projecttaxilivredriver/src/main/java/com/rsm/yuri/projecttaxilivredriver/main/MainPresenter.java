@@ -22,4 +22,6 @@ public interface MainPresenter {
 
     void getMyCar();
 
+    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+
 }

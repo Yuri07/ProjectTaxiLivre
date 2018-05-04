@@ -8,16 +8,30 @@ import com.google.firebase.database.Exclude;
 
 public class ChatMessage {
 
-    String msg;
-    String sender;
+    private String id;
+    private String msg;
+    private String sender;
+
     @Exclude
-    boolean sentByMe;
+    private boolean sentByMe;
+    private boolean read;
+
+
 
     public ChatMessage(){}
 
-    public ChatMessage(String sender, String msg){
+    public ChatMessage(String sender, String msg, boolean read){
         this.msg = msg;
         this.sender = sender;
+        this.read = read;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMsg() {
@@ -44,4 +58,11 @@ public class ChatMessage {
         this.sentByMe = sentByMe;
     }
 
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
 }
