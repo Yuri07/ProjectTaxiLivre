@@ -30,6 +30,7 @@ import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
+import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.profile.ui.ProfileActivity;
@@ -215,6 +216,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public MapFragment getMapFragment(){
+        return mapFragment;
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -310,6 +315,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Log.d("d", "onActivityResult UPDATE_PROFILE");
             setupHeaderViewNavigation(email, nome, urlPhotoUser);
         }
+        /*if(requestCode== InfoWindowFragment.PLACE_AUTOCOMPLETE_REQUEST_CODE){
+            //data.getExtras()
+        }*/
     }
 
     protected static class HeaderViewHolder {

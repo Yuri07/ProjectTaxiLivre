@@ -56,6 +56,11 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
+    public void carRequest(NearDriver requestDriver) {
+        mapInteractor.requestDriver(requestDriver);
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(MapEvent event) {
         String error = event.getError();

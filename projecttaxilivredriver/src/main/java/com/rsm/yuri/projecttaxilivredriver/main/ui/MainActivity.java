@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     private static final String NOTIFICATION_MSG_KEY = "notificationMsg";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

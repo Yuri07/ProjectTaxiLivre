@@ -15,6 +15,8 @@ public interface MapInteractor {
 
     void updateMyLocation(LatLng location);
 
+    void requestDriver(NearDriver requestDriver);
+
     /*void addNearDrivers();////nao tem essas funcoes disponiveis para o usuario na tela do mapfragment
     void removeNearDrivers();*/
 

@@ -22,5 +22,55 @@
         android:name="com.google.android.gms.maps.SupportMapFragment" />-->
         <!--class="com.rsm.yuri.projecttaxilivre.TempFragment"/>-->
 
+    <FrameLayout
+        android:id="@+id/frameLayoutConfirmar"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_gravity="bottom"
+        android:background="#ffffff"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_valor_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="Valor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/editTxt_valor_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="R$25,50"
+                android:textSize="24sp" />
+
+
+            <Button
+                android:id="@+id/button_confirmar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorAccent"
+                android:text="Confirmar" />
+
+        </LinearLayout>
+
+
+    </FrameLayout>
+
 
 </FrameLayout>

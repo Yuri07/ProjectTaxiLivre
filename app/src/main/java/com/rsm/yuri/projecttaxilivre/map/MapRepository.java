@@ -15,6 +15,8 @@ public interface MapRepository {
 
     void updateMyLocation(LatLng location);
 
+    void requestDriver(NearDriver requestDriver);
+
     //void addNearDrivers();//nao tem essas funções para o usuario na tela do mapfragment.
     //void removeNearDrivers();
 

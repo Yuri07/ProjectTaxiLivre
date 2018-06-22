@@ -1,7 +1,10 @@
 package com.rsm.yuri.projecttaxilivre.map.ui;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,23 +17,39 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Info;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.appolica.interactiveinfowindow.InfoWindow;
 import com.appolica.interactiveinfowindow.fragment.MapInfoWindowFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.rsm.yuri.projecttaxilivre.BuildConfig;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
@@ -48,6 +67,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,12 +76,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class MapFragment extends Fragment implements MapView, OnMapReadyCallback, //GoogleMap.InfoWindowAdapter,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+        , InfoWindowFragment.OnChildFragmentInteractionListener {
 
     @BindView(R.id.container)
     FrameLayout container;
-    //@BindView(R.id.map_fragment_click_frame)
-    //FrameLayout clickFrameLayout;
+    @BindView(R.id.frameLayoutConfirmar)
+    FrameLayout frameLayoutConfirmar;
+    @BindView(R.id.button_confirmar)
+    Button buttonConfirmar;
+
     Unbinder unbinder;
 
     @Inject
@@ -69,9 +93,18 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Inject
     ImageLoader imageLoader;
 
+
     private MapInfoWindowFragment mapInfoWindowFragment;
     private GoogleMap map;
     private HashMap<Marker, NearDriver> markers;
+
+    private Marker markerClicked;
+    private InfoWindow.MarkerSpecification markerSpecClicked;
+    private InfoWindowFragment infoWindowFragmentClicked;
+    private NearDriver requestDriver;
+
+    private PolylineOptions polylineOptions = null;
+
     private List<NearDriver> nearDriversList;
     private Location lastLocation;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -81,6 +114,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     private final static int PERMISSIONS_REQUEST_LOCATION = 11;
     private static String[] PERMISSIONS_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
+
+    private static final int MAP_ZOOM_PADDING = 90;
+    private static final int MAP_CAMERA_ANIMATION_DURATION_IN_MILLIS = 500;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,20 +149,11 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        /*FragmentManager fm = getChildFragmentManager();
-        SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);*/
-
-        //moveCameraToLastKnowLocation();
 
         mapInfoWindowFragment =
                 (MapInfoWindowFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapInfoWindowFragment.getMapAsync(this);
-
-        //final InfoWindow infoWindow = new InfoWindow(marker, markerSpec, fragment);
-        // Shows the InfoWindow or hides it if it is already opened.
-        //mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
 
     }
 
@@ -141,7 +168,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         addDriverToList(nearDriver);
     }
 
-    public void addDriverToList(NearDriver nearDriver){
+    public void addDriverToList(NearDriver nearDriver) {
         nearDriversList.add(nearDriver);
         LatLng location = new LatLng(nearDriver.getLatitude(), nearDriver.getLongitude());
         Marker marker = map.addMarker(new MarkerOptions()
@@ -160,7 +187,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         removeDriverFromList(nearDriver);
     }
 
-    public void removeDriverFromList(NearDriver nearDriver){
+    public void removeDriverFromList(NearDriver nearDriver) {
         for (Map.Entry<Marker, NearDriver> entry : markers.entrySet()) {
             NearDriver currentNearDriver = entry.getValue();
             Marker currentMarker = entry.getKey();
@@ -172,7 +199,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         }
 
         for (NearDriver nearDriverIteractor : nearDriversList) {
-            if(nearDriverIteractor.getEmail().equals(nearDriver.getEmail())){
+            if (nearDriverIteractor.getEmail().equals(nearDriver.getEmail())) {
                 nearDriversList.remove(nearDriverIteractor);
             }
         }
@@ -213,16 +240,20 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         map = googleMap;
-        //map.setInfoWindowAdapter(this);
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        setOnMakerClick(map);
+        moveCameraToLastKnowLocation();
+    }
+
+    public void setOnMakerClick(final GoogleMap googleMap) {
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-                NearDriver nearDriver = markers.get(marker);
-                LatLng position = new LatLng(nearDriver.getLatitude()+0.007, nearDriver.getLongitude());
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                requestDriver = markers.get(marker);
+                markerClicked = marker;
+                LatLng position = new LatLng(requestDriver.getLatitude() + 0.007, requestDriver.getLongitude());
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
                 //marker.showInfoWindow();
 
@@ -231,38 +262,23 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
                 final InfoWindow.MarkerSpecification markerSpec =
                         new InfoWindow.MarkerSpecification(offsetX, offsetY);
+                markerSpecClicked = markerSpec;
 
                 InfoWindowFragment infoWindowFragment = new InfoWindowFragment();
+                infoWindowFragmentClicked = infoWindowFragment;
 
                 final InfoWindow infoWindow = new InfoWindow(marker, markerSpec, infoWindowFragment);
+
+                if(polylineOptions!=null){
+                    map.clear();
+                    polylineOptions=null;
+                }
+
                 mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
-                infoWindowFragment.render(nearDriver);
+                infoWindowFragment.render(requestDriver);
                 return true;
             }
         });
-        //Log.d("d", "Entrou no onMapReady");
-        moveCameraToLastKnowLocation();
-
-        /*if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
-            Log.d("d", "Nao tinha as permissoes.");
-        } else {
-            Log.d("d", "Tem as permissoes");
-            map.setMyLocationEnabled(true);
-            LatLng location = null;
-            for (NearDriver nearDriver : nearDriversList) {
-                Log.d("d", "NearDriverList(i).getemail(): " + nearDriver.getEmail());
-                location = new LatLng(nearDriver.getLatitude(), nearDriver.getLongitude());
-                Marker marker = map.addMarker(new MarkerOptions()
-                        .position(location)
-                        .title(nearDriver.getEmail())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_black_24dp)));
-                markers.put(marker, nearDriver);
-            }
-            //if (location != null) map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
-        }*/
-
     }
 
     private Location moveCameraToLastKnowLocation() {
@@ -287,7 +303,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         }
         map.setMyLocationEnabled(true);
 
-         mFusedLocationClient.getLastLocation()
+        mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
@@ -295,6 +311,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                             // Logic to handle location object
                             Log.d("Fragment", "onSuccess");
                             lastLocation = location;
+
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                             mapPresenter.subscribe(position);
@@ -331,6 +348,124 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
         }
 
+    }
+
+    @Override
+    public void messageFromWindowInfoToMapFrag(Place destinyPlace) {
+
+        Log.d("d", "MapFragment - Place: " + destinyPlace.getName());
+
+        if (markerClicked != null && markerSpecClicked != null && infoWindowFragmentClicked != null) {
+
+            final InfoWindow infoWindow = new InfoWindow(markerClicked, markerSpecClicked, infoWindowFragmentClicked);
+            markerClicked = null;
+            markerSpecClicked = null;
+            infoWindowFragmentClicked = null;
+            mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+            String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
+            GoogleDirection.withServerKey(myApiKey)
+                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                    .to(destinyPlace.getLatLng())
+                    .transportMode(TransportMode.DRIVING)
+                    .execute(new DirectionCallback() {
+                        @Override
+                        public void onDirectionSuccess(Direction direction, String rawBody) {
+                            if (direction.isOK()) {
+                                Route route = direction.getRouteList().get(0);
+                                Leg leg = route.getLegList().get(0);
+                                ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                                Info distanceInfo = leg.getDistance();
+                                Info durationInfo = leg.getDuration();
+                                String distance = distanceInfo.getText();
+                                String duration = durationInfo.getText();
+
+                                polylineOptions = DirectionConverter.createPolyline(
+                                        getContext(), directionPositionList, 5, Color.BLUE);
+
+                                map.addPolyline(polylineOptions);
+
+                                zoomRoute(map, directionPositionList);
+
+                                frameLayoutConfirmar.setVisibility(View.VISIBLE);
+
+                            } else {
+                                Log.d("d", "MapFragment - messageFromWindowInfoToMapFrag direction.isOK == false");
+                            }
+                        }
+
+                        @Override
+                        public void onDirectionFailure(Throwable t) {
+                        }
+                    });
+        }
+    }
+
+    @OnClick(R.id.button_confirmar)
+    public void onViewClicked() {
+        Toast.makeText(getContext(), "Botao confirmar clicado!", Toast.LENGTH_SHORT).show();
+        frameLayoutConfirmar.setVisibility(View.GONE);
+        //moveCameraToLastKnowLocation();
+        mapPresenter.carRequest(requestDriver.getEmail(), );
+    }
+
+    public void zoomRoute(GoogleMap googleMap, List<LatLng> lstLatLngRoute) {
+
+        if (googleMap == null || lstLatLngRoute == null || lstLatLngRoute.isEmpty()) return;
+
+        LatLngBounds currentLatLongBounds =
+                googleMap.getProjection().getVisibleRegion().latLngBounds;
+        boolean updateBounds = false;
+
+        for (LatLng latLng : lstLatLngRoute) {
+            if (!currentLatLongBounds.contains(latLng)) {
+                updateBounds = true;
+            }
+        }
+
+        if (updateBounds) {
+
+            CameraUpdate cameraUpdate;
+
+            if (lstLatLngRoute.size() == 1) {
+
+                LatLng latLng = lstLatLngRoute.iterator().next();
+                cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
+
+            } else {
+
+                LatLngBounds.Builder builder = LatLngBounds.builder();
+                for (LatLng latLng : lstLatLngRoute) {
+                    builder.include(latLng);
+                }
+                LatLngBounds latLongBounds = builder.build();
+
+                cameraUpdate =
+                        CameraUpdateFactory.newLatLngBounds(latLongBounds, MAP_ZOOM_PADDING);
+
+            }
+
+            try {
+                googleMap.animateCamera(cameraUpdate, MAP_CAMERA_ANIMATION_DURATION_IN_MILLIS,
+                        new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                            }
+
+                            @Override
+                            public void onCancel() {
+                            }
+                        });
+            } catch (IllegalStateException ex) {
+                // Ignore it. We're just being a bit lazy, as this exception only happens if
+                // we try to animate the camera before the map has a size
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -379,7 +514,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
         TransitionManager.beginDelayedTransition(root, set);
         clickFrameLayout.setVisibility(clickFrameLayout.getVisibility()==View.VISIBLE ? View.VISIBLE : View.INVISIBLE);*/
-        //text2.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);*/
+    //text2.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);*/
 
         /*TransitionManager.beginDelayedTransition(root, new android.support.transition.Fade());
         FrameLayout clickFrameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_click_frame);
@@ -414,9 +549,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         imageLoader.load(imgCar, nearDriver.getUrlPhotoCar());
         txtNome.setText(nearDriver.getNome());
         txtModelo.setText(nearDriver.getModelo());
-        txtTotalTravels.setText(nearDriver.getTotalTravels()+"");
+        txtTotalTravels.setText(nearDriver.getTotalTravels() + "");
         DecimalFormat df = new DecimalFormat("#.0");
-        txtAverage.setText(df.format(nearDriver.getAverageRatings())+"");
+        txtAverage.setText(df.format(nearDriver.getAverageRatings()) + "");
     }
 
     @Override

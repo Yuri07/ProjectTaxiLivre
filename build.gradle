@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath 'com.google.gms:google-services:3.2.0'
+        classpath 'com.google.gms:google-services:3.3.1'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -29,6 +29,8 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+
+
 ext {
     minSdkVersion = 16
     targetSdkVersion = 27
@@ -41,6 +43,7 @@ ext {
     firebaseVersion = '11.8.0'//'11.0.4'
 
     appolicaVersion = '1.0.7'
+    androidGoogleDirectionAndPlaceLibrary = '1.1.1'
     circleImageViewVersion = '2.2.0'
     butterknifeVersion = '8.8.1'
     cloudinaryVersion = '1.20.0'

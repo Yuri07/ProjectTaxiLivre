@@ -1,7 +1,5 @@
 package com.rsm.yuri.projecttaxilivre.map.entities;
 
-import java.util.Map;
-
 /**
  * Created by yuri_ on 05/02/2018.
  */
@@ -15,6 +13,7 @@ public class NearDriver {
     private String urlPhotoCar;
     private String nome;
     private String modelo;
+    private String placa;
     private long totalTravels;
     private double averageRatings;
 
@@ -81,6 +80,14 @@ public class NearDriver {
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
+    }
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public void setPlaca(String placa) {
+        this.placa = placa;
     }
 
     public long getTotalTravels() {

@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+/*def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))*/
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
@@ -9,19 +13,34 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //buildConfigField 'String', "GOOGLE_MAPS_API_KEY_LOCAL_PROPERTY", localProperties['GOOGLE_MAPS_API_KEY_LOCAL_PROPERTY']
+        //buildConfigField 'String', "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+            buildConfigField 'String', "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
+            //buildConfigField "String", "GOOGLE_MAPS_API_KEY", localProperties('GOOGLE_MAPS_API_KEY')
+            resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
+            //resValue "string", "GOOGLE_MAPS_API_KEY", localProperties('GOOGLE_MAPS_API_KEY')
         }
 
         debug {
-            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+            buildConfigField 'String', "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
+            //buildConfigField "String", "GOOGLE_MAPS_API_KEY", localProperties('GOOGLE_MAPS_API_KEY')
+            resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
+            //resValue "string", "GOOGLE_MAPS_API_KEY", localProperties('GOOGLE_MAPS_API_KEY')
         }
 
     }
+
+    /*buildTypes.each {
+        it.buildConfigField 'String', 'GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY2', GoogleMapsApiKeyGradleProperty
+    }*/
+
 }
 
 dependencies {
@@ -36,6 +55,7 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-location:$rootProject.ext.playServicesLocationVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.ext.playServicesLocationVersion"
+    implementation "com.google.android.gms:play-services-places:$rootProject.ext.playServicesLocationVersion"
 
     implementation "com.google.firebase:firebase-database:$rootProject.ext.firebaseVersion"
     implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
@@ -53,6 +73,8 @@ dependencies {
     implementation "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
     implementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     implementation "de.hdodenhof:circleimageview:$rootProject.ext.circleImageViewVersion"
+
     implementation "com.appolica:interactive-info-window:$rootProject.ext.appolicaVersion"
+    implementation "com.akexorcist:googledirectionlibrary:$rootProject.ext.androidGoogleDirectionAndPlaceLibrary"
 }
 apply plugin: 'com.google.gms.google-services'

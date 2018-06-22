@@ -18,11 +18,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+            resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
         }
 
         debug {
-            resValue "string", "GOOGLE_MAPS_API_KEY", project.property('GOOGLE_MAPS_API_KEY')
+            resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
         }
     }
 

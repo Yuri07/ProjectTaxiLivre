@@ -136,7 +136,6 @@ public class ProfileFragment extends Fragment implements ProfileView {//, MainAc
         switch (view.getId()) {
             case R.id.frameLayoutEditarPerfil:
                 startActivityForResult(new Intent(getActivity(), EditProfileActivity.class),UPDATE_PROFILE);
-
                 break;
         }
     }

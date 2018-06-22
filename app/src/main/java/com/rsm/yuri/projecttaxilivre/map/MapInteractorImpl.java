@@ -35,6 +35,11 @@ public class MapInteractorImpl implements MapInteractor {
         mapRepository.updateMyLocation(location);
     }
 
+    @Override
+    public void requestDriver(NearDriver requestDriver) {
+        mapRepository.requestDriver(requestDriver);
+    }
+
     /*@Override//nao tem essas funcoes disponiveis para o usuario na tela do mapfragment
     public void addNearDrivers() {
         mapRepository.addNearDrivers();

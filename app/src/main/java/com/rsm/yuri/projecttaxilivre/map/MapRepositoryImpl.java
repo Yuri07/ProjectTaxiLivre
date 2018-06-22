@@ -93,6 +93,11 @@ public class MapRepositoryImpl implements MapRepository {
         });
     }
 
+    @Override
+    public void requestDriver(NearDriver requestDriver) {
+        firebase.
+    }
+
     private void post(int type, NearDriver nearDriver){
         post(type, nearDriver, null);
     }

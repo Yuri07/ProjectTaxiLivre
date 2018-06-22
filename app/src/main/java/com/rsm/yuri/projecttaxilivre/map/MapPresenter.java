@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.map;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 
 /**
@@ -15,6 +16,8 @@ public interface MapPresenter {
     void onDestroy();
 
     void updateMyLocation(LatLng location);
+
+    void carRequest(NearDriver requestDriver);
 
     void onEventMainThread(MapEvent event);
 
