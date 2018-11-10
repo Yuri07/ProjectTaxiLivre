@@ -1,11 +1,15 @@
 # ProjectTaxiLivre
 Projeto de App de transporte.
 
-App Cliente
+Modelos de arquitetura e padrões: MVP, Clean Architecture.
+
+Bibliotecas utilizadas:butterknife, dagger, glide, googledirectionlibrary, google.firebase, android.gms.
+
+App Cliente:
 
 ![alt tag](https://firebasestorage.googleapis.com/v0/b/projecttaxilivre-1515301730986.appspot.com/o/urlsgithub%2FTaxiLivre1r.png?alt=media&token=cdeef17b-b388-40f5-a256-956f20c140c5 "Map")      ![alt tag](https://firebasestorage.googleapis.com/v0/b/projecttaxilivre-1515301730986.appspot.com/o/urlsgithub%2Ftaxilivre%2Ftaxilivresolicitar.png?alt=media&token=36e58334-beb4-4fd5-920b-0083d8ff19ec "solicitar")   ![alt tag](https://firebasestorage.googleapis.com/v0/b/projecttaxilivre-1515301730986.appspot.com/o/urlsgithub%2Ftaxilivre%2FProjectTaxiLivreTravelRequestresized.jpg?alt=media&token=6123608f-0960-4487-844c-f684cd58f485 "travelrequested")
 
-App Motorista
+App Motorista:
 
 ![alt tag](https://firebasestorage.googleapis.com/v0/b/projecttaxilivre-1515301730986.appspot.com/o/urlsgithub%2Ftaxilivre%2Ftaxilivredriverhome.png?alt=media&token=02da8604-9a32-4f99-9a6e-c5abbb3283fb "home")
 
