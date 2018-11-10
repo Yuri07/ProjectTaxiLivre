@@ -3,7 +3,7 @@ Projeto de App de transporte.
 
 Modelos de arquitetura e padrões: MVP, Clean Architecture.
 
-Bibliotecas utilizadas:butterknife, dagger, glide, googledirectionlibrary, google.firebase, android.gms.
+Bibliotecas utilizadas:butterknife, dagger, glide, googledirectionlibrary, firebase-database, firebase-auth, firebase-storage, firebase-messaging, android.gms.
 
 App Cliente:
 
