@@ -1,6 +1,9 @@
 package com.rsm.yuri.projecttaxilivredriver.main.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,10 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -40,7 +45,9 @@ import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivredriver.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivredriver.main.MainPresenter;
+import com.rsm.yuri.projecttaxilivredriver.main.broadcast.LocalBroadcastMainActivity;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainComponent;
+import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
 import com.rsm.yuri.projecttaxilivredriver.money.ui.MoneyFragment;
 import com.rsm.yuri.projecttaxilivredriver.profile.ui.ProfileFragment;
 
@@ -62,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     NavigationView navigationView;
     @BindView(R.id.switch_main)
     Switch switchMain;
+    @BindView(R.id.mainAppBarLayout)
+    AppBarLayout appBarLayout;
     @BindView(R.id.main_toolbar)
     Toolbar toolbar;
     @BindView(R.id.custom_toolbar_title)
@@ -91,8 +100,21 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     public final static String ONLINE = "ONLINE";
     public final static String OFFLINE = "OFFLINE";
+    public final static String IN_TRAVEL = "Em Viagem";
+
+    public static final String FILTRO_KEY = "MainActivity_KEY";
+    public static final String MENSAGEM_KEY = "MainActivity_MENSAGEM_KEY";
+
+    private LocalBroadcastMainActivity broadcast;
+
+    private BroadcastReceiver mBroadcastReceiver;
 
     private static final String NOTIFICATION_MSG_KEY = "notificationMsg";
+    public static final String DATA_REQUEST_TRAVEL_MSG_KEY = "dataRequestTravelMsg";
+    public static final String DATA_REQUEST_TRAVEL_MSG= "true";
+
+    public static final String RECEIVER_INTENT = "RECEIVER_INTENT";
+    //public static final String RECEIVER_MESSAGE = "RECEIVER_MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +141,30 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         navigationView.setNavigationItemSelectedListener(this);
 
         setupInjection();
+
+        /* INTENT FILTER */
+        /*broadcast = new LocalBroadcastMainActivity(this);
+        IntentFilter intentFilter = new IntentFilter( FILTRO_KEY );
+        LocalBroadcastManager.getInstance(this).registerReceiver( broadcast, intentFilter );*/
+
+
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String dataRequestTravelMsg = intent.getStringExtra(DATA_REQUEST_TRAVEL_MSG_KEY);
+                if(dataRequestTravelMsg!=null) {
+                    //Log.d("d", "MainActivity dataRequestTravelFirebaseCloudMsg: " + dataRequestTravelMsg);
+                    if (dataRequestTravelMsg.equals(DATA_REQUEST_TRAVEL_MSG)) {
+                        Bundle extras = intent.getExtras();
+
+                        getIntent().removeExtra(DATA_REQUEST_TRAVEL_MSG_KEY);
+
+                        listener.onTravelRequest(extras);
+                    }
+                }
+            }
+        };
+
 
         if (fragments[FRAGMENT_HOME_IN_ARRAY] instanceof OnSwitchButtonClickedListener) {
             listener = (OnSwitchButtonClickedListener) fragments[FRAGMENT_HOME_IN_ARRAY];
@@ -279,6 +325,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     public interface OnSwitchButtonClickedListener {
         public void onSwitchButtonClicked(boolean switchStatus);
+
+        public void onTravelRequest(Bundle dataTravelRequester);
     }
 
 
@@ -329,10 +377,12 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     protected void onResume() {
         super.onResume();
         Intent intent = getIntent();
-        //boolean notificationMsg = intent.getBooleanExtra(NOTIFICATION_MSG_KEY, false);
+
         String notificationMsg = intent.getStringExtra(NOTIFICATION_MSG_KEY);
+        Log.d("d", "MainActiity NotificationFirebaseCloudMsg: " + notificationMsg);
+
         if(notificationMsg!=null){
-            Log.d("d", "NotificationMsg: " + notificationMsg);
+            //Log.d("d", "MainActiity NotificationFirebaseCloudMsg: " + notificationMsg);
             if(notificationMsg.equals("true")) {
                 String emailSender = intent.getStringExtra(EMAIL_KEY);
                 Log.d("d", "emailSender: " + emailSender);
@@ -349,16 +399,47 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
                 startActivity(i);
             }
-        }else {
+
+        }//else {
+
+            /*String dataRequestTravelMsg = intent.getStringExtra(DATA_REQUEST_TRAVEL_MSG_KEY);
+            Log.d("d", "MainActivity dataRequestTravelFirebaseCloudMsg: " + dataRequestTravelMsg);
+
+            if(dataRequestTravelMsg!=null) {
+                //Log.d("d", "MainActivity dataRequestTravelFirebaseCloudMsg: " + dataRequestTravelMsg);
+                if (dataRequestTravelMsg.equals("true")) {
+                    Bundle extras = intent.getExtras();
+
+                    getIntent().removeExtra(DATA_REQUEST_TRAVEL_MSG_KEY);
+
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.content_frame, fragments[FRAGMENT_HOME_IN_ARRAY])
+                            .commit();
+                    if(fragments[FRAGMENT_HOME_IN_ARRAY].isAdded()) {
+                        listener.onTravelRequest(extras);
+                        Log.d("d", "MainActivity fragments[FRAGMENT_HOME_IN_ARRAY]  is Added");
+                    }else{
+                        Log.d("d", "MainActivity fragments[FRAGMENT_HOME_IN_ARRAY]  is not Added");
+                    }
+
+                }
+
+            }*/
+
             long status = sharedPreferences.getLong(TaxiLivreDriverApp.STATUS_KEY, 0);
             if (status == Driver.OFFLINE) {
                 sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
                 presenter.changeToOnlineStatus();
             }
-        }
+
+        //}
 
         verifyToken();
 
+
+    }
+
+    public void callHomeFragmentOnTravelRequest(Bundle extras){
 
     }
 
@@ -372,6 +453,10 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         super.onPause();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
     @OnClick(R.id.switch_main)
     public void onViewClicked(View view) {
@@ -391,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
                     sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.WAITING_TRAVEL).apply();
                     presenter.startWaitingTravel();
                     listener.onSwitchButtonClicked(true);
+                    //onStop();
                 }else{
                     //getSupportActionBar().setTitle("OFFLINE");
                     //toolbar.setTitle(OFFLINE);
@@ -409,11 +495,59 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         }
     }
 
+    public void msgTravelAcceptedFromHomeFragment(){
+        Log.d("d", "MainActivity - msgTravelAcceptedFromHomeFragment");
+        switchMain.setChecked(false);
+        //customToolbaTitle.setText(IN_TRAVEL);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Drawable color = new ColorDrawable(Color.parseColor("#009688"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
+            getSupportActionBar().setBackgroundDrawable(color);
+            changeStatusBarColor(false);
+        }
+
+        bottomNavigation.setVisibility(View.GONE);
+        appBarLayout.setVisibility(View.GONE);
+
+        sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.IN_TRAVEL).apply();
+
+        presenter.startInTravelStatus();
+
+        listener.onSwitchButtonClicked(false);
+
+
+
+
+    }
+
+    public void logMensagem(String mensagem ){
+
+    }
+
     @Override
     protected void onDestroy() {
         //sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.OFFLINE).apply();
         //presenter.changeToOfflineStatus();
+        presenter.onDestroy();
+        /*LocalBroadcastManager
+                .getInstance(this)
+                .unregisterReceiver( broadcast );*/
+
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
+                new IntentFilter(RECEIVER_INTENT)
+        );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

@@ -17,7 +17,6 @@ public class ChatMessage {
     private boolean read;
 
 
-
     public ChatMessage(){}
 
     public ChatMessage(String sender, String msg, boolean read){

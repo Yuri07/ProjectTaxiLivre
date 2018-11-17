@@ -55,6 +55,11 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
+    public void startInTravelStatus(){
+        mainInteractor.changeWaitingTravelStatus(Driver.IN_TRAVEL);
+    }
+
+    @Override
     public void onDestroy() {
         mainView = null;
         eventBus.unregister(this);

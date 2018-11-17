@@ -16,6 +16,7 @@ public interface MainPresenter {
 
     void startWaitingTravel();
     void stopWaitingTravel();
+    void startInTravelStatus();
 
     void logout();
     void checkForSession();

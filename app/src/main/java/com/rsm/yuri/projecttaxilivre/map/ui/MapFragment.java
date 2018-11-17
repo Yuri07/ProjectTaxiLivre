@@ -2,9 +2,12 @@ package com.rsm.yuri.projecttaxilivre.map.ui;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -56,11 +59,17 @@ import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
 import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
+import com.rsm.yuri.projecttaxilivre.travelslist.entities.Travel;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -79,10 +88,12 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
         , InfoWindowFragment.OnChildFragmentInteractionListener {
 
-    @BindView(R.id.container)
+    @BindView(R.id.container_map)
     FrameLayout container;
     @BindView(R.id.frameLayoutConfirmar)
     FrameLayout frameLayoutConfirmar;
+    @BindView(R.id.editTxt_valor_map)
+    TextView editTxtValorMap;
     @BindView(R.id.button_confirmar)
     Button buttonConfirmar;
 
@@ -92,16 +103,21 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     MapPresenter mapPresenter;
     @Inject
     ImageLoader imageLoader;
+    @Inject
+    SharedPreferences sharedPreferences;
 
 
     private MapInfoWindowFragment mapInfoWindowFragment;
     private GoogleMap map;
     private HashMap<Marker, NearDriver> markers;
 
+    private Geocoder geocoder;
+
     private Marker markerClicked;
     private InfoWindow.MarkerSpecification markerSpecClicked;
     private InfoWindowFragment infoWindowFragmentClicked;
-    private NearDriver requestDriver;
+    private NearDriver requestedDriver;
+    private TravelRequest travelRequest;
 
     private PolylineOptions polylineOptions = null;
 
@@ -211,6 +227,17 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     }
 
     @Override
+    public void onTravelAckReceived(String travelAck) {
+        mapPresenter.unsubscribeForResponseOfDriverRequested();
+        if(travelAck.equals("rejected")){
+
+        }else{
+            //Travel travel = mapPresenter.getTravel(requestedDriver.getEmail(), travelAck);
+            //mapPresenter.confirmTravel(travel);
+        }
+    }
+
+    @Override
     public void onPause() {
         //mapPresenter.onPause();
         super.onPause();
@@ -250,9 +277,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-                requestDriver = markers.get(marker);
+                requestedDriver = markers.get(marker);
                 markerClicked = marker;
-                LatLng position = new LatLng(requestDriver.getLatitude() + 0.007, requestDriver.getLongitude());
+                LatLng position = new LatLng(requestedDriver.getLatitude() + 0.007, requestedDriver.getLongitude());
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
                 //marker.showInfoWindow();
@@ -275,7 +302,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                 }
 
                 mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
-                infoWindowFragment.render(requestDriver);
+                infoWindowFragment.render(requestedDriver);
                 return true;
             }
         });
@@ -311,6 +338,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                             // Logic to handle location object
                             Log.d("Fragment", "onSuccess");
                             lastLocation = location;
+
 
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
@@ -362,6 +390,42 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             markerSpecClicked = null;
             infoWindowFragmentClicked = null;
             mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+
+            travelRequest = new TravelRequest();
+            travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
+            travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
+
+
+
+            List<Address> addresses;
+            geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+            travelRequest.setPlaceOriginAddress(destinyPlace.getAddress().toString());
+            travelRequest.setPlaceDestinoAddress("default");
+            try {
+                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                /*String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
+
+                travelRequest.setPlaceDestinoAddress(address);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            travelRequest.setLatOrigem(lastLocation.getLatitude());
+            travelRequest.setLongOrigem(lastLocation.getLongitude());
+            travelRequest.setLatDestino(destinyPlace.getLatLng().latitude);
+            travelRequest.setLongDestino(destinyPlace.getLatLng().longitude);
+
+            Date currentTime = Calendar.getInstance().getTime();
+            Log.d("d", "MapFragment - travelDate: " + currentTime.toString());
+            travelRequest.setTravelDate(currentTime.toString());
+
             String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
             GoogleDirection.withServerKey(myApiKey)
                     .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
@@ -377,8 +441,14 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
                                 Info distanceInfo = leg.getDistance();
                                 Info durationInfo = leg.getDuration();
-                                String distance = distanceInfo.getText();
-                                String duration = durationInfo.getText();
+                                String distanceReadable = distanceInfo.getText();
+                                String durationReadable = durationInfo.getText();
+
+                                int distance = Integer.parseInt(distanceInfo.getValue());
+                                Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
+                                double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+                                travelRequest.setTravelPrice(travelPrice);
+                                Log.d("d", "MapFragment - travelPrice: " + travelPrice);
 
                                 polylineOptions = DirectionConverter.createPolyline(
                                         getContext(), directionPositionList, 5, Color.BLUE);
@@ -387,6 +457,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
                                 zoomRoute(map, directionPositionList);
 
+                                editTxtValorMap.setText(String.format( "%.2f", travelRequest.getTravelPrice())+"R$");
                                 frameLayoutConfirmar.setVisibility(View.VISIBLE);
 
                             } else {
@@ -406,7 +477,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         Toast.makeText(getContext(), "Botao confirmar clicado!", Toast.LENGTH_SHORT).show();
         frameLayoutConfirmar.setVisibility(View.GONE);
         //moveCameraToLastKnowLocation();
-        mapPresenter.carRequest(requestDriver.getEmail(), );
+        mapPresenter.carRequest(requestedDriver, travelRequest);
+        mapPresenter.subscribeForResponseOfDriverRequested();
     }
 
     public void zoomRoute(GoogleMap googleMap, List<LatLng> lstLatLngRoute) {

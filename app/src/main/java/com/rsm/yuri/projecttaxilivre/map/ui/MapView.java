@@ -14,4 +14,5 @@ public interface MapView {
     void onDriverRemoved(NearDriver neardriver);
     void onDriverError(String error);
 
+    void onTravelAckReceived(String travelAck);
 }

@@ -10,12 +10,14 @@ import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 public class MapEvent {
 
     private NearDriver nearDriver;
+    private String travelAck;
     private int eventType;
     private String error;
 
     public final static int onDriverAdded = 0;
     public final static int onDriverMoved = 2;
     public final static int onDriverRemoved = 3;
+    public static int onTravelAckReceived = 4;
 
     public NearDriver getNearDriver() {
         return nearDriver;
@@ -23,6 +25,14 @@ public class MapEvent {
 
     public void setNearDriver(NearDriver nearDriver) {
         this.nearDriver = nearDriver;
+    }
+
+    public String getTravelAck() {
+        return travelAck;
+    }
+
+    public void setTravelAck(String travelAck) {
+        this.travelAck = travelAck;
     }
 
     public int getEventType() {

@@ -6,6 +6,7 @@ import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.events.MapHomeEvent;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeView;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
+import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -39,6 +40,11 @@ public class HomePresenterImpl implements HomePresenter {
     @Override
     public void uploadDriverDataToArea(NearDriver nearDriver) {
         interactor.uploadNearDriverData(nearDriver);
+    }
+
+    @Override
+    public void acceptTravel(Travel travel) {
+        interactor.acceptTravel(travel);
     }
 
     @Override

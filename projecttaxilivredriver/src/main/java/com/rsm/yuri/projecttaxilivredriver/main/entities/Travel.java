@@ -1,10 +1,6 @@
-package com.rsm.yuri.projecttaxilivre.travelslist.entities;
+package com.rsm.yuri.projecttaxilivredriver.main.entities;
 
-/**
- * Created by yuri_ on 29/01/2018.
- */
-
-public class Travel {//olhar o uber do irmão pedro para ver quais os dados sao necessarios aqui.
+public class Travel {
 
     private String travelId;
 

@@ -18,10 +18,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
             resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
         }
 
         debug {
+            buildConfigField 'String', "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
             resValue "string", "GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY", project.property('GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY')
         }
     }
@@ -63,6 +65,8 @@ dependencies {
     implementation "com.github.PhilJay:MPAndroidChart:$rootProject.ext.mpandroidchartVersion"
 
     implementation "me.zhanghai.android.materialratingbar:library:$rootProject.ext.materialratingbarVersion"
+
+    implementation "com.akexorcist:googledirectionlibrary:$rootProject.ext.androidGoogleDirectionAndPlaceLibrary"
 
 }
 apply plugin: 'com.google.gms.google-services'

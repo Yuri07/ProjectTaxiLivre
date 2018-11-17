@@ -20,6 +20,8 @@ import com.google.firebase.storage.UploadTask;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
+import com.rsm.yuri.projecttaxilivre.map.models.Area;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
 
@@ -43,6 +45,10 @@ public class FirebaseAPI {
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
+    private final static String TRAVELS_PATH = "travels";
+    private final static String TRAVELS_BY_DRIVERS_PATH = "bydriverskey";
+    private final static String TRAVELS_BY_USERS_PATH = "byuserskey";
+    private final static String TRAVEL_ACK_PATH = "travelAck";
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
     private final static String LATITUDE_PATH = "latitude";
@@ -69,6 +75,7 @@ public class FirebaseAPI {
     private ChildEventListener chatEventListener;
 
     private ValueEventListener statusReceiverChatEventListener;
+    private ValueEventListener responseOfDriverRequestedEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
@@ -99,9 +106,11 @@ public class FirebaseAPI {
     }
 
     public void updateMyLocation(LatLng location, FirebaseActionListenerCallback listenerCallback) {
-
-        getMyUserReference().child(LATITUDE_PATH).setValue(location.latitude);
-        getMyUserReference().child(LONGITUDE_PATH).setValue(location.longitude);
+        DatabaseReference myUserReference = getMyUserReference();
+        if(myUserReference!=null) {
+            myUserReference.child(LATITUDE_PATH).setValue(location.latitude);
+            myUserReference.child(LONGITUDE_PATH).setValue(location.longitude);
+        }
 
     }
 
@@ -254,8 +263,35 @@ public class FirebaseAPI {
         }
     }
 
+    public void subscribeForResponseOfDriverRequested(final FirebaseEventListenerCallback listener) {
+        if(responseOfDriverRequestedEventListener==null) {
+            responseOfDriverRequestedEventListener= new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            //Log.d("d", "getStatusReceiverChatReference(receiver): " + getStatusReceiverChatReference(receiver));
+            getResponseOfDriverRequestedReference().addValueEventListener(responseOfDriverRequestedEventListener);
+
+        }
+    }
+
     public void unSubscribeForStatusReceiverUpdate(String receiver) {
         getStatusReceiverChatReference(receiver).removeEventListener(statusReceiverChatEventListener);
+        statusReceiverChatEventListener=null;
+    }
+
+    public void unSubscribeForResponseOfDriverRequested() {
+        getResponseOfDriverRequestedReference().removeEventListener(responseOfDriverRequestedEventListener);
+        responseOfDriverRequestedEventListener=null;
     }
 
     public void setMessageChatRead(String receiver, String msgId) {
@@ -282,6 +318,25 @@ public class FirebaseAPI {
                 }
             }
         });
+    }
+
+    public void setTravelRequest(TravelRequest travelRequest, String requestedDriverEmail, Area areaRequestedDriver){
+
+        Map<String, Object> updates = new HashMap<String, Object>();
+        updates.put("requesterEmail", travelRequest.getRequesterEmail());
+        updates.put("requesterName", travelRequest.getRequesterName());
+        updates.put("placeOriginAddress", travelRequest.getPlaceOriginAddress());
+        updates.put("placeDestinoAddress", travelRequest.getPlaceDestinoAddress());
+        updates.put("latOrigem", travelRequest.getLatOrigem());
+        updates.put("longOrigem", travelRequest.getLongOrigem());
+        updates.put("latDestino", travelRequest.getLatDestino());
+        updates.put("longDestino", travelRequest.getLongDestino());
+        updates.put("travelDate", travelRequest.getTravelDate());
+        updates.put("travelPrice", travelRequest.getTravelPrice());
+
+        getAreaDataReference(areaRequestedDriver.getId()).
+                child(requestedDriverEmail.replace(".","_")).updateChildren(updates);
+
     }
 
     public void getUrlPhotoDriver(String email, final FirebaseEventListenerCallback listenerCallback) {
@@ -317,7 +372,7 @@ public class FirebaseAPI {
 
     }
 
-    public void checkForSession(FirebaseActionListenerCallback listener) {
+        public void checkForSession(FirebaseActionListenerCallback listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             listener.onSuccess();
@@ -392,9 +447,25 @@ public class FirebaseAPI {
         return databaseReference.getRoot().child(CHATS_PATH).child(keyChat);
     }
 
+    public DatabaseReference getTravelsReference(String driverEmail){
+        String keyUserEmail = getAuthUserEmail().replace(".","_");
+        String keyDriverEmail = driverEmail.replace(".","_");
+
+        String keyTravel = keyDriverEmail + SEPARATOR + keyUserEmail;
+        /*if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
+            keyChat = keyReceiver + SEPARATOR + keySender;//sempre o primeiro em ordem alfabetica vem primeiro
+        }*/
+        return databaseReference.getRoot().child(TRAVELS_PATH).child(keyTravel);
+    }
+
     public DatabaseReference getStatusReceiverChatReference(String receiver){
         String keyReceiver = receiver.replace(".","_");
         return databaseReference.getRoot().child(DRIVER_PATH).child(keyReceiver).child(STATUS_PATH);
+    }
+
+    public DatabaseReference getResponseOfDriverRequestedReference(){
+        String myKeyUser = getAuthUserEmail().replace(".","_");
+        return databaseReference.getRoot().child(USERS_PATH).child(myKeyUser).child(TRAVEL_ACK_PATH);
     }
 
     public void changeUserConnectionStatus(long status) {

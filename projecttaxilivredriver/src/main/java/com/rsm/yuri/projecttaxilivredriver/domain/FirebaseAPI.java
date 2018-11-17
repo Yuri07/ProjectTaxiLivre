@@ -20,6 +20,7 @@ import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.models.GroupAreas;
+import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,10 @@ public class FirebaseAPI {
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
+    private final static String TRAVELS_PATH = "travels";
+    private final static String TRAVELS_BY_DRIVERS_PATH = "bydriverskey";
+    private final static String TRAVELS_BY_USERS_PATH = "byuserskey";
+    private final static String TRAVEL_ACK_PATH = "travelAck";
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
     private final static String LATITUDE_PATH = "latitude";
@@ -215,6 +220,30 @@ public class FirebaseAPI {
                 }
             }
         });
+    }
+
+    public void acceptTravel(Travel travel, String idArea){
+        getAreaDataReference(idArea).child(travel.getDriverEmail().replace(".","_")).removeValue();
+
+        String newTravelId = createTravelId();
+
+        travel.setTravelId(newTravelId);
+
+        //getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).child(newTravelId).setValue(travel);
+
+        getTravelsReference(travel.getRequesterEmail()).child(newTravelId).setValue(travel);
+
+        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH).setValue(newTravelId);
+
+    }
+
+    public String createTravelId() {
+        return getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).push().getKey();
+
+    }
+
+    public DatabaseReference  getTravelByDriverKeyReference(String emailDriverKey){
+        return databaseReference.getRoot().child(TRAVELS_PATH).child(TRAVELS_BY_DRIVERS_PATH).child(emailDriverKey);
     }
 
     public void updateMyLocation(final LatLng location, final String idArea, final FirebaseActionListenerCallback listenerCallback){
@@ -490,11 +519,23 @@ public class FirebaseAPI {
         String keySender = getAuthUserEmail().replace(".","_");
         String keyReceiver = receiver.replace(".","_");
 
-        String keyChat = keySender + SEPARATOR + keyReceiver;
+        String keyChat = keySender + SEPARATOR + keyReceiver;//essa linha é invertida no app do usuario
+
         /*if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
             keyChat = keyReceiver + SEPARATOR + keySender;//sempre o primeiro em ordem alfabetica vem primeiro
         }*/
         return databaseReference.getRoot().child(CHATS_PATH).child(keyChat);
+    }
+
+    public DatabaseReference getTravelsReference(String userEmail){
+        String keyDriverEmail = getAuthUserEmail().replace(".","_");
+        String keyUserEmail = userEmail.replace(".","_");
+
+        String keyTravel = keyDriverEmail + SEPARATOR + keyUserEmail;
+        /*if (keySender.compareTo(keyReceiver) > 0) {//Esse método retorna um numero inteiro. Se ele for menor do que zero, o primeiro argumento é "menor" (alfabeticamente, nesse caso) que o segundo; maior que zero se o primeiro for "maior" que o segundo, e igual a zero se eles forem iguais. Esse método diferencia maiúsculas de minúsuclas. Se não quiser isso, use o compareToIgnoreCase
+            keyChat = keyReceiver + SEPARATOR + keySender;//sempre o primeiro em ordem alfabetica vem primeiro
+        }*/
+        return databaseReference.getRoot().child(TRAVELS_PATH).child(keyTravel);
     }
 
     public DatabaseReference getStatusReceiverChatReference(String receiver){

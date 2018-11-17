@@ -10,7 +10,9 @@ import com.rsm.yuri.projecttaxilivre.domain.FirebaseActionListenerCallback;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseEventListenerCallback;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
 import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
+import com.rsm.yuri.projecttaxilivre.map.models.Area;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
 
@@ -94,23 +96,74 @@ public class MapRepositoryImpl implements MapRepository {
     }
 
     @Override
-    public void requestDriver(NearDriver requestDriver) {
-        firebase.
+    public void requestDriver(NearDriver requestedDriver, TravelRequest travelRequest){
+        GroupAreas groupAreasRequestedDriver = areasHelper.getGroupAreas(requestedDriver.getLatitude(), requestedDriver.getLongitude());
+        Area areaRequestedDriver = groupAreasRequestedDriver.getMainArea();
+        firebase.setTravelRequest(travelRequest, requestedDriver.getEmail(), areaRequestedDriver);
+    }
+
+    @Override
+    public void subscribeForResponseOfDriverRequested() {
+        firebase.subscribeForResponseOfDriverRequested( new FirebaseEventListenerCallback(){
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot) {
+                /*long status = (long) dataSnapshot.getValue();
+                Log.d("d", "subscribeForStatusReceiverUpdates onchildAdded status((long) dataSnapshot.getValue()) = " + status);
+
+                post(ChatEvent.READ_STATUS_RECEIVER_EVENT, status);*/
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot) {
+                String travelAck = (String) dataSnapshot.getValue();
+                //Log.d("d", "subscribeForStatusReceiverUpdates onchildChanged status((long) dataSnapshot.getValue()) = " + status);
+
+                //if(travelAck!=null)
+                    post(MapEvent.onTravelAckReceived, travelAck);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                post(error.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void unsubscribeForResponseOfDriverRequested() {
+        firebase.unSubscribeForResponseOfDriverRequested();
     }
 
     private void post(int type, NearDriver nearDriver){
-        post(type, nearDriver, null);
+        post(type, nearDriver, null, null);
+    }
+
+    private void post(int type, String travelAck){
+        post(type, null, travelAck, null);
     }
 
     private void post(String error){
-        post(0, null, error);
+        post(0, null, null,error);
     }
 
-    private void post(int type, NearDriver nearDriver, String error){
+    private void post(int type, NearDriver nearDriver, String travelAck, String error){
         MapEvent event = new MapEvent();
         event.setEventType(type);
-        event.setError(error);
         event.setNearDriver(nearDriver);
+        event.setTravelAck(travelAck);
+        event.setError(error);
+
         eventBus.post(event);
     }
 

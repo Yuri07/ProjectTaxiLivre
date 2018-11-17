@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
+    android:id="@+id/container_map"
     tools:context=".main.ui.MainActivity">
     <!--tools:showIn="@layout/app_bar_main">-->
 
@@ -53,7 +53,6 @@
                 android:layout_gravity="center"
                 android:text="R$25,50"
                 android:textSize="24sp" />
-
 
             <Button
                 android:id="@+id/button_confirmar"

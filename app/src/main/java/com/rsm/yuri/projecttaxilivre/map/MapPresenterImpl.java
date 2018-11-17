@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
 import com.rsm.yuri.projecttaxilivre.map.events.MapEvent;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 
@@ -56,8 +57,18 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void carRequest(NearDriver requestDriver) {
-        mapInteractor.requestDriver(requestDriver);
+    public void carRequest(NearDriver requestDriver, TravelRequest travelRequest){
+        mapInteractor.requestDriver(requestDriver, travelRequest);
+    }
+
+    @Override
+    public void subscribeForResponseOfDriverRequested() {
+        mapInteractor.subscribeForResponseOfDriverRequested();
+    }
+
+    @Override
+    public void unsubscribeForResponseOfDriverRequested() {
+        mapInteractor.unsubscribeForResponseOfDriverRequested();
     }
 
     @Override
@@ -67,17 +78,22 @@ public class MapPresenterImpl implements MapPresenter {
         if (error != null) {
             mapView.onDriverError(error);
         } else {
-            NearDriver nearDriver = event.getNearDriver();
-            switch (event.getEventType()) {
-                case MapEvent.onDriverAdded:
-                    onDriverAdded(nearDriver);
-                    break;
-                case MapEvent.onDriverMoved:
-                    onDriverMoved(nearDriver);
-                    break;
-                case MapEvent.onDriverRemoved:
-                    onDriverRemoved(nearDriver);
-                    break;
+            String travelAck = event.getTravelAck();
+            if(travelAck!=null) {
+                mapView.onTravelAckReceived(travelAck);
+            }else{
+                NearDriver nearDriver = event.getNearDriver();
+                switch (event.getEventType()) {
+                    case MapEvent.onDriverAdded:
+                        onDriverAdded(nearDriver);
+                        break;
+                    case MapEvent.onDriverMoved:
+                        onDriverMoved(nearDriver);
+                        break;
+                    case MapEvent.onDriverRemoved:
+                        onDriverRemoved(nearDriver);
+                        break;
+                }
             }
         }
 
