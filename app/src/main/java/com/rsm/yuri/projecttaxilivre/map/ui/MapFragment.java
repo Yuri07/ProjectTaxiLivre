@@ -17,11 +17,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,15 +54,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivre.BuildConfig;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
+import com.rsm.yuri.projecttaxilivre.main.ui.MainActivity;
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
 import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
+import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.Rating;
 import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
 import com.rsm.yuri.projecttaxilivre.travelslist.entities.Travel;
 
@@ -86,7 +94,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapFragment extends Fragment implements MapView, OnMapReadyCallback, //GoogleMap.InfoWindowAdapter,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
-        , InfoWindowFragment.OnChildFragmentInteractionListener {
+        , InfoWindowFragment.OnChildFragmentInteractionListener, MainActivity.OnTravelStatusChangedListener {
 
     @BindView(R.id.container_map)
     FrameLayout container;
@@ -96,6 +104,28 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     TextView editTxtValorMap;
     @BindView(R.id.button_confirmar)
     Button buttonConfirmar;
+    @BindView(R.id.frameLayoutWaitingForResponse)
+    FrameLayout frameLayoutWaitingForResponse;
+
+    @BindView(R.id.frameLayoutBottom)
+    FrameLayout frameLayoutBottom;
+    @BindView(R.id.map_label_current_street)
+    TextView textViewCurrentStreet;
+    @BindView(R.id.map_bottom_frame_chat_img_view)
+    CircleImageView buttonChat;
+    @BindView(R.id.map_bottom_frame_linearlayout_status_travel)
+    LinearLayout linearLayoutStatus;
+    @BindView(R.id.map_label_status_travel)
+    TextView textViewStatusTravel;
+
+    @BindView(R.id.mapFrameLayoutAvaliation)
+    FrameLayout frameLayoutAvalition;
+    @BindView(R.id.map_avaliation_rating_bar)
+    RatingBar ratingTravelBar;
+    @BindView(R.id.map_avaliation_edit_text_comment)
+    EditText editTextComment;
+    @BindView(R.id.map_avaliation_label_ok)
+    TextView textViewOk;
 
     Unbinder unbinder;
 
@@ -106,23 +136,28 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Inject
     SharedPreferences sharedPreferences;
 
-
     private MapInfoWindowFragment mapInfoWindowFragment;
     private GoogleMap map;
     private HashMap<Marker, NearDriver> markers;
+    private HashMap<Marker, Driver> myDriverMarkerHasMap;
+
+    private Polyline polyline;
 
     private Geocoder geocoder;
 
     private Marker markerClicked;
+    private Marker myDriverMarker;
     private InfoWindow.MarkerSpecification markerSpecClicked;
     private InfoWindowFragment infoWindowFragmentClicked;
     private NearDriver requestedDriver;
     private TravelRequest travelRequest;
+    private String currentTravelID;
 
     private PolylineOptions polylineOptions = null;
 
     private List<NearDriver> nearDriversList;
     private Location lastLocation;
+    private Driver myDriver;
     private FusedLocationProviderClient mFusedLocationClient;
 
     private TaxiLivreApp app;
@@ -142,6 +177,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
         markers = new HashMap<Marker, NearDriver>();
         nearDriversList = new ArrayList<>();
+
+        myDriverMarkerHasMap = new HashMap<Marker, Driver>();
 
         mapPresenter.onCreate();
         //mapPresenter.subscribe();
@@ -217,6 +254,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         for (NearDriver nearDriverIteractor : nearDriversList) {
             if (nearDriverIteractor.getEmail().equals(nearDriver.getEmail())) {
                 nearDriversList.remove(nearDriverIteractor);
+                break;
             }
         }
     }
@@ -226,15 +264,190 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         Snackbar.make(container, error, Snackbar.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onTravelAckReceived(String travelAck) {
-        mapPresenter.unsubscribeForResponseOfDriverRequested();
-        if(travelAck.equals("rejected")){
+    public void addMyDriverToMapScreen(LatLng locatinOfMyDriver){
+        //this.myDriver = myDriver;
 
-        }else{
-            //Travel travel = mapPresenter.getTravel(requestedDriver.getEmail(), travelAck);
-            //mapPresenter.confirmTravel(travel);
+        //LatLng location = new LatLng(locatinOfMyDriver.latitude, locatinOfMyDriver.longitude);
+        myDriverMarker = map.addMarker(new MarkerOptions()
+                .position(locatinOfMyDriver)
+                .title(requestedDriver.getEmail())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_black_24dp)));
+
+        Log.d("d", "MapFragment - addMyDriverToMapScreen()");
+
+        //myDriverMarkerHasMap.put(marker, myDriver);
+
+    }
+
+    public void removeMyDriverFromMapScreen(){
+        if(myDriverMarker!=null)
+            myDriverMarker.remove();
+        Log.d("d", "MapFragment - removeMyDriverFromMapScreen()");
+        //Map.Entry<Marker, Driver> entry = (Map.Entry<Marker, Driver>) myDriverMarkerHasMap.entrySet();
+        //myDriverMarkerHasMap.remove(entry.getKey());
+        //myDriver = null;
+    }
+
+    public void removeNearDriversFromMapScreen(){
+        Log.d("d", "MapFragment - removeNearDriversFromMapScreen() ");
+        for (Map.Entry<Marker, NearDriver> entry : markers.entrySet()) {
+            Log.d("d", "MapFragment - removeNearDriversFromMapScreen() - entrou no for");
+            Marker currentMarker = entry.getKey();
+            currentMarker.remove();
+            //markers.remove(currentMarker);//lanca concurrentmodificaitonexception pq se trata de
+            // uma Fail Fast Iterator(https://www.geeksforgeeks.org/fail-fast-fail-safe-iterators-java/)
         }
+        markers.clear();
+        nearDriversList.clear();
+        /*for (NearDriver nearDriverIteractor : nearDriversList) {
+            nearDriversList.remove(nearDriverIteractor);
+        }*/
+
+    }
+
+    @OnClick(R.id.button_confirmar)
+    public void onViewClicked() {
+        Toast.makeText(getContext(), "Botao confirmar clicado!", Toast.LENGTH_SHORT).show();
+        frameLayoutConfirmar.setVisibility(View.GONE);
+        //moveCameraToLastKnowLocation();
+        mapPresenter.carRequest(requestedDriver, travelRequest);
+        mapPresenter.unsubscribe();
+        mapPresenter.subscribeForResponseOfDriverRequested();
+
+        frameLayoutWaitingForResponse.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onTravelAckReceived(String travelID) {
+
+        Log.d("d", "MapFragment - onTravelAckReceived() - travelID = " + travelID);
+
+        frameLayoutWaitingForResponse.setVisibility(View.GONE);
+
+        currentTravelID = travelID;
+
+        mapPresenter.unsubscribeForResponseOfDriverRequested();
+        //mapPresenter.deleteAckTravelRequest();
+
+        removeNearDriversFromMapScreen();
+        //Log.d("d", "MapFragment - onTravelAckReceived() - removeu os nearDrivers ");
+
+        if(polyline!=null)
+            polyline.remove();
+
+        if(!travelID.equals("travelNotAcceptedAck")){
+            setupScreenInTravel();
+            Log.d("d", "MapFragment - onTravelAckReceived() - travelID nao e igual a travelNotAcceptedAck ");
+
+            if(travelID.equals("rejected")){
+                Log.d("d", "MapFragment - onTravelAckReceived() - travelID == rejected: ");
+            }else{
+                Log.d("d", "MapFragment - onTravelAckReceived() - travelID != rejected: " + travelID);
+                mapPresenter.subscribeForMyDriverLocationUpdate(requestedDriver.getEmail(),currentTravelID);
+
+            }
+        }else{
+            Log.d("d", "MapFragment - onTravelAckReceived() - travelID e igual a travelNotAcceptedAck ");
+            Toast.makeText(getContext(), "Motorista não respondeu requisição.",Toast.LENGTH_SHORT).show();
+
+            subscribeForNearDriversUpdate();
+
+        }
+
+    }
+
+    @Override
+    public void onTravelInitiate() {
+        Log.d("d", "MapFragment - onTravelInitiate");
+
+        setupInitiateTravelBottomLayout();
+
+    }
+
+    @Override
+    public void onTravelTerminate() {
+
+        Log.d("d", "MapFragment - onTravelTerminate");
+
+        mapPresenter.unsubscribeForMyDriverLocationUpdate(requestedDriver.getEmail(), currentTravelID);
+
+        setupOnTravelTerminateBottomLayout();
+
+        frameLayoutAvalition.setVisibility(View.VISIBLE);
+
+
+    }
+
+    @OnClick(R.id.map_avaliation_label_ok)
+    public void onOkEvaluationTextViewClicked(){
+
+        Rating rating = setupRatingFromAvaliationFrameLayout();
+
+        mapPresenter.uploadMyRating(requestedDriver.getEmail(), rating);
+
+        frameLayoutAvalition.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void onMyDriverMoved(LatLng locatinoOfMyDriver) {
+        Log.d("d", "MapFragment - onMyDriverMoved() ");
+        removeMyDriverFromMapScreen();
+        addMyDriverToMapScreen(locatinoOfMyDriver);
+
+        //drawRoute(locatinoOfMyDriver, lastLocation);//maneira correta
+        LatLng locationDriverSimulated = new LatLng(-3.741758, -38.607207);//location do assai:
+
+
+        drawRoute(locationDriverSimulated, lastLocation);//para testar
+
+    }
+
+    private void drawRoute(LatLng myDriverLocation, Location myLastLocation){
+        String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
+        GoogleDirection.withServerKey(myApiKey)
+                .from(myDriverLocation)
+                .to(new LatLng(myLastLocation.getLatitude(), myLastLocation.getLongitude()))
+                .transportMode(TransportMode.DRIVING)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (direction.isOK()) {
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                            Info distanceInfo = leg.getDistance();
+                            Info durationInfo = leg.getDuration();
+                            String distanceReadable = distanceInfo.getText();
+                            String durationReadable = durationInfo.getText();
+
+                            int distance = Integer.parseInt(distanceInfo.getValue());
+                            Log.d("d", "MapFragment - drawRoute() - distanceInfo.getValue(): " + distance);
+                            //double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+                            //travelRequest.setTravelPrice(travelPrice);
+                            //Log.d("d", "MapFragment - travelPrice: " + travelPrice);
+
+                            polylineOptions = DirectionConverter.createPolyline(
+                                    getContext(), directionPositionList, 5, Color.BLUE);
+
+                            if(polyline!=null)
+                                polyline.remove();
+
+                            polyline = map.addPolyline(polylineOptions);
+
+                            zoomRoute(map, directionPositionList);
+
+
+                        } else {
+                            Log.d("d", "MapFragment - drawRoute() - direction.isOK == false");
+                        }
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                    }
+                });
     }
 
     @Override
@@ -270,6 +483,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         map = googleMap;
         setOnMakerClick(map);
         moveCameraToLastKnowLocation();
+
     }
 
     public void setOnMakerClick(final GoogleMap googleMap) {
@@ -342,12 +556,23 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
-                            mapPresenter.subscribe(position);
-                            mapPresenter.updateMyLocation(position);
+
+                            if(app.getConectivityStatus(getActivity())) {
+                                mapPresenter.subscribe(position);
+                                mapPresenter.updateMyLocation(position);
+                            }else{
+                                informUserConnectivityLost();
+                            }
+
                         }
                     }
                 });
         return lastLocation;
+    }
+
+    public void informUserConnectivityLost(){
+        Toast.makeText(getContext(), "Não foi possível se conectar a rede TaxiLivre",Toast.LENGTH_SHORT).show();
+        Log.d( "d", "Não foi possível se conectar a rede TaxiLivre" );
     }
 
     @Override
@@ -394,8 +619,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             travelRequest = new TravelRequest();
             travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
             travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
-
-
+            travelRequest.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
+            travelRequest.setAverageRatingsPassenger(sharedPreferences.getFloat(TaxiLivreApp.AVERAGE_RATINGS_PASSENGER_KEY, 1.0f));
 
             List<Address> addresses;
             geocoder = new Geocoder(getContext(), Locale.getDefault());
@@ -447,13 +672,15 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                                 int distance = Integer.parseInt(distanceInfo.getValue());
                                 Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
                                 double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+
                                 travelRequest.setTravelPrice(travelPrice);
+
                                 Log.d("d", "MapFragment - travelPrice: " + travelPrice);
 
                                 polylineOptions = DirectionConverter.createPolyline(
                                         getContext(), directionPositionList, 5, Color.BLUE);
 
-                                map.addPolyline(polylineOptions);
+                                polyline = map.addPolyline(polylineOptions);
 
                                 zoomRoute(map, directionPositionList);
 
@@ -472,14 +699,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         }
     }
 
-    @OnClick(R.id.button_confirmar)
-    public void onViewClicked() {
-        Toast.makeText(getContext(), "Botao confirmar clicado!", Toast.LENGTH_SHORT).show();
-        frameLayoutConfirmar.setVisibility(View.GONE);
-        //moveCameraToLastKnowLocation();
-        mapPresenter.carRequest(requestedDriver, travelRequest);
-        mapPresenter.subscribeForResponseOfDriverRequested();
-    }
+
 
     public void zoomRoute(GoogleMap googleMap, List<LatLng> lstLatLngRoute) {
 
@@ -626,6 +846,42 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         txtAverage.setText(df.format(nearDriver.getAverageRatings()) + "");
     }
 
+    private void subscribeForNearDriversUpdate(){
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            int permissionLocation = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+            }
+            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
+            }
+
+        }
+        //map.setMyLocationEnabled(true);
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            Log.d("Fragment", "onSuccess");
+                            lastLocation = location;
+                            Log.d("d", "MapFragment - subscribeForNearDriversUpdate ");
+
+                            LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                            mapPresenter.subscribe(position);
+                            mapPresenter.updateMyLocation(position);
+                        }
+                    }
+                });
+    }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         checkLocationPermission();
@@ -645,6 +901,45 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    private void setupScreenInTravel(){
+        frameLayoutWaitingForResponse.setVisibility(View.GONE);
+        frameLayoutBottom.setVisibility(View.VISIBLE);
+    }
+
+    private void setupInitiateTravelBottomLayout(){
+        buttonChat.setVisibility(View.GONE);
+        linearLayoutStatus.setGravity(Gravity.CENTER);
+        textViewCurrentStreet.setVisibility(View.VISIBLE);
+        textViewStatusTravel.setText("Em viagem");
+    }
+
+    private void setupOnTravelTerminateBottomLayout(){
+        frameLayoutBottom.setVisibility(View.GONE);
+        linearLayoutStatus.setGravity(Gravity.NO_GRAVITY);
+        buttonChat.setVisibility(View.VISIBLE);
+        textViewCurrentStreet.setVisibility(View.GONE);
+        textViewStatusTravel.setText("Aguardando Motorista");
+
+    }
+
+    private Rating setupRatingFromAvaliationFrameLayout(){
+        String comment = String.valueOf(editTextComment.getText());
+        double numStars = ratingTravelBar.getNumStars();
+        Log.d("d", "MapFragment - onOkEvaluation - numStars: " + numStars);
+
+        Rating rating = new Rating();
+        rating.setEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
+        rating.setNome(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
+        Date currentTime = Calendar.getInstance().getTime();
+        rating.setDate(currentTime.toString());
+        rating.setComment(comment);
+        long numStarsInt = (long) numStars;
+        rating.setVote(numStarsInt);
+        rating.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
+
+        return rating;
     }
 
 

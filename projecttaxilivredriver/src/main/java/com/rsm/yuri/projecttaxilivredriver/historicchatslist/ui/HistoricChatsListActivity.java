@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HistoricChatsListActivity extends AppCompatActivity implements HistoricChatsListView, OnItemClickListener {
+public class HistoricChatsListActivity extends AppCompatActivity implements HistoricChatsListView, OnItemClickListener, ConnectivityListener {
 
     @BindView(R.id.container)
     CoordinatorLayout container;
@@ -33,11 +33,15 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Inject
     HistoricChatsListPresenter presenter;
 
+    private TaxiLivreDriverApp app;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_historic_chats_list);
         ButterKnife.bind(this);
+        app = (TaxiLivreDriverApp) getApplication();
 
         setupInjection();
 
@@ -66,8 +70,8 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     }
 
     private void setupInjection() {
-        TaxiLivreDriverApp app = (TaxiLivreDriverApp) getApplication();
-        app.getHistoricChatsListComponent(this, this, this).inject(this);
+        //TaxiLivreDriverApp app = (TaxiLivreDriverApp) getApplication();
+        app.getHistoricChatsListComponent(this, this, this, this).inject(this);
     }
 
     private void setupRecyclerView() {
@@ -87,6 +91,11 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Override
     public void onItemLongClick(User user) {
         presenter.removeHistoricChat(user.getEmail());
+    }
+
+    @Override
+    public boolean getConnectivityStatus() {
+        return app.getConectivityStatus(this);
     }
 
     @Override

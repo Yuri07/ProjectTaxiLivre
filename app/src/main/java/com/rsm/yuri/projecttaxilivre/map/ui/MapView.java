@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.map.ui;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
@@ -15,4 +16,6 @@ public interface MapView {
     void onDriverError(String error);
 
     void onTravelAckReceived(String travelAck);
+
+    void onMyDriverMoved(LatLng locationOfMyDriver);
 }

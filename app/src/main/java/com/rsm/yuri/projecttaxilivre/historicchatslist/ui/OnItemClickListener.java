@@ -10,5 +10,5 @@ public interface OnItemClickListener {
 
     void onItemClick(Driver driver);
     void onItemLongClick(Driver driver);
-
+    //boolean getConnectivityStatus();
 }

@@ -27,7 +27,7 @@
         android:layout_marginTop="8dp"
         android:text="Nome"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
+        app:layout_constraintStart_toEndOf="@id/imgAvatar"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="8dp" />
 
@@ -37,40 +37,40 @@
         android:layout_height="16dp"
         android:layout_marginStart="8dp"
         android:src="@drawable/icons8_estrela_preenchida_16"
-        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/imgAvatar"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         android:layout_marginLeft="8dp" />
     <ImageView
         android:id="@+id/star2"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:src="@drawable/icons8_estrela_gray_preenchida_16"
-        app:layout_constraintStart_toEndOf="@+id/star1"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/star1"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         />
     <ImageView
         android:id="@+id/star3"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:src="@drawable/icons8_estrela_gray_preenchida_16"
-        app:layout_constraintStart_toEndOf="@+id/star2"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/star2"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         />
     <ImageView
         android:id="@+id/star4"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:src="@drawable/icons8_estrela_gray_preenchida_16"
-        app:layout_constraintStart_toEndOf="@+id/star3"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/star3"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         />
     <ImageView
         android:id="@+id/star5"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:src="@drawable/icons8_estrela_gray_preenchida_16"
-        app:layout_constraintStart_toEndOf="@+id/star4"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/star4"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         />
 
     <TextView
@@ -79,8 +79,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="07/03/2018"
-        app:layout_constraintStart_toEndOf="@+id/star5"
-        app:layout_constraintTop_toBottomOf="@+id/txtNomeUser"
+        app:layout_constraintStart_toEndOf="@id/star5"
+        app:layout_constraintTop_toBottomOf="@id/txtNomeUser"
         android:layout_marginLeft="8dp" />
 
     <TextView
@@ -94,7 +94,7 @@
         android:text="Não consigo colocar a forma de pagamento em dinheiro , o que eu faço ? Me ajudem"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
+        app:layout_constraintTop_toBottomOf="@id/imgAvatar"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
         android:gravity="start" />

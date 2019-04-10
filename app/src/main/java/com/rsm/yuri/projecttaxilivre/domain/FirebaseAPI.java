@@ -1,7 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.domain;
 
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -17,17 +16,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.Rating;
 import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
 import com.rsm.yuri.projecttaxilivre.map.models.Area;
-import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 /**
  * Created by yuri_ on 12/01/2018.
@@ -45,10 +42,12 @@ public class FirebaseAPI {
     private final static String AREAS_PATH = "areas";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
+    private final static String HISTORICTRAVELS_PATH = "historictravels";
     private final static String TRAVELS_PATH = "travels";
     private final static String TRAVELS_BY_DRIVERS_PATH = "bydriverskey";
     private final static String TRAVELS_BY_USERS_PATH = "byuserskey";
     private final static String TRAVEL_ACK_PATH = "travelAck";
+    private final static String TRAVEL_ACK_CHILD_PATH = "newTravelID";
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
     private final static String LATITUDE_PATH = "latitude";
@@ -61,7 +60,7 @@ public class FirebaseAPI {
     private static final String DRIVERS_PHOTOS_PATH = "drivers_photos";
     private static final String USERS_PHOTOS_PATH = "users_photos";
 
-    //private AreasHelper areasHelper;
+    //private AreasFortalezaHelper areasHelper;
 
     private DatabaseReference databaseReference;
 
@@ -69,21 +68,28 @@ public class FirebaseAPI {
     private DatabaseReference areaVerticalSideDataReference;
     private DatabaseReference areaHorizontalSideDataReference;
     private DatabaseReference areaDiagonalDataReference;
+    private DatabaseReference myDriverLocationReference;
 
     private ChildEventListener areasEventListener;
     private ChildEventListener historicChatsListEventListener;
     private ChildEventListener chatEventListener;
+    private ChildEventListener responseOfDriverRequestedEventListener;
+    private ChildEventListener myDriverLocationEventListener;
 
     private ValueEventListener statusReceiverChatEventListener;
-    private ValueEventListener responseOfDriverRequestedEventListener;
+    //private ValueEventListener myDriverLocationEventListener;
+    //private ValueEventListener responseOfDriverRequestedEventListener;
 
     private StorageReference storageReference;
     private StorageReference driversPhotosStorageReference;
     private StorageReference usersPhotosStorageReference;
 
-    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference){//, AreasHelper areasHelper){
+    private FirebaseAuth firebaseAuth;
+
+    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, FirebaseAuth firebaseAuth){//, AreasFortalezaHelper areasHelper){
         this.databaseReference = databaseReference;
         this.storageReference = storageReference;
+        this.firebaseAuth = firebaseAuth;
         //this.areasHelper = areasHelper;
     }
 
@@ -117,6 +123,7 @@ public class FirebaseAPI {
     public void subscribeForNearDriversUpdate(final GroupAreas groupAreas, final FirebaseEventListenerCallback listener){
 
         if(areasEventListener==null){
+            Log.d("d", "FirebaseAPI - subscribeForNearDriversUpdates() - areasEventListener = new ChildEventListener");
             areasEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -143,10 +150,15 @@ public class FirebaseAPI {
                     listener.onCancelled(databaseError);
                 }
             };
+
             mainAreaDataReference = getAreaDataReference(groupAreas.getMainArea().getId());
+            //mainAreaDataReference.keepSynced(false);
             areaVerticalSideDataReference= getAreaDataReference(groupAreas.getAreaVerticalSide().getId());
+            //areaVerticalSideDataReference.keepSynced(false);
             areaHorizontalSideDataReference = getAreaDataReference(groupAreas.getAreaHorizontalSide().getId());
+            //areaHorizontalSideDataReference.keepSynced(false);
             areaDiagonalDataReference = getAreaDataReference(groupAreas.getAreaDiagonal().getId());
+            //areaDiagonalDataReference.keepSynced(false);
 
             mainAreaDataReference.addChildEventListener(areasEventListener);
             areaVerticalSideDataReference.addChildEventListener(areasEventListener);
@@ -159,11 +171,58 @@ public class FirebaseAPI {
 
     public void unsubscribeForNearDriversUpdates(){
         if(mainAreaDataReference!=null&&areaVerticalSideDataReference!=null&&areaHorizontalSideDataReference!=null&&areaDiagonalDataReference!=null) {
+            Log.d("d", "FirebaseAPI - unsubscribeForNearDriversUpdates()");
             mainAreaDataReference.removeEventListener(areasEventListener);
             areaVerticalSideDataReference.removeEventListener(areasEventListener);
             areaHorizontalSideDataReference.removeEventListener(areasEventListener);
             areaDiagonalDataReference.removeEventListener(areasEventListener);
+            areasEventListener=null;
         }
+    }
+
+    public void subscribeForMyDriverLocationUpdate(final String driverEmail,
+                                                   final String travelID, final FirebaseEventListenerCallback listener) {
+
+        if(myDriverLocationEventListener==null){
+            myDriverLocationEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildAdded(dataSnapshot);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            myDriverLocationReference = getTravelsReference(driverEmail);
+            myDriverLocationReference.addChildEventListener(myDriverLocationEventListener);
+
+        }
+
+    }
+
+    public void unsubscribeForMyDriverLocationUpdate(){
+        if(myDriverLocationReference!=null) {
+            myDriverLocationReference.removeEventListener(myDriverLocationEventListener);
+        }
+
     }
 
     public void subscribeForHistoricChatsListUpdates(final FirebaseEventListenerCallback listener) {
@@ -264,7 +323,47 @@ public class FirebaseAPI {
     }
 
     public void subscribeForResponseOfDriverRequested(final FirebaseEventListenerCallback listener) {
+
         if(responseOfDriverRequestedEventListener==null) {
+            responseOfDriverRequestedEventListener = new ChildEventListener() {
+
+
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildAdded(dataSnapshot);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            getUserReference(getAuthUserEmail())
+                    .child(TRAVEL_ACK_PATH)//.child(TRAVEL_ACK_CHILD_PATH)
+                    .addChildEventListener(responseOfDriverRequestedEventListener);
+
+            //Log.d("d", "getStatusReceiverChatReference(receiver): " + getStatusReceiverChatReference(receiver));
+            //getResponseOfDriverRequestedReference().addChildEventListener(responseOfDriverRequestedEventListener);
+
+        }
+
+        /*if(responseOfDriverRequestedEventListener==null) {
             responseOfDriverRequestedEventListener= new ValueEventListener() {
 
                 @Override
@@ -281,7 +380,7 @@ public class FirebaseAPI {
             //Log.d("d", "getStatusReceiverChatReference(receiver): " + getStatusReceiverChatReference(receiver));
             getResponseOfDriverRequestedReference().addValueEventListener(responseOfDriverRequestedEventListener);
 
-        }
+        }*/
     }
 
     public void unSubscribeForStatusReceiverUpdate(String receiver) {
@@ -292,6 +391,11 @@ public class FirebaseAPI {
     public void unSubscribeForResponseOfDriverRequested() {
         getResponseOfDriverRequestedReference().removeEventListener(responseOfDriverRequestedEventListener);
         responseOfDriverRequestedEventListener=null;
+        deleteAckTravelRequest();
+    }
+
+    public void deleteAckTravelRequest(){
+        getUserReference(getAuthUserEmail()).child(TRAVEL_ACK_PATH).child(TRAVEL_ACK_CHILD_PATH).setValue("");
     }
 
     public void setMessageChatRead(String receiver, String msgId) {
@@ -325,6 +429,9 @@ public class FirebaseAPI {
         Map<String, Object> updates = new HashMap<String, Object>();
         updates.put("requesterEmail", travelRequest.getRequesterEmail());
         updates.put("requesterName", travelRequest.getRequesterName());
+        updates.put("urlPhotoUser", travelRequest.getUrlPhotoUser());
+        updates.put("averageRatingsPassenger", travelRequest.getAverageRatingsPassenger());
+
         updates.put("placeOriginAddress", travelRequest.getPlaceOriginAddress());
         updates.put("placeDestinoAddress", travelRequest.getPlaceDestinoAddress());
         updates.put("latOrigem", travelRequest.getLatOrigem());
@@ -333,10 +440,28 @@ public class FirebaseAPI {
         updates.put("longDestino", travelRequest.getLongDestino());
         updates.put("travelDate", travelRequest.getTravelDate());
         updates.put("travelPrice", travelRequest.getTravelPrice());
+        updates.put("urlPhotoTravel", travelRequest.getUrlPhotoMap());
 
         getAreaDataReference(areaRequestedDriver.getId()).
                 child(requestedDriverEmail.replace(".","_")).updateChildren(updates);
 
+    }
+
+    public void uploadMyRating(String emailDriver, Rating rating){
+        getMyDriverRatingsReference(emailDriver).push().setValue(rating);
+    }
+
+    public DatabaseReference getMyDriverRatingsReference(String emailDriver){
+        //return getRatingsReference(getAuthUserEmail());
+
+        DatabaseReference ratingsReference = null;
+        String email = emailDriver;
+        if(email!=null){
+            String emailKey = email.replace(".","_");
+            ratingsReference = databaseReference.getRoot().child(RATINGS_PATH).child(emailKey);
+        }
+        //Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
+        return ratingsReference;
     }
 
     public void getUrlPhotoDriver(String email, final FirebaseEventListenerCallback listenerCallback) {
@@ -372,8 +497,8 @@ public class FirebaseAPI {
 
     }
 
-        public void checkForSession(FirebaseActionListenerCallback listener) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public void checkForSession(FirebaseActionListenerCallback listener) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
             listener.onSuccess();
         } else {
@@ -382,7 +507,8 @@ public class FirebaseAPI {
     }
 
     public void logout() {
-        FirebaseAuth.getInstance().signOut();
+        firebaseAuth.signOut();
+        //FirebaseAuth.getInstance().signOut();
         //notifyContactsOfConnectionChange(User.OFFLINE, true);
         changeUserConnectionStatus(User.OFFLINE);
     }
@@ -392,7 +518,7 @@ public class FirebaseAPI {
     }
 
     public String getAuthUserEmail(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
         String email = null;
         if(user!=null)
             email = user.getEmail();
@@ -465,7 +591,7 @@ public class FirebaseAPI {
 
     public DatabaseReference getResponseOfDriverRequestedReference(){
         String myKeyUser = getAuthUserEmail().replace(".","_");
-        return databaseReference.getRoot().child(USERS_PATH).child(myKeyUser).child(TRAVEL_ACK_PATH);
+        return databaseReference.getRoot().child(USERS_PATH).child(myKeyUser).child(HISTORICTRAVELS_PATH);
     }
 
     public void changeUserConnectionStatus(long status) {
@@ -613,6 +739,5 @@ public class FirebaseAPI {
         }
 
     }
-
 
 }

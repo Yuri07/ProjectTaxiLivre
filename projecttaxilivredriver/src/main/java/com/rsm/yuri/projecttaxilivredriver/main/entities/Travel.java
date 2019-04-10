@@ -6,6 +6,9 @@ public class Travel {
 
     private String requesterEmail;
     private String requesterName;
+    private String urlPhotoUser;
+    private double averageRatingsPassenger;
+
     private String placeOriginAddress;
     private String placeDestinoAddress;
     private double latOrigem;
@@ -14,6 +17,7 @@ public class Travel {
     private double longDestino;
     private String travelDate;
     private double travelPrice;
+    private String urlPhotoMap;
 
     private String driverEmail;
     private double latDriver;
@@ -54,6 +58,22 @@ public class Travel {
 
     public void setRequesterName(String requesterName) {
         this.requesterName = requesterName;
+    }
+
+    public String getUrlPhotoUser() {
+        return urlPhotoUser;
+    }
+
+    public void setUrlPhotoUser(String urlPhotoUser) {
+        this.urlPhotoUser = urlPhotoUser;
+    }
+
+    public double getAverageRatingsPassenger() {
+        return averageRatingsPassenger;
+    }
+
+    public void setAverageRatingsPassenger(double averageRatingsPassenger) {
+        this.averageRatingsPassenger = averageRatingsPassenger;
     }
 
     public String getPlaceOriginAddress() {
@@ -118,6 +138,14 @@ public class Travel {
 
     public void setTravelPrice(double travelPrice) {
         this.travelPrice = travelPrice;
+    }
+
+    public String getUrlPhotoMap() {
+        return urlPhotoMap;
+    }
+
+    public void setUrlPhotoMap(String urlPhotoMap) {
+        this.urlPhotoMap = urlPhotoMap;
     }
 
     public String getDriverEmail() {

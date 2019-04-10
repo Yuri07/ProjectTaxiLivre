@@ -6,4 +6,7 @@ package com.rsm.yuri.projecttaxilivredriver.home.ui;
 
 public interface HomeView {
     void onLocationReadingError(String error);
+
+    void onTravelCreated(String newTravelID);
+
 }

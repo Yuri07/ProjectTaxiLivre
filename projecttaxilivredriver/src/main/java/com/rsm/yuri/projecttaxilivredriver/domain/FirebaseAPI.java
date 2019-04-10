@@ -16,8 +16,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.entities.HistoricTravelItem;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.models.GroupAreas;
 import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
@@ -38,17 +41,25 @@ public class FirebaseAPI {
     private final static String STATUS_PATH = "status";
     private final static String URL_PHOTO_USER_PATH = "urlPhotoUser";
     private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
+    private final static String URL_PHOTO_TRAVEL_MAP_PATH = "urlPhotoMap";
     private final static String URL_PHOTO_CAR_PATH = "urlPhotoCar";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
     private final static String AREAS_PATH = "areas";
+    private final static String CIDADES_PATH = "cidades";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
+    private final static String HISTORICTRAVELS_PATH = "historictravels";
     private final static String TRAVELS_PATH = "travels";
     private final static String TRAVELS_BY_DRIVERS_PATH = "bydriverskey";
     private final static String TRAVELS_BY_USERS_PATH = "byuserskey";
+    private final static String INITIATE_TRAVEL_PATH = "initiateTravel";
+    private final static String TERMINATE_TRAVEL_PATH = "terminateTravel";
     private final static String TRAVEL_ACK_PATH = "travelAck";
+    private final static String TRAVEL_ACK_CHILD_PATH = "newTravelID";
+
     private final static String LOCATION_PATH = "location";
     private final static String RATINGS_PATH = "ratings";
+    private final static String USERS_RATINGS_PATH = "usersRatings";
     private final static String LATITUDE_PATH = "latitude";
     private final static String LONGITUDE_PATH = "longitude";
     private final static String SEPARATOR = "___";
@@ -60,11 +71,14 @@ public class FirebaseAPI {
     private static final String USERS_PHOTOS_PATH = "users_photos";
     private static final String CARS_PHOTOS_PATH = "cars_photos";
 
-    //private AreasHelper areasHelper;
+    private static final String  TRAVEL_NOT_ACCEPTED_ACK = "travelNotAcceptedAck";
+
+    //private AreasFortalezaHelper areasHelper;
 
     private DatabaseReference databaseReference;
 
     private ChildEventListener historicChatsListEventListener;
+    private ChildEventListener historicTravelsListEventListener;
     private ChildEventListener chatEventListener;
 
     private ValueEventListener ratingsEventListener;
@@ -75,9 +89,12 @@ public class FirebaseAPI {
     private StorageReference driversPhotosStorageReference;
     private StorageReference usersPhotosStorageReference;
 
-    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference){//, AreasHelper areasHelper){
+    private FirebaseAuth firebaseAuth;
+
+    public FirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, FirebaseAuth firebaseAuth){//, AreasFortalezaHelper areasHelper){
         this.databaseReference = databaseReference;
         this.storageReference = storageReference;
+        this.firebaseAuth = firebaseAuth;
         //this.areasHelper = areasHelper;
     }
 
@@ -176,6 +193,48 @@ public class FirebaseAPI {
         getChatsReference(receiver).removeEventListener(chatEventListener);
     }
 
+    public void subscribeForHistoricTravelsListUpdates(final FirebaseEventListenerCallback listener){
+
+        if(historicTravelsListEventListener==null) {
+            historicTravelsListEventListener= new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    listener.onChildAdded(dataSnapshot);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    //listener.onChildChanged(dataSnapshot);
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    //listener.onChildRemoved(dataSnapshot);
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onCancelled(databaseError);
+                }
+            };
+
+            getMyHistoricTravelsReference().addChildEventListener(historicTravelsListEventListener);
+
+        }
+
+    }
+
+    public void unSubscribeForHistoricTravelsListUpdates() {
+        if(historicTravelsListEventListener!=null) {
+            getMyHistoricTravelsReference().removeEventListener(historicTravelsListEventListener);
+        }
+    }
+
     public void subscribeForStatusReceiverUpdate(final String receiver, final FirebaseEventListenerCallback listener) {
         if(statusReceiverChatEventListener==null) {
             statusReceiverChatEventListener= new ValueEventListener() {
@@ -209,8 +268,9 @@ public class FirebaseAPI {
         return getChatsReference(receiver).push().getKey();
     }
 
-    public void uploadNearDriverData(final NearDriver nearDriver, final String idArea,final FirebaseActionListenerCallback listenerCallback) {
-        getAreaDataReference(idArea).child(nearDriver.getEmail().replace(".","_")).setValue(nearDriver, new DatabaseReference.CompletionListener() {
+    public void uploadNearDriverData(final NearDriver nearDriver, final String cidade, final String idArea,final FirebaseActionListenerCallback listenerCallback) {
+        getAreaDataReference(idArea, cidade).child(nearDriver.getEmail()
+                .replace(".","_")).setValue(nearDriver, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if(databaseError==null){
@@ -222,19 +282,37 @@ public class FirebaseAPI {
         });
     }
 
-    public void acceptTravel(Travel travel, String idArea){
-        getAreaDataReference(idArea).child(travel.getDriverEmail().replace(".","_")).removeValue();
+    public String acceptTravel(Travel travel, String cidade, String idArea){
+        getAreaDataReference(idArea, cidade).child(travel.getDriverEmail().replace(".","_")).removeValue();
 
         String newTravelId = createTravelId();
 
         travel.setTravelId(newTravelId);
 
+        HistoricTravelItem historicTravelItem = new HistoricTravelItem(travel);
+
         //getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).child(newTravelId).setValue(travel);
 
         getTravelsReference(travel.getRequesterEmail()).child(newTravelId).setValue(travel);
 
-        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH).setValue(newTravelId);
+        //getUserReference(travenl.getRequesterEmail()).child(TRAVEL_ACK_PATH).setValue(newTravelId);
 
+        getDriverReference(travel.getDriverEmail()).child(HISTORICTRAVELS_PATH).child(newTravelId)
+                .setValue(historicTravelItem);
+
+        getUserReference(travel.getRequesterEmail()).child(HISTORICTRAVELS_PATH).child(newTravelId)
+                .setValue(historicTravelItem);
+
+        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH)
+                        .child(TRAVEL_ACK_CHILD_PATH).setValue(newTravelId);
+
+        return newTravelId;
+
+    }
+
+    public void notifyRequesterTravelNotAccepted(String requesterEmail){
+        getUserReference(requesterEmail).child(TRAVEL_ACK_PATH)
+                .child(TRAVEL_ACK_CHILD_PATH).setValue(TRAVEL_NOT_ACCEPTED_ACK);
     }
 
     public String createTravelId() {
@@ -243,21 +321,22 @@ public class FirebaseAPI {
     }
 
     public DatabaseReference  getTravelByDriverKeyReference(String emailDriverKey){
-        return databaseReference.getRoot().child(TRAVELS_PATH).child(TRAVELS_BY_DRIVERS_PATH).child(emailDriverKey);
+        return getTravelsReference(emailDriverKey);
+        //return databaseReference.getRoot().child(TRAVELS_PATH).child(TRAVELS_BY_DRIVERS_PATH).child(emailDriverKey);
     }
 
-    public void updateMyLocation(final LatLng location, final String idArea, final FirebaseActionListenerCallback listenerCallback){
+    public void updateMyLocation(final LatLng location, final String cidade, final String idArea, final FirebaseActionListenerCallback listenerCallback){
         String authUserEmail = getAuthUserEmail();
         //GroupAreas groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
         //NearDriver nearDriver = new NearDriver(getAuthUserEmail(),location.latitude, location.longitude );
         final String emailKey = authUserEmail.replace(".","_");
-        getAreaDataReference(idArea).child(emailKey).
+        getAreaDataReference(idArea, cidade).child(emailKey).
                 child(LATITUDE_PATH).setValue(location.latitude, new DatabaseReference.CompletionListener(){
 
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if(databaseError==null){
-                            getAreaDataReference(idArea).child(emailKey).
+                            getAreaDataReference(idArea, cidade).child(emailKey).
                                         child(LONGITUDE_PATH).setValue(location.longitude);
                             getMyUserReference().child(LATITUDE_PATH).setValue(location.latitude);
                             getMyUserReference().child(LONGITUDE_PATH).setValue(location.longitude);
@@ -270,10 +349,109 @@ public class FirebaseAPI {
 
     }
 
-    public void removeDriverFromArea(GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback) {
+    public void updateMyLocationForTravel(final LatLng location, final String requesterEmail, final String newTravelID,
+                                          final FirebaseActionListenerCallback listenerCallback){
+        //String authUserEmail = getAuthUserEmail();
+        getTravelsReference(requesterEmail).
+                child(newTravelID).child("latDriver").setValue(location.latitude, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError==null){
+                    getTravelsReference(requesterEmail).child(newTravelID).child("longDriver").setValue(location.longitude);
+                    listenerCallback.onSuccess();
+                }else{
+                    listenerCallback.onError(databaseError);
+                }
+            }
+        });
+
+    }
+
+    public void initiateTravel(String emailRequester, String travelID) {
+        getTravelsReference(emailRequester).child(travelID).child(INITIATE_TRAVEL_PATH)
+                .setValue("true");
+    }
+
+    public void terminateTravel(String emailRequester, String travelID) {
+        getTravelsReference(emailRequester).child(travelID).child(TERMINATE_TRAVEL_PATH)
+                .setValue("true");
+    }
+
+    public void uploadUserRating(final String userEmail, final Rating rating){
+        getUserRatingsReference(userEmail).child(rating.getTravelId()).setValue(rating);
+
+        getUserReference(userEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+            String nCountStars;
+            int nCountStarsValue;
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User passenger = dataSnapshot.getValue(User.class);
+                if(passenger!=null) {
+                    switch ((int) rating.getVote()) {
+                        case 1:
+                            nCountStars = "countStars1";
+                            passenger.setCount1Stars(passenger.getCount1Stars() + 1);
+                            nCountStarsValue = passenger.getCount1Stars() + 1;
+                            passenger.setAverageRating(passenger.getAverageRating());
+                            //getUserReference(userEmail).child("countStars1").setValue(passenger.getCount1Stars());
+                            //getUserReference(userEmail).child("countStars1")
+                            break;
+                        case 2:
+                            nCountStars = "countStars2";
+                            passenger.setCount2Stars(passenger.getCount2Stars() + 1);
+                            nCountStarsValue = passenger.getCount2Stars() + 1;
+                            break;
+                        case 3:
+                            nCountStars = "countStars3";
+                            passenger.setCount3Stars(passenger.getCount3Stars() + 1);
+                            nCountStarsValue = passenger.getCount3Stars() + 1;
+                            break;
+                        case 4:
+                            nCountStars = "countStars4";
+                            passenger.setCount4Stars(passenger.getCount4Stars() + 1);
+                            nCountStarsValue = passenger.getCount4Stars() + 1;
+                            break;
+                        case 5:
+                            nCountStars = "countStars5";
+                            passenger.setCount5Stars(passenger.getCount5Stars() + 1);
+                            nCountStarsValue = passenger.getCount5Stars() + 1;
+                            break;
+                    }
+
+                    passenger.setTotalRatings(passenger.getTotalRatings()+1);
+                    double averageRatings = passenger.getCount1Stars() + passenger.getCount2Stars() * 2
+                            + passenger.getCount3Stars() * 3 + passenger.getCount4Stars() * 4 + passenger.getCount5Stars() * 5;
+                    int totalRatings = passenger.getTotalRatings();
+
+                    HashMap<String, Object> ratingValues = new HashMap<>();
+                    ratingValues.put(nCountStars, nCountStarsValue);
+                    ratingValues.put("averageRating", averageRatings);
+                    ratingValues.put("totalRatings", totalRatings);
+
+                    String userEmailKey = userEmail.replace("." ,"_");
+
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put("/users/" + userEmailKey, ratingValues);
+                    databaseReference.updateChildren(childUpdates);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void saveCity(String city){
+        getMyUserReference().child("cidade").setValue(city);
+    }
+
+    public void removeDriverFromArea(String cidade, GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback) {
         //NearDriver nearDriver = new NearDriver();
         String authUserEmail = getAuthUserEmail();
-        getAreaDataReference(groupAreas.getMainArea().getId()).child(authUserEmail.replace(".","_"))
+        getAreaDataReference(groupAreas.getMainArea().getId(), cidade).child(authUserEmail.replace(".","_"))
                 .setValue(null, new DatabaseReference.CompletionListener(){
 
                     @Override
@@ -371,6 +549,24 @@ public class FirebaseAPI {
         getUserReference(email).child(URL_PHOTO_USER_PATH).addListenerForSingleValueEvent(urlPhotoDriverEventListener);
     }
 
+    public void getUrlPhotoMapTravel(String travelId, final FirebaseEventListenerCallback listenerCallback) {
+        ValueEventListener urlPhotoTravelMapEventListener = new ValueEventListener(){
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listenerCallback.onChildAdded(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listenerCallback.onCancelled(databaseError);
+            }
+        } ;
+        getDriverReference(getAuthUserEmail()).child(HISTORICTRAVELS_PATH)
+                .child(travelId).child(URL_PHOTO_TRAVEL_MAP_PATH)
+                .addListenerForSingleValueEvent(urlPhotoTravelMapEventListener);
+    }
+
     /*public void getLoggedUser(final FirebaseActionListenerCallback listener){
         getMyUserReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -425,6 +621,17 @@ public class FirebaseAPI {
         return ratingsReference;
     }
 
+    public DatabaseReference getUserRatingsReference(String userEmaiil){
+        //return getRatingsReference(getAuthUserEmail());
+        DatabaseReference ratingsReference = null;
+        if(userEmaiil!=null){
+            String emailKey = userEmaiil.replace(".","_");
+            ratingsReference = databaseReference.getRoot().child(USERS_RATINGS_PATH).child(emailKey);
+        }
+        //Log.d("d", "FaribaseAPI.getMyRatingReference(): "+ratingsReference);
+        return ratingsReference;
+    }
+
     /*public DatabaseReference getRatingsReference(String email){
         //return getDriverReference(email).child(RATINGS_PATH).child();
 
@@ -434,25 +641,33 @@ public class FirebaseAPI {
         return getHistoriChatsReferenceOfDriver(getAuthUserEmail());
     }
 
+    public DatabaseReference getMyHistoricTravelsReference(){
+        return getHistoriTravelsReferenceOfDriver(getAuthUserEmail());
+    }
+
     public DatabaseReference getHistoriChatsReferenceOfDriver(String email){
         return getDriverReference(email).child(HISTORICCHATS_PATH);
+    }
+
+    public DatabaseReference getHistoriTravelsReferenceOfDriver(String email){
+        return getDriverReference(email).child(HISTORICTRAVELS_PATH);
     }
 
     public DatabaseReference getHistoriChatsReferenceOfUser(String email){
         return getUserReference(email).child(HISTORICCHATS_PATH);
     }
 
-    private DatabaseReference getAreaDataReference(String idArea) {
+    private DatabaseReference getAreaDataReference(String idArea, String cidade) {
         DatabaseReference areaReference = null;
         if(idArea!=null){
-            areaReference = databaseReference.getRoot().child(AREAS_PATH).child(idArea);
+            areaReference = databaseReference.getRoot().child(CIDADES_PATH).child(cidade).child(AREAS_PATH).child(idArea);
         }
         return areaReference;
 
     }
 
     public void checkForSession(FirebaseActionListenerCallback listener) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();//FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             listener.onSuccess();
         } else {
@@ -461,7 +676,8 @@ public class FirebaseAPI {
     }
 
     public void logout() {
-        FirebaseAuth.getInstance().signOut();
+        firebaseAuth.signOut();
+        //FirebaseAuth.getInstance().signOut();
         //notifyContactsOfConnectionChange(User.OFFLINE, true);
         changeUserConnectionStatus(Driver.OFFLINE);
     }
@@ -471,7 +687,7 @@ public class FirebaseAPI {
     }
 
     public String getAuthUserEmail(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();//FirebaseAuth.getInstance().getCurrentUser();
         String email = null;
         if(user!=null)
             email = user.getEmail();
@@ -629,6 +845,28 @@ public class FirebaseAPI {
 
     }
 
+    public void uploadMapPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
+
+        StorageReference photoRef = getDriversPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
+
+        final DatabaseReference myUrlPhotoReference = getMyUrlPhotoReference();
+
+        photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                myUrlPhotoReference.setValue(downloadUrl.toString());
+                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                firebaseStorageFinishedListener.onError(e.getMessage());
+            }
+        });
+
+    }
+
     public StorageReference getDriversPhotosStorageReference(){
         return storageReference.getRoot().child(DRIVERS_PHOTOS_PATH);
     }
@@ -653,6 +891,10 @@ public class FirebaseAPI {
         historicChatsListEventListener = null;
     }
 
+    public void destroyHistoricTravelsListener(){
+        historicTravelsListEventListener = null;
+    }
+
     public void destroyChatListener() {
         chatEventListener = null;
     }
@@ -673,5 +915,7 @@ public class FirebaseAPI {
         }
 
     }
+
+
 
 }

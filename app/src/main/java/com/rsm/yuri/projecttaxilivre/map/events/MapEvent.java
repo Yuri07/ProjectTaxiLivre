@@ -1,5 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.map.events;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 
@@ -11,6 +12,7 @@ public class MapEvent {
 
     private NearDriver nearDriver;
     private String travelAck;
+    private LatLng locationOfMyDriver;
     private int eventType;
     private String error;
 
@@ -18,6 +20,7 @@ public class MapEvent {
     public final static int onDriverMoved = 2;
     public final static int onDriverRemoved = 3;
     public static int onTravelAckReceived = 4;
+    public final static int onMyDriverMoved = 5;
 
     public NearDriver getNearDriver() {
         return nearDriver;
@@ -33,6 +36,14 @@ public class MapEvent {
 
     public void setTravelAck(String travelAck) {
         this.travelAck = travelAck;
+    }
+
+    public LatLng getLocationOfMyDriver() {
+        return locationOfMyDriver;
+    }
+
+    public void setLocationOfMyDriver(LatLng locationOfMyDriver) {
+        this.locationOfMyDriver = locationOfMyDriver;
     }
 
     public int getEventType() {

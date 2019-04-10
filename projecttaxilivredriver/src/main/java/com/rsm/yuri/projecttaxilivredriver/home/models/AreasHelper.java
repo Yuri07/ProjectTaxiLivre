@@ -2,15 +2,18 @@ package com.rsm.yuri.projecttaxilivredriver.home.models;
 
 import static java.lang.Math.abs;
 
-/**
- * Created by yuri_ on 03/02/2018.
- */
+public abstract class AreasHelper {
 
-public class AreasHelper {
+//    public abstract GroupAreas getGroupAreas(double latitude, double longitude);
 
+    private double LAT_INI = -3.668985;//lat e long de fortaleza
+    private double LONG_INI = -38.672476;
 
-    private final static double LAT_INI = -3.668985;
-    private final static double LONG_INI = -38.672476;
+    public void setInitialLatLong(double lat, double longi){
+        this.LAT_INI = lat;
+        this.LONG_INI = longi;
+    }
+
     private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
     private final static double SIZE_AREA_X[]= {0.04, 0.03, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.007, 0.01, 0.01, 0.02, 0.02, 0.04 };
 

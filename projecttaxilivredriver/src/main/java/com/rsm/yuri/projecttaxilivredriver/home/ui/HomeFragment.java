@@ -3,7 +3,10 @@ package com.rsm.yuri.projecttaxilivredriver.home.ui;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -17,9 +20,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,20 +47,31 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rsm.yuri.projecttaxilivredriver.BuildConfig;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
+import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.home.HomePresenter;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainActivity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -62,6 +79,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.view.animation.Animation.RELATIVE_TO_SELF;
 
@@ -80,6 +98,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @BindView(R.id.homeFrameLayoutTop)
     FrameLayout homeFrameLayoutTop;
+    @BindView(R.id.home_text_view_next_street)
+    TextView textViewNextStreet;
     @BindView(R.id.home_text_view_passenger_address1)
     TextView textViewPassengerAddress1;
     @BindView(R.id.home_text_view_passenger_address2)
@@ -87,8 +107,46 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @BindView(R.id.homeFrameLayoutBottom)
     FrameLayout homeFrameLayoutBottom;
+    @BindView(R.id.home_text_view_label_status_travel)
+    TextView textViewStatusTravel;
+    @BindView(R.id.home_text_view_label_status_travel2)
+    TextView textViewStatusTravel2;
     @BindView(R.id.home_text_view_passenger_name)
     TextView textViewPassengerName;
+    @BindView(R.id.home_bottom_frame_chat_img_view)
+    CircleImageView chatButton;
+    @BindView(R.id.home_bottom_framelayout_chat_img_view)
+    FrameLayout frameLayoutChatImgView;
+    @BindView(R.id.home_bottom_framelayout_chat_img_view2)
+    FrameLayout frameLayoutImgViewPadding;
+    @BindView(R.id.home_textview_cron_wait_passenger)
+    TextView tv_time;
+
+    //@BindView(R.id.view_progress_bar_waiting_passenger)
+    ProgressBar viewProgressBarWaitingPassenger;
+    @BindView(R.id.home_frag_button_iniciar_corrida)
+    Button initiateTravelButton;
+
+    @BindView(R.id.home_linear_layout_time_distance_tv)
+    LinearLayout timeDistanceLinearLayout;
+    @BindView(R.id.home_tv_time_to_destiny)
+    TextView tvTimeToDestiny;
+    @BindView(R.id.home_tv_distance_to_destiny)
+    TextView tvDistanceToDestiny;
+
+    @BindView(R.id.home_frag_button_terminar_corrida)
+    Button terminateTravelButton;
+
+
+    @BindView(R.id.homeFrameLayoutAvaliation)
+    FrameLayout frameLayoutAvaliation;
+    @BindView(R.id.home_avaliation_rating_bar)
+    RatingBar avaliationRatingBar;
+    @BindView(R.id.home_avaliation_edit_text_comment)
+    EditText editTextAvaliationComment;
+    @BindView(R.id.home_avaliation_label_ok)
+    TextView tvAvaliationOk;
+
 
     @BindView(R.id.home_view_padding)
     View homeViewPadding;
@@ -104,10 +162,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     private GoogleMap map;
     private Location lastLocation;
-    private int teste;
+    private String cidade = null;
+    private Polyline polyline;
+
+    private Geocoder geocoder;
+
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
+    private LocationCallback mLocationForTravelCallback;
+    private LocationCallback mLocationInTravelCallback;
     private LocationRequest mLocationRequest;
+
+    private Marker myLocationMarker;
+
+    private String newTravelID = "notInicialized";
+    private Travel currentTravel;
 
     private PolylineOptions polylineOptions = null;
 
@@ -129,37 +198,80 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupInjection();
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        inicializaVariavelCidade();
+        Log.d("d", "HomeFragment - onCreate()- cidade: " + cidade);
+        setupInjection(cidade);
+
+        presenter.onCreate();
+
+        presenter.saveCity(cidade);
+        sharedPreferences.edit().putString(TaxiLivreDriverApp.CIDADE_KEY, cidade).apply();
 
         createLocationRequest();
         createLocationCallback();
+        createMyLocationForTravelCallback();
+        createMyLocationInTravelCallback();
 
     }
 
-    private void createLocationCallback() {
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    // Update UI with location data
-                    // ...
-                    lastLocation = location;
-                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
-                    presenter.updateLocation(position);
-                }
+    private String inicializaVariavelCidade() {
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            int permissionLocation = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
             }
-        };
+            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
+            }
+
+        }
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+
+                            lastLocation = location;
+
+
+                            LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+//                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                            geocoder = new Geocoder(getContext(), Locale.getDefault());
+                            List<Address> addresses;
+                            try {
+                                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                cidade = addresses.get(0).getLocality();
+                                Log.d("d", "HomeFragment - inicializaVariavelCidade()- cidade: " + cidade);
+                                /*String state = addresses.get(0).getAdminArea();
+                                String country = addresses.get(0).getCountryName();
+                                String postalCode = addresses.get(0).getPostalCode();
+                                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }
+                });
+
+
+
+        return "";
     }
 
-    private void setupInjection() {
+    private void setupInjection(String cidade) {
         TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
-        app.getHomeComponent(this, this).inject(this);
+        app.getHomeComponent(this, this, cidade).inject(this);
         //Log.d("d", "ProfileFragment.setupInjection:finalizada");
     }
 
@@ -197,6 +309,95 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         //}
     }
 
+    private void createLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                    lastLocation = location;
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                    presenter.updateLocation(position);
+                }
+            }
+        };
+    }
+
+    private void createMyLocationForTravelCallback() {
+        mLocationForTravelCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                    lastLocation = location;
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                    String requestyerEmail = dataTravelRequester.getString("requesterEmail");
+                    Log.d("d", "HomeFragment.mLocationForTravelCallback - newTravelID" + newTravelID
+                            + " requesterEmail: " + requestyerEmail);
+
+                    presenter.updateLocationForTravel(position, requestyerEmail, newTravelID);
+
+                    /*if(polyline!=null)
+                        polyline.remove();*/
+
+                    //drawRoute(lastLocation,new LatLng(dataTravelRequester
+                    //.getDouble("latOrigem"),dataTravelRequester.getDouble("longOrigem")));//maneira correta
+
+                    removeMyDriverFromMapScreen();
+                    addMyDriverToMapScreen(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                    drawRoute(lastLocation,new LatLng(dataTravelRequester       //para testes
+                            .getDouble("latDestino"),dataTravelRequester.getDouble("longDestino")));
+
+                }
+            }
+        };
+    }
+
+    private void createMyLocationInTravelCallback() {
+        mLocationInTravelCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                    lastLocation = location;
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                    String requestyerEmail = dataTravelRequester.getString("requesterEmail");
+                    Log.d("d", "HomeFragment.mLocationForTravelCallback - newTravelID" + newTravelID
+                            + " requesterEmail: " + requestyerEmail);
+
+                    presenter.updateLocationForTravel(position, requestyerEmail, newTravelID);
+
+                    /*if(polyline!=null)
+                        polyline.remove();*/
+
+                    //drawRoute(lastLocation,new LatLng(currentTravel.getLatDestino(),
+                    //                                  currentTravel.getLongDestino()));//maneira correta
+
+                    removeMyDriverFromMapScreen();
+                    addMyDriverToMapScreen(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                    drawRoute(lastLocation,new LatLng(dataTravelRequester       //para testes
+                            .getDouble("latDestino"),dataTravelRequester.getDouble("longDestino")));
+
+                }
+            }
+        };
+    }
+
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -209,6 +410,34 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
             return;
         }
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+
+    private void startLocationUpdatesForTravel() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationForTravelCallback, null);
+    }
+
+    private void startLocationUpdatesInTravel() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationInTravelCallback, null);
     }
 
     protected void createLocationRequest() {
@@ -233,10 +462,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         presenter.removeDriverFromArea();
     }
 
+    private  void stopLocationUpdatesForTravel(){
+        mFusedLocationClient.removeLocationUpdates(mLocationForTravelCallback);
+    }
+
+    private  void stopLocationUpdatesInTravel(){
+        mFusedLocationClient.removeLocationUpdates(mLocationInTravelCallback);
+    }
+
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        presenter.onDestroy();
         unbinder.unbind();
+        super.onDestroyView();
+
     }
 
     private Location moveCameraToLastKnowLocation() {
@@ -269,8 +508,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             // Logic to handle location object
                             Log.d("Fragment", "onSuccess");
                             lastLocation = location;
-                            teste = 111;
-                            Log.d("d", "HomeFragment - movCameratoLastKnowLocation - teste: " + teste);
                             Log.d("d", "HomeFragment - movCameratoLastKnowLocation - lastlocation.getLat: " + lastLocation.getLatitude());
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
@@ -298,7 +535,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     @Override
     public void onSwitchButtonClicked(boolean switchStatus) {
         if (switchStatus) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            /*if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -321,12 +558,31 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                                 //map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                             }
                         }
-                    });
+                    });*/
 
+            uploadDriverDataToArea();
             startLocationUpdates();
+
         } else {
             stopLocationUpdates();
         }
+    }
+
+    public void addMyDriverToMapScreen(LatLng locatinOfMyDriver){
+
+        myLocationMarker = map.addMarker(new MarkerOptions()
+                .position(locatinOfMyDriver)
+                .title(sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr"))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_black_24dp)));
+
+        Log.d("d", "MapFragment - addMyDriverToMapScreen()");
+
+    }
+
+    public void removeMyDriverFromMapScreen(){
+        if(myLocationMarker!=null)
+            myLocationMarker.remove();
+        Log.d("d", "MapFragment - removeMyDriverFromMapScreen()");
     }
 
     public Location getLastLocation(){
@@ -357,9 +613,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     @Override
     public void onTravelRequest(Bundle dataTravelRequester) {
 
+        desabilitarDrawerNavigation();
+
         stopLocationUpdates();
 
-        frameLayoutAceitar.setVisibility(View.VISIBLE);
         this.dataTravelRequester = dataTravelRequester;
 
         double latTravelOrigem = dataTravelRequester.getDouble("latOrigem");
@@ -412,8 +669,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         //onResume() do mainActivity é chamado o estado da activity é restaurado mas como o estadoo método onSaved
         //https://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
 
-
-
         String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
         GoogleDirection.withServerKey(myApiKey)
                 .from(new LatLng(latTravelDestino, longTravelDestino))
@@ -440,7 +695,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             polylineOptions = DirectionConverter.createPolyline(
                                     getContext(), directionPositionList, 5, Color.BLUE);
 
-                            map.addPolyline(polylineOptions);
+                            polyline = map.addPolyline(polylineOptions);
 
                             int duration = Integer.parseInt(durationInfo.getValue());
                             Log.d("d", "HomeFragment - durationInfo.getValue(): " + duration);
@@ -450,6 +705,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             editTxtEstimatedTimeMap.setText(String.format("%.0f", travelDuration)+"min");
 
                             zoomRoute(map, directionPositionList);
+
+                            frameLayoutAceitar.setVisibility(View.VISIBLE);
+
+                            fn_countdown();
 
                         } else {
                             Log.d("d", "HomeFragment - onTravelRequest - direction.isOK == false");
@@ -462,8 +721,111 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                     }
                 });
 
-        fn_countdown();
+
     }
+
+    @OnClick(R.id.frameLayoutAceitar)
+    public void onViewClicked() {
+
+        Log.d("d", "HomeFragment - onVieClickedt - lastlocation.getLat: " + lastLocation.getLatitude());
+        countDownTimer.cancel();
+        frameLayoutAceitar.setVisibility(View.GONE);
+        Toast.makeText(getContext(),"Corrida aceita!", Toast.LENGTH_LONG).show();
+
+        currentTravel = getTravel(dataTravelRequester, lastLocation);
+
+        informMainActivityTravelAccepted();
+
+        setupScreenOnTravelAccepted();
+
+        //captureScreenMap();
+
+        presenter.acceptTravel(currentTravel);
+
+    }
+
+    private void onFrameLayoutAceitarNotClicked() {
+        habilitarDrawerNavigation();
+        uploadDriverDataToArea();
+        startLocationUpdates();
+        presenter.notifyRequesterTravelNotAccepted(dataTravelRequester.getString("requesterEmail"));
+        cleanMapRoute();
+        frameLayoutAceitar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onTravelCreated(String newTravelID){
+        this.newTravelID = newTravelID;
+        currentTravel.setTravelId(newTravelID);
+        Log.d("d", "HomeFragment.onTravelCreated- newTravelID" + this.newTravelID);
+        startLocationUpdatesForTravel();
+
+        fn_countdownSimulateArrival();
+
+        //fn_countdownProgressBarWaitingPassenger();
+
+    }
+
+    public void onArrivalToGetPassenger(){
+
+        setupFramesLayoutOnArrivalToGetPassenger();
+
+        fn_countdownProgressBarWaitingPassenger();
+
+    }
+
+
+
+    @OnClick(R.id.home_frag_button_iniciar_corrida)
+    public void onInitiateTravelButtonClicked(){
+        stopLocationUpdatesForTravel();
+        startLocationUpdatesInTravel();
+
+        String requesterEmail = dataTravelRequester.getString("requesterEmail");
+
+        presenter.initiateTravel(requesterEmail, newTravelID);
+
+        countDownTimer.cancel();
+
+        setupScreenOnInitiateJourney();
+
+        startLocationUpdatesInTravel();
+
+        fn_countdownSimulateArrivalInDestiny();
+
+    }
+
+    public void onArrivalToLandingPassenger(){
+        setupScreenOnArrivalToLandingPassenger();
+
+    }
+
+    @OnClick(R.id.home_frag_button_terminar_corrida)
+    public void onTerminateTravelButtonClicked(){
+        stopLocationUpdatesInTravel();
+
+        presenter.terminateTravel(currentTravel.getRequesterEmail(), currentTravel.getTravelId());
+
+        setupScreenOnTerminateTravel();
+
+    }
+
+    @OnClick(R.id.home_avaliation_label_ok)
+    public void onAvaliationLabelClicked() {
+        habilitarDrawerNavigation();
+
+        frameLayoutAvaliation.setVisibility(View.GONE);
+
+        Rating rating = setupRatingFromAvaliationFrameLayout();
+
+        presenter.uploadUserRating(currentTravel.getRequesterEmail(), rating);
+
+        homeViewPadding.setVisibility(View.GONE);
+
+        informMainActivityTravelCompleted();
+
+    }
+
 
     public void zoomRoute(GoogleMap googleMap, List<LatLng> lstLatLngRoute) {
 
@@ -519,6 +881,58 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         }
     }
 
+    private void drawRoute(Location originLocation, LatLng destinyLocation){
+        String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
+        GoogleDirection.withServerKey(myApiKey)
+                .from(new LatLng(originLocation.getLatitude(), originLocation.getLongitude()))
+                .to(destinyLocation)
+                .transportMode(TransportMode.DRIVING)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (direction.isOK()) {
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                            Info distanceInfo = leg.getDistance();
+                            Info durationInfo = leg.getDuration();
+                            String distanceReadable = distanceInfo.getText();
+                            String durationReadable = durationInfo.getText();
+
+                            int distance = Integer.parseInt(distanceInfo.getValue());
+                            Log.d("d", "MapFragment - drawRoute() - distanceInfo.getValue(): " + distance);
+                            //double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+                            //travelRequest.setTravelPrice(travelPrice);
+                            //Log.d("d", "MapFragment - travelPrice: " + travelPrice);
+
+                            polylineOptions = DirectionConverter.createPolyline(
+                                    getContext(), directionPositionList, 5, Color.BLUE);
+
+                            if(polyline!=null)
+                                polyline.remove();
+
+                            polyline = map.addPolyline(polylineOptions);
+
+                            zoomRoute(map, directionPositionList);
+
+
+                        } else {
+                            Log.d("d", "MapFragment - drawRoute() - direction.isOK == false");
+                        }
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                    }
+                });
+    }
+
+    public void cleanMapRoute(){
+        if(polyline!=null)
+            polyline.remove();
+    }
+
     public NearDriver getNearDriver(Location location){
         NearDriver nearDriver = new NearDriver();
         nearDriver.setEmail(sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr"));
@@ -531,6 +945,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         nearDriver.setAverageRatings(sharedPreferences.getFloat(TaxiLivreDriverApp.AVERAG_RATING_KEY, 5.5f));
         nearDriver.setLatitude(location.getLatitude());
         nearDriver.setLongitude(location.getLongitude());
+        //nearDriver.setCount5Stars();
         return nearDriver;
     }
 
@@ -552,6 +967,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             dataRequester.getString("requesterEmail"));
         Log.d("d", "HomeFragment.getTravel() requesterName " +
                             dataRequester.getString("requesterName"));
+
+        Log.d("d", "HomeFragment.getTravel() urlPhotoUser: " +
+                dataRequester.getString("urlPhotoUser"));
+        Log.d("d", "HomeFragment.getTravel() averageRatingsPassenger " +
+                dataRequester.getDouble("averageRatingsPassenger"));
+
         Log.d("d", "HomeFragment.getTravel() placeOriginAddress: " +
                 dataRequester.getString("placeOriginAddress"));
         Log.d("d", "HomeFragment.getTravel() placeDestinoAddress " +
@@ -568,9 +989,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                 dataRequester.getString("travelDate"));
         Log.d("d", "HomeFragment.getTravel() travelPrice: " +
                 dataRequester.getDouble("travelPrice"));
+        Log.d("d", "HomeFragment.getTravel() urlPhotoMap: " +
+                dataRequester.getString("urlPhotoMap"));
 
         travel.setRequesterEmail(dataRequester.getString("requesterEmail"));
         travel.setRequesterName(dataRequester.getString("requesterName"));
+        travel.setUrlPhotoUser(dataRequester.getString("urlPhotoUser"));
+        travel.setAverageRatingsPassenger(dataRequester.getDouble("averageRatingsPassenger"));
+
         travel.setPlaceOriginAddress(dataRequester.getString("placeOriginAddress"));
         travel.setPlaceDestinoAddress(dataRequester.getString("placeDestinoAddress"));
         travel.setLatOrigem(dataRequester.getDouble("latOrigem"));
@@ -579,7 +1005,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         travel.setLongDestino(dataRequester.getDouble("longDestino"));
         travel.setTravelDate(dataRequester.getString("travelDate"));
         travel.setTravelPrice(dataRequester.getDouble("travelPrice"));
-
+        travel.setUrlPhotoMap(dataRequester.getString("urlPhotoMap"));
         return travel;
     }
 
@@ -644,15 +1070,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
             @Override
             public void onFinish() {
+
                 setProgress(progress, endTime);
                 onFrameLayoutAceitarNotClicked();
 
             }
         };
+
         countDownTimer.start();
-        /*}else {
-            Toast.makeText(getApplicationContext(),"Please enter the value",Toast.LENGTH_LONG).show();
-        }*/
 
     }
 
@@ -663,43 +1088,297 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     }
 
+    private void fn_countdownProgressBarWaitingPassenger() {
+
+        progress = 1;
+        endTime = 60;
+
+        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                //setProgressBarWaitingPassengerProgress(progress, endTime);
+                progress = progress + 1;
+
+                int seconds = (int) (millisUntilFinished / 1000) % 60;
+                    int minutes = (int) ((millisUntilFinished / (1000 * 60)) % 60);
+                    //int hours = (int) ((millisUntilFinished / (1000 * 60 * 60)) % 24);
+                    String newtime = minutes + ":" + seconds;
+
+                    if (newtime.equals("0:0")) {
+                        tv_time.setText("00:00");
+                    } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
+                        tv_time.setText("0" + minutes + ":0" + seconds);
+                    } else if ((String.valueOf(minutes).length() == 1)) {
+                        tv_time.setText("0" + minutes + ":" + seconds);
+                    } else if ((String.valueOf(seconds).length() == 1)) {
+                        tv_time.setText(minutes + ":0" + seconds);
+                    } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
+                        tv_time.setText(minutes + ":0" + seconds);
+                    } else if (String.valueOf(minutes).length() == 1) {
+                        tv_time.setText("0" + minutes + ":" + seconds);
+                    } else if (String.valueOf(seconds).length() == 1) {
+                        tv_time.setText(minutes + ":0" + seconds);
+                    } else {
+                        tv_time.setText(minutes + ":" + seconds);
+                    }
+
+            }
+
+            @Override
+            public void onFinish() {
+                //setProgressBarWaitingPassengerProgress(progress, endTime);
+                onPassengerNotArriverd();
+
+            }
+        };
+        countDownTimer.start();
+
+    }
+
+    public void setProgressBarWaitingPassengerProgress(int startTime, int endTime) {
+        viewProgressBarWaitingPassenger.setMax(endTime);
+        viewProgressBarWaitingPassenger.setSecondaryProgress(endTime);
+        viewProgressBarWaitingPassenger.setProgress(startTime);
+    }
+
+    private void fn_countdownSimulateArrival() {
+
+        progress = 1;
+        endTime = 20;
+
+        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progress = progress + 1;
+            }
+
+            @Override
+            public void onFinish() {
+                onArrivalToGetPassenger();
+            }
+        };
+        countDownTimer.start();
+
+    }
+
+    private void fn_countdownSimulateArrivalInDestiny() {
+
+        progress = 1;
+        endTime = 40;
+
+        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progress = progress + 1;
+            }
+
+            @Override
+            public void onFinish() {
+                onArrivalToLandingPassenger();
+            }
+        };
+        countDownTimer.start();
+
+    }
+
     @Override
     public void onDestroy() {
         stopLocationUpdates();
         super.onDestroy();
     }
 
-    @OnClick(R.id.frameLayoutAceitar)
-    public void onViewClicked() {
-        Log.d("d", "HomeFragment - onVieClickedt- lastlocation.getLat: " + lastLocation.getLatitude());
-        frameLayoutAceitar.setVisibility(View.GONE);
-        Toast.makeText(getContext(),"Corrida aceita!", Toast.LENGTH_LONG).show();
 
-        Travel travel = getTravel(dataTravelRequester, lastLocation);
 
+    private String[] getSplittedAddress(String completeAddress){
+        String[] placeOriginAddressSplitted = completeAddress.split(",");
+        String address2 = placeOriginAddressSplitted[1] + ", " + placeOriginAddressSplitted[2];
+        String[] address = {placeOriginAddressSplitted[0], address2};
+        return address;
+    }
+
+    public void uploadDriverDataToArea(){
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            NearDriver nearDriver = getNearDriver(location);
+
+                            presenter.uploadDriverDataToArea(nearDriver);
+
+                            //LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                        }
+                    }
+                });
+    }
+
+    private void onPassengerNotArriverd(){
+        Log.d("d", "HomeFragment - onPassengerNotArrived");
+    }
+
+    private void habilitarDrawerNavigation(){
         if(getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
-            Log.d("d", "HomeFragment - onViewClicked - msgTravelAcceptedFromHomeFragment");
+            Log.d("d", "HomeFragment - habilitarDrawerNavigation - msgTravelAcceptedFromHomeFragment");
+            mainActivity.enableDrawNavigation();
+        }
+    }
+
+    private void desabilitarDrawerNavigation(){
+        if(getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            Log.d("d", "HomeFragment - desabilitarDrawerNavigation - msgTravelAcceptedFromHomeFragment");
+            mainActivity.disableDrawNavigation();
+        }
+    }
+
+    private void informMainActivityTravelAccepted(){
+        if(getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            Log.d("d", "HomeFragment - informMainActivityTravelAccepted - msgTravelAcceptedFromHomeFragment");
             mainActivity.msgTravelAcceptedFromHomeFragment();
         }
+    }
 
-        presenter.acceptTravel(travel);
+    private void informMainActivityTravelCompleted(){
+        if(getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            Log.d("d", "HomeFragment - informMainActivityTravelCompleted - msgTravelCompletedFromHomeFragment");
+            mainActivity.msgTravelCompletedFromHomeFragment();
+        }
+    }
 
+    private void setupScreenOnTravelAccepted(){
         homeViewPadding.setVisibility(View.GONE);
         homeFrameLayoutTop.setVisibility(View.VISIBLE);
         homeFrameLayoutBottom.setVisibility(View.VISIBLE);
-        String placeOriginAddress = travel.getPlaceOriginAddress();
-        String[] placeOriginAddressSplitted = placeOriginAddress.split(",");
-        String address2 = placeOriginAddressSplitted[1] + ", " + placeOriginAddressSplitted[2];
-        textViewPassengerAddress1.setText(placeOriginAddressSplitted[0]);
-        textViewPassengerAddress2.setText(address2);
-        textViewPassengerName.setText(travel.getRequesterName());
+        String[] address = getSplittedAddress(currentTravel.getPlaceOriginAddress());
+        textViewPassengerAddress1.setText(address[0]);
+        textViewPassengerAddress2.setText(address[1]);
+        textViewPassengerName.setText(currentTravel.getRequesterName());
+        Log.d("d", "HomeFragment - onViewClicked - antes de presenter.acceptTravel");
 
+        if(polyline!=null)
+            polyline.remove();
     }
 
-    private void onFrameLayoutAceitarNotClicked() {
-        startLocationUpdates();
-        frameLayoutAceitar.setVisibility(View.GONE);
+    private void setupFramesLayoutOnArrivalToGetPassenger(){
+        textViewStatusTravel.setVisibility(View.GONE);
+        textViewStatusTravel2.setVisibility(View.VISIBLE);
+        textViewNextStreet.setVisibility(View.GONE);
+        tv_time.setVisibility(View.VISIBLE);
+        //viewProgressBarWaitingPassenger.setVisibility(View.VISIBLE);
+        initiateTravelButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setupScreenOnInitiateJourney(){
+        frameLayoutChatImgView.setVisibility(View.GONE);
+        frameLayoutImgViewPadding.setVisibility(View.GONE);
+        textViewStatusTravel.setVisibility(View.VISIBLE);
+        textViewStatusTravel2.setVisibility(View.GONE);
+        textViewStatusTravel.setText("Desembarque de "+currentTravel.getRequesterName());
+        textViewPassengerName.setVisibility(View.GONE);
+        textViewNextStreet.setVisibility(View.VISIBLE);
+        initiateTravelButton.setVisibility(View.GONE);
+        tv_time.setVisibility(View.GONE);
+        //viewProgressBarWaitingPassenger.setVisibility(View.GONE);
+        chatButton.setVisibility(View.INVISIBLE);
+
+        String[] address = getSplittedAddress(currentTravel.getPlaceDestinoAddress());
+        textViewPassengerAddress1.setText(address[0]);
+        textViewPassengerAddress2.setText(address[1]);
+
+        timeDistanceLinearLayout.setVisibility(View.VISIBLE);
+        tvTimeToDestiny.setText("0.1 min");
+        tvDistanceToDestiny.setText("0.1 km");
+    }
+
+    private void setupScreenOnArrivalToLandingPassenger(){
+        textViewPassengerAddress2.setVisibility(View.GONE);
+        timeDistanceLinearLayout.setVisibility(View.GONE);
+        terminateTravelButton.setVisibility(View.VISIBLE);
+    }
+    private void setupScreenOnTerminateTravel(){
+
+        homeFrameLayoutTop.setVisibility(View.GONE);
+        homeFrameLayoutBottom.setVisibility(View.GONE);
+        frameLayoutChatImgView.setVisibility(View.VISIBLE);
+        frameLayoutImgViewPadding.setVisibility(View.INVISIBLE);
+        textViewNextStreet.setVisibility(View.VISIBLE);
+        textViewPassengerAddress2.setVisibility(View.VISIBLE);
+        textViewStatusTravel.setText("Aguardando Usuário");
+        textViewPassengerName.setVisibility(View.VISIBLE);
+        frameLayoutAvaliation.setVisibility(View.VISIBLE);
+    }
+
+    private Rating setupRatingFromAvaliationFrameLayout(){
+        Rating rating = new Rating();
+        rating.setTravelId(newTravelID);
+        rating.setEmail(sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr"));
+        rating.setNome(sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "nome_sh_pr"));
+        rating.setUrlPhotoUser("driverComment");
+        Date currentTime = Calendar.getInstance().getTime();
+        rating.setDate(currentTime.toString());
+        rating.setVote(avaliationRatingBar.getNumStars());
+        rating.setComment(String.valueOf(editTextAvaliationComment.getText()));
+        return rating;
+    }
+
+    public void captureScreenMap(){
+
+        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback()
+        {
+
+            @Override
+            public void onSnapshotReady(Bitmap snapshot)
+            {
+                // TODO Auto-generated method stub
+                Bitmap bitmap = snapshot;
+
+                OutputStream fout = null;
+
+                String filePath = System.currentTimeMillis() + ".jpeg";
+
+                try
+                {
+                    //fout = openFileOutput(filePath, MODE_WORLD_READABLE);
+
+                    // Write the string to the file
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+                    fout.flush();
+                    fout.close();
+                }
+                catch (FileNotFoundException e)
+                {
+                    // TODO Auto-generated catch block
+                    Log.d("ImageCapture", "FileNotFoundException");
+                    Log.d("ImageCapture", e.getMessage());
+                    filePath = "";
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    Log.d("ImageCapture", "IOException");
+                    Log.d("ImageCapture", e.getMessage());
+                    filePath = "";
+                }
+
+                //openShareImageDialog(filePath);
+            }
+        };
+
+        map.snapshot(callback);
     }
 
 }

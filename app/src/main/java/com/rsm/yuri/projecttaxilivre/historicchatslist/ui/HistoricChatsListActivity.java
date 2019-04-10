@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HistoricChatsListActivity extends AppCompatActivity implements HistoricChatsListView, OnItemClickListener {
+public class HistoricChatsListActivity extends AppCompatActivity implements HistoricChatsListView, OnItemClickListener, ConnectivityListener {
 
     @BindView(R.id.container)
     CoordinatorLayout container;
@@ -38,11 +38,14 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Inject
     HistoricChatsListPresenter presenter;
 
+    private TaxiLivreApp app;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historic_chats_list);
         ButterKnife.bind(this);
+        app = (TaxiLivreApp) getApplication();
 
         setupInjection();
 
@@ -55,7 +58,8 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.onResume();
+        //if(app.getConectivityStatus(this))
+            presenter.onResume();
     }
 
     @Override
@@ -71,8 +75,9 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     }
 
     private void setupInjection() {
-        TaxiLivreApp app = (TaxiLivreApp) getApplication();
-        app.getHistoricChatsListComponent(this, this, this).inject(this);
+        //TaxiLivreApp app = (TaxiLivreApp) getApplication();
+        app.getHistoricChatsListComponent(this, this, this, this).inject(this);
+        //app.getHistoricChatsListComponent(this, this, this).inject(this);
     }
 
     private void setupRecyclerView() {
@@ -92,6 +97,11 @@ public class HistoricChatsListActivity extends AppCompatActivity implements Hist
     @Override
     public void onItemLongClick(Driver driver) {
         //presenter.removeHistoricChat(driver.getEmail());
+    }
+
+    @Override
+    public boolean getConnectivityStatus() {
+        return app.getConectivityStatus(this);
     }
 
     @Override

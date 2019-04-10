@@ -86,7 +86,7 @@ public class HistoricChatsListPresenterImpl implements HistoricChatsListPresente
                         onHistoricChatRemoved(user);
                         break;
                     case HistoricChatsListEvent.onUrlPhotoDriverRetrived:
-                        Log.d("d", "event.type = historicchatRemoved"+user.getEmail());
+                        Log.d("d", "event.type = historicchatRetrived"+user.getEmail());
                         onUrlPhotoUserRetrived(user);
                         break;
                 }

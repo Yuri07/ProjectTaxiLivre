@@ -41,6 +41,9 @@ public class MainRepositoryImpl implements MainRepository {
 
                 myUserReference = firebase.getMyUserReference();//pega a referencia no
                 // database para o usuario atualmente autenticado
+
+                //myUserReference.keepSynced(true);
+
                 myUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {

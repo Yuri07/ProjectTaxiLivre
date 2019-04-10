@@ -2,6 +2,7 @@ package com.rsm.yuri.projecttaxilivre.map;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
+import com.rsm.yuri.projecttaxilivre.map.entities.Rating;
 import com.rsm.yuri.projecttaxilivre.map.entities.TravelRequest;
 
 /**
@@ -49,6 +50,26 @@ public class MapInteractorImpl implements MapInteractor {
     @Override
     public void unsubscribeForResponseOfDriverRequested() {
         mapRepository.unsubscribeForResponseOfDriverRequested();
+    }
+
+    @Override
+    public void deleteAckTravelRequest() {
+        mapRepository.deleteAckTravelRequest();
+    }
+
+    @Override
+    public void subscribeForMyDriverLocationUpdate(String driverEmail, String travelID) {
+        mapRepository.subscribeForMyDriverLocationUpdate(driverEmail, travelID);
+    }
+
+    @Override
+    public void unsubscribeForMyDriverLocationUpdate(String driverEmail, String travelID) {
+        mapRepository.unsubscribeForMyDriverLocationUpdate(driverEmail, travelID);
+    }
+
+    @Override
+    public void uploadMyRating(String emailDriver, Rating rating) {
+        mapRepository.uploadMyRating(emailDriver, rating);
     }
 
     /*@Override//nao tem essas funcoes disponiveis para o usuario na tela do mapfragment

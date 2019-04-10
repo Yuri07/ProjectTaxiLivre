@@ -45,6 +45,7 @@ public class AvatarUploaderPhoto implements UploaderPhoto {
                     event.setError(error);
                     post(EditProfileEvent.UPLOAD_ERROR, error);
                 }
+
             });
         }
 

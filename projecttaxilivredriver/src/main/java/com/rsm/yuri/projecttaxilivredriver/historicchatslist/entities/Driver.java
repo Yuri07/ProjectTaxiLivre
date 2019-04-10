@@ -11,6 +11,7 @@ public class Driver {
     private String email;
 
     private String nome;
+    private String sobreNome;
 
     private String urlPhotoDriver;
 
@@ -60,6 +61,14 @@ public class Driver {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getSobreNome() {
+        return sobreNome;
+    }
+
+    public void setSobreNome(String sobreNome) {
+        this.sobreNome = sobreNome;
     }
 
     public long getStatus() {

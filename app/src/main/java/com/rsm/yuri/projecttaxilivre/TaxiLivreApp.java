@@ -2,6 +2,8 @@ package com.rsm.yuri.projecttaxilivre;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -19,6 +21,7 @@ import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListModule;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivre.lib.di.LibsModule;
@@ -52,6 +55,7 @@ public class TaxiLivreApp extends Application{
     public final static String EMAIL_KEY = "email";
     public final static String NOME_KEY = "nome";
     public final static String URL_PHOTO_USER_KEY = "urlPhotoUser";
+    public final static String AVERAGE_RATINGS_PASSENGER_KEY = "averageRatingsPassenger";
 
     public final static String FIREBASE_NOTIFICATION_TOKEN_KEY = "firebaseNotificationToken";
     public final static String FIREBASE_NOTIFICATION_TOKEN_UPDATED_KEY = "firebaseNotificationUpdatedToken";
@@ -64,6 +68,7 @@ public class TaxiLivreApp extends Application{
     public void onCreate() {
         super.onCreate();
         initModules();
+
     }
 
     private void initModules() {
@@ -84,7 +89,19 @@ public class TaxiLivreApp extends Application{
         return NOME_KEY;
     }
 
+    public static String getAverageRatingsPassengerKey() {
+        return AVERAGE_RATINGS_PASSENGER_KEY;
+    }
 
+    public boolean getConectivityStatus(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
 
     public LoginComponent getLoginComponent(LoginView view) {
         return DaggerLoginComponent
@@ -122,7 +139,8 @@ public class TaxiLivreApp extends Application{
 
     public HistoricChatsListComponent getHistoricChatsListComponent(Context context,
                                                                     HistoricChatsListView view,
-                                                                    OnItemClickListener onItemClickListener) {
+                                                                    OnItemClickListener onItemClickListener,
+                                                                    ConnectivityListener connectivityListener) {
         libsModule.setContext(context);
 
         return DaggerHistoricChatsListComponent
@@ -130,7 +148,7 @@ public class TaxiLivreApp extends Application{
                 .taxiLivreAppModule(taxiLivreAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))
+                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener, connectivityListener))//.historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))//
                 .build();
 
     }

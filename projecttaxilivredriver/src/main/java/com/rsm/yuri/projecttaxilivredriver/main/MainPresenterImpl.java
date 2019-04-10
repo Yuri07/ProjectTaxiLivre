@@ -60,6 +60,11 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
+    public void uploadCompletedTravelStatus(){
+        mainInteractor.uploadCompletedTravelStatus(Driver.ONLINE);
+    }
+
+    @Override
     public void onDestroy() {
         mainView = null;
         eventBus.unregister(this);

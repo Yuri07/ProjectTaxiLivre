@@ -58,6 +58,9 @@
             android:label="@string/contactlist.title"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".historictravelslist.ui.HistoricTravelListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".chat.ui.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -75,7 +78,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".main.ui.MainOnTravelRequestActivity"></activity>
+        <activity android:name=".main.ui.MainOnTravelRequestActivity" />
+        <activity android:name=".historictravel.ui.HistoricTravelActivity"></activity>
     </application>
 
 </manifest>

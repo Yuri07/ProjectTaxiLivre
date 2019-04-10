@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.User;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
@@ -29,11 +30,16 @@ public class HistoricChatsListAdapter extends RecyclerView.Adapter<HistoricChats
     private List<User> historicChatsList;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
+    private ConnectivityListener connectivityListener;
 
-    public HistoricChatsListAdapter(List<User> historicChatsList, ImageLoader imageLoader, OnItemClickListener clickListener) {
+    public HistoricChatsListAdapter(List<User> historicChatsList,
+                                    ImageLoader imageLoader,
+                                    OnItemClickListener clickListener,
+                                    ConnectivityListener connectivityListener) {
         this.historicChatsList = historicChatsList;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
+        this.connectivityListener = connectivityListener;
     }
 
     @Override
@@ -56,6 +62,11 @@ public class HistoricChatsListAdapter extends RecyclerView.Adapter<HistoricChats
         holder.txtUser.setText(email);
         holder.txtStatus.setText(status);
         holder.txtStatus.setTextColor(color);
+
+        if(!connectivityListener.getConnectivityStatus())
+            holder.txtStatus.setVisibility(View.INVISIBLE);
+        else
+            holder.txtStatus.setVisibility(View.VISIBLE);
 
         String url = user.getUrlPhotoUser();
         if(url!=null) {

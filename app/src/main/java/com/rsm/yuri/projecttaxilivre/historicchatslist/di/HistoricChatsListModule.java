@@ -9,6 +9,7 @@ import com.rsm.yuri.projecttaxilivre.historicchatslist.HistoricChatsListReposito
 import com.rsm.yuri.projecttaxilivre.historicchatslist.HistoricChatsListRepositoryImpl;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.HistoricChatsListSessionInteractor;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.HistoricChatsListSessionInteractorImpl;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.adapters.HistoricChatsListAdapter;
@@ -32,10 +33,14 @@ public class HistoricChatsListModule {
 
     private HistoricChatsListView view;
     private OnItemClickListener clickListener;
+    private ConnectivityListener connectivityListener;
 
-    public HistoricChatsListModule(HistoricChatsListView view, OnItemClickListener clickListener) {
+    public HistoricChatsListModule(HistoricChatsListView view,
+                                   OnItemClickListener clickListener,
+                                   ConnectivityListener connectivityListener) {
         this.view = view;
         this.clickListener = clickListener;
+        this.connectivityListener = connectivityListener;
     }
 
     @Provides
@@ -48,7 +53,8 @@ public class HistoricChatsListModule {
     @Singleton
     HistoricChatsListPresenter providesHistoricChatsListPresenter(EventBus eventBus,
                                                                   HistoricChatsListView historicChatsListView,
-                                                                  HistoricChatsListInteractor historicChatsListInteractor, HistoricChatsListSessionInteractor sessionInteractor){
+                                                                  HistoricChatsListInteractor historicChatsListInteractor,
+                                                                  HistoricChatsListSessionInteractor sessionInteractor){
         return new HistoricChatsListPresenterImpl(eventBus,
                 historicChatsListView,
                 historicChatsListInteractor,
@@ -75,14 +81,24 @@ public class HistoricChatsListModule {
 
     @Provides
     @Singleton
-    HistoricChatsListAdapter providesHistoricChatsListAdapter(List<Driver> historicChatsList, ImageLoader imageLoader, OnItemClickListener clickListener){
-        return new HistoricChatsListAdapter(historicChatsList, imageLoader, clickListener);
+    HistoricChatsListAdapter providesHistoricChatsListAdapter(List<Driver> historicChatsList,
+                                                              ImageLoader imageLoader,
+                                                              OnItemClickListener clickListener,
+                                                              ConnectivityListener connectivityListener){
+
+        return new HistoricChatsListAdapter(historicChatsList, imageLoader, clickListener, connectivityListener);
     }
 
     @Provides
     @Singleton
     OnItemClickListener providesOnItemClickListener(){
         return clickListener;
+    }
+
+    @Provides
+    @Singleton
+    ConnectivityListener providesConnectivityListener(){
+        return connectivityListener;
     }
 
     @Provides

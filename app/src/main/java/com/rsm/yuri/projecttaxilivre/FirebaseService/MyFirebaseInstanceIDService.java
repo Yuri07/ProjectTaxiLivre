@@ -7,7 +7,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.rsm.yuri.projecttaxilivre.FirebaseService.di.DaggerFIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.FirebaseService.di.FIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreAppModule;

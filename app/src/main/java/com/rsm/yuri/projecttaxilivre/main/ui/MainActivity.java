@@ -1,6 +1,9 @@
 package com.rsm.yuri.projecttaxilivre.main.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -67,15 +71,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Inject
     ImageLoader imageLoader;
 
+    private OnTravelStatusChangedListener listener;
+
     HeaderViewHolder headerViewHolder;
     View headerLayout;
 
     private Location lastLocation;
     private TaxiLivreApp app;
 
+    private BroadcastReceiver mBroadcastReceiver;
+
     public final static int UPDATE_PROFILE = 0;
 
     private static final String NOTIFICATION_MSG_KEY = "notificationMsg";
+
+    public static final String RECEIVER_INTENT = "RECEIVER_INTENT";
+
+    public static final String DATA_INITIATE_TRAVEL_MSG_KEY = "dataInitiateTravelMsg";
+    public static final String DATA_TERMINATE_TRAVEL_MSG_KEY = "dataTerminateTravelMsg";
+
+    public static final String DATA_INITIATE_TRAVEL_MSG = "true";
+    public static final String DATA_TERMINATE_TRAVEL_MSG = "true";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +126,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         headerViewHolder = new HeaderViewHolder(headerLayout);
 
         setupInjection();
+
+        listener = mapFragment;
+
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                Log.d("d", "MainActivity - mBroadCastReceiver - onReceiver()");
+
+                String dataInitiateTravelMsg = intent.getStringExtra(DATA_INITIATE_TRAVEL_MSG_KEY);
+                String dataTerminateTravelMsg = intent.getStringExtra(DATA_TERMINATE_TRAVEL_MSG_KEY);
+
+                if(dataInitiateTravelMsg!=null) {
+                    //Log.d("d", "MainActivity dataRequestTravelFirebaseCloudMsg: " + dataRequestTravelMsg);
+                    if (dataInitiateTravelMsg.equals(DATA_INITIATE_TRAVEL_MSG)) {
+                        //Bundle extras = intent.getExtras();
+
+                        getIntent().removeExtra(DATA_INITIATE_TRAVEL_MSG_KEY);
+
+                        listener.onTravelInitiate();
+                    }
+
+                }else if(dataTerminateTravelMsg!=null){
+
+                    if (dataTerminateTravelMsg.equals(DATA_TERMINATE_TRAVEL_MSG)) {
+                        //Bundle extras = intent.getExtras();
+
+                        getIntent().removeExtra(DATA_TERMINATE_TRAVEL_MSG_KEY);
+
+                        listener.onTravelTerminate();
+                    }
+
+                }
+            }
+        };
+
+        /*if(mapFragment instanceof OnTravelStatusChangedListener){
+            listener = (OnTravelStatusChangedListener) mapFragment;
+            Log.d("d", "MainActivity.onCreate():listener inicializado");
+        }else{
+            Log.d("d", "MainActivity.onCreate():listener nao inicializado");
+            throw new ClassCastException();
+        }*/
 
         fragmentManager.beginTransaction()
                 .add(R.id.map_fragment_content_frame, mapFragment)
@@ -179,6 +238,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    public interface OnTravelStatusChangedListener {
+        public void onTravelInitiate();
+
+        public void onTravelTerminate();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -318,6 +383,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*if(requestCode== InfoWindowFragment.PLACE_AUTOCOMPLETE_REQUEST_CODE){
             //data.getExtras()
         }*/
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver((mBroadcastReceiver), new IntentFilter(RECEIVER_INTENT));
     }
 
     protected static class HeaderViewHolder {

@@ -41,6 +41,7 @@ import com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatActivity;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Car;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListActivity;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.ui.HistoricTravelListActivity;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivredriver.login.ui.LoginActivity;
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     private ActionBar actionBar;
 
+    TaxiLivreDriverApp app;
+
     public final static int FRAGMENT_HOME_IN_ARRAY = 0;
     public final static int FRAGMENT_MONEY_IN_ARRAY = 1;
     public final static int FRAGMENT_AVALIATION_IN_ARRAY = 2;
@@ -123,12 +126,20 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         ButterKnife.bind(this);
 
+        app = (TaxiLivreDriverApp) getApplication();
+
         setupBottomNavigationView();
 
         //toolbar.setTitle(OFFLINE);
         setSupportActionBar(toolbar);
 
         customToolbaTitle.setText(OFFLINE);
+
+        if(!app.getConectivityStatus(this)) {
+            switchMain.setEnabled(false);
+            Toast.makeText(this, "Não foi possível se conectar a rede TaxiLivre", Toast.LENGTH_SHORT).show();
+            Log.d("d", "MainActivity - onCreate() - Não foi possível se conectar a rede TaxiLivre");
+        }
 
         //actionBar = getSupportActionBar();
         //actionBar.setCustomView(R.layout.app_bar_main);
@@ -146,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         /*broadcast = new LocalBroadcastMainActivity(this);
         IntentFilter intentFilter = new IntentFilter( FILTRO_KEY );
         LocalBroadcastManager.getInstance(this).registerReceiver( broadcast, intentFilter );*/
-
 
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -196,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         Fragment[] fragments = new Fragment[]{new HomeFragment(),
                 new MoneyFragment(), new AvaliationFragment(), new ProfileFragment()};
 
-        TaxiLivreDriverApp app = (TaxiLivreDriverApp) getApplication();
+        //TaxiLivreDriverApp app = (TaxiLivreDriverApp) getApplication();
         MainComponent mainComponent = app.getMainComponent(this, this, getSupportFragmentManager(), fragments);
         mainComponent.inject(this);
 
@@ -347,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         int id = item.getItemId();
 
         if (id == R.id.nav_viagens) {
-
+            startActivity(new Intent(this, HistoricTravelListActivity.class));
         } else if (id == R.id.nav_historico_chats) {
             startActivity(new Intent(this, HistoricChatsListActivity.class));
         } else if (id == R.id.nav_ajuda) {
@@ -515,9 +525,38 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         listener.onSwitchButtonClicked(false);
 
+    }
 
+    public void msgTravelCompletedFromHomeFragment(){
+        Log.d("d", "MainActivity - msgTravelCompletedFromHomeFragment");
+        switchMain.setChecked(true);
+        //customToolbaTitle.setText(IN_TRAVEL);
 
+        if (Build.VERSION.SDK_INT >= 21) {
+            Drawable color = new ColorDrawable(Color.parseColor("#FF9800"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
+            getSupportActionBar().setBackgroundDrawable(color);
+            changeStatusBarColor(true);
+        }
 
+        bottomNavigation.setVisibility(View.VISIBLE);
+        appBarLayout.setVisibility(View.VISIBLE);
+
+        sharedPreferences.edit().putLong(TaxiLivreDriverApp.STATUS_KEY, Driver.ONLINE).apply();
+
+        presenter.startInTravelStatus();
+
+        listener.onSwitchButtonClicked(true);
+    }
+
+    public void disableDrawNavigation(){
+        Log.d("d", "MainActivity - disableDrawNavigation");
+        main_container.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+    }
+
+    public void enableDrawNavigation(){
+        Log.d("d", "MainActivity - enableDrawNavigation");
+        main_container.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     public void logMensagem(String mensagem ){
@@ -545,9 +584,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
-                new IntentFilter(RECEIVER_INTENT)
-        );
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver((mBroadcastReceiver), new IntentFilter(RECEIVER_INTENT));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

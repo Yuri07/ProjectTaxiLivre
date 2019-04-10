@@ -28,6 +28,12 @@ public class MainInteractorImpl implements MainInteractor {
     }
 
     @Override
+    public void uploadCompletedTravelStatus(int status) {
+        //mainRepository.uploadCompletedTravelStatus(status);
+        mainRepository.changeUserConnectionStatus(status);
+    }
+
+    @Override
     public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
         mainRepository.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
     }

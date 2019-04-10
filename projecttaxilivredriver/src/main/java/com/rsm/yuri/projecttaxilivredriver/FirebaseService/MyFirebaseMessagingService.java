@@ -121,7 +121,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             Intent intent = new Intent(MainActivity.RECEIVER_INTENT);
             intent.putExtras(args);
-            intent.putExtra(MainActivity.DATA_REQUEST_TRAVEL_MSG_KEY,"true");
+            intent.putExtra(MainActivity.DATA_REQUEST_TRAVEL_MSG_KEY, MainActivity.DATA_REQUEST_TRAVEL_MSG);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
             /*startActivity(new Intent(this, MainActivity.class));*/

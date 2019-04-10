@@ -6,7 +6,27 @@ package com.rsm.yuri.projecttaxilivredriver.home.events;
 
 public class MapHomeEvent {
 
+    private String newTravelID;
+    private int eventType;
     private String error;
+
+    public static int ON_TRAVEL_CREATED = 22;
+
+    public String getNewTravelID() {
+        return newTravelID;
+    }
+
+    public void setNewTravelID(String newTravelID) {
+        this.newTravelID = newTravelID;
+    }
+
+    public int getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(int eventType) {
+        this.eventType = eventType;
+    }
 
     public String getError() {
         return error;

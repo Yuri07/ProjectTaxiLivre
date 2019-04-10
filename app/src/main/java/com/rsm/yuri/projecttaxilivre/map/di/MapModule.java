@@ -8,7 +8,9 @@ import com.rsm.yuri.projecttaxilivre.map.MapPresenter;
 import com.rsm.yuri.projecttaxilivre.map.MapPresenterImpl;
 import com.rsm.yuri.projecttaxilivre.map.MapRepository;
 import com.rsm.yuri.projecttaxilivre.map.MapRepositoryImpl;
+import com.rsm.yuri.projecttaxilivre.map.models.AreasFortalezaHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
+import com.rsm.yuri.projecttaxilivre.map.models.AreasTeresinaHelper;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
 
 import javax.inject.Singleton;
@@ -55,7 +57,7 @@ public class MapModule {
     @Provides
     @Singleton
     AreasHelper providesAreasHelper(){
-        return new AreasHelper();
+        return new AreasTeresinaHelper();
     }
 
 }

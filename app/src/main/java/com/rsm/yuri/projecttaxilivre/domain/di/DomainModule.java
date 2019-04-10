@@ -1,11 +1,11 @@
 package com.rsm.yuri.projecttaxilivre.domain.di;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseAPI;
-import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
 
 import javax.inject.Singleton;
 
@@ -18,10 +18,14 @@ import dagger.Provides;
 @Module
 public class DomainModule {
 
+    public DomainModule() {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    }
+
     @Provides
     @Singleton
-    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference) {
-        return new FirebaseAPI(databaseReference, storageReference);
+    FirebaseAPI providesFirebaseAPI(DatabaseReference databaseReference, StorageReference storageReference, FirebaseAuth firebaseAuth) {
+        return new FirebaseAPI(databaseReference, storageReference, firebaseAuth);
     }
 
     @Provides
@@ -34,6 +38,12 @@ public class DomainModule {
     @Singleton
     StorageReference providesStorageReference(){
         return FirebaseStorage.getInstance().getReference();
+    }
+
+    @Provides
+    @Singleton
+    FirebaseAuth providesFirebaseAuth(){
+        return FirebaseAuth.getInstance();
     }
 
 

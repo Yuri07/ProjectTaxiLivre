@@ -2,11 +2,14 @@ package com.rsm.yuri.projecttaxilivredriver;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationModule;
+//import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationView;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatComponet;
@@ -21,8 +24,14 @@ import com.rsm.yuri.projecttaxilivredriver.editprofile.ui.EditProfileView;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListModule;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.OnItemClickListener;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.DaggerHistoricTravelsListComponent;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.HistoricTravelsListComponent;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.HistoricTravelsListModule;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.ui.HistoricTravelListView;
+import com.rsm.yuri.projecttaxilivredriver.historictravelslist.ui.OnHistoricTravelItemClickListener;
 import com.rsm.yuri.projecttaxilivredriver.home.di.DaggerHomeComponent;
 import com.rsm.yuri.projecttaxilivredriver.home.di.HomeComponent;
 import com.rsm.yuri.projecttaxilivredriver.home.di.HomeModule;
@@ -63,13 +72,14 @@ public class TaxiLivreDriverApp extends Application {
     public final static String COUNT_3_STARS_KEY = "count3Stars";
     public final static String COUNT_4_STARS_KEY = "count4Stars";
     public final static String COUNT_5_STARS_KEY = "count5Stars";
-
     public final static String MODELO_KEY = "modelo";
     public final static String URL_PHOTO_CAR_KEY = "urlPhotoCar";
     public final static String MARCA_KEY = "marca";
     public final static String COR_KEY = "cor";
     public final static String ANO_KEY = "ano";
     public final static String PLACA_KEY = "placa";
+
+    public final static String CIDADE_KEY = "cidade";
 
     @Override
     public void onCreate() {
@@ -81,6 +91,16 @@ public class TaxiLivreDriverApp extends Application {
         libsModule = new LibsModule();
         domainModule = new DomainModule();
         taxiLivreDriverAppModule= new TaxiLivreDriverAppModule(this);
+    }
+
+    public boolean getConectivityStatus(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
     }
 
     public LoginComponent getLoginComponent(LoginView view) {
@@ -105,14 +125,15 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
-    public HomeComponent getHomeComponent(HomeView view, Fragment fragment){
+    public HomeComponent getHomeComponent(HomeView view, Fragment fragment, String cidade){
         libsModule.setContext(fragment.getContext());
+
         return DaggerHomeComponent
                 .builder()
                 .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .homeModule(new HomeModule(view))
+                .homeModule(new HomeModule(view,cidade))
                 .build();
     }
 
@@ -140,7 +161,8 @@ public class TaxiLivreDriverApp extends Application {
 
     public HistoricChatsListComponent getHistoricChatsListComponent(Context context,
                                                                     HistoricChatsListView view,
-                                                                    OnItemClickListener onItemClickListener) {
+                                                                    OnItemClickListener onItemClickListener,
+                                                                    ConnectivityListener connectivityListener) {
         libsModule.setContext(context);
 
         return DaggerHistoricChatsListComponent
@@ -148,7 +170,7 @@ public class TaxiLivreDriverApp extends Application {
                 .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))
+                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener, connectivityListener))
                 .build();
     }
 
@@ -162,6 +184,21 @@ public class TaxiLivreDriverApp extends Application {
                 .libsModule(libsModule)
                 .chatModule(new ChatModule(view))
                 .build();
+    }
+
+    public HistoricTravelsListComponent getHistoricTravelsListComponent(Context context,
+                                                                        HistoricTravelListView view,
+                                                                        OnHistoricTravelItemClickListener onItemClickListener){
+        libsModule.setContext(context);
+
+        return DaggerHistoricTravelsListComponent
+                .builder()
+                .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .historicTravelsListModule(new HistoricTravelsListModule(view, onItemClickListener))
+                .build();
+
     }
 
     public EditProfileComponent getEditProfileComponent(EditProfileView view, Context context, int uploaderInjection){
