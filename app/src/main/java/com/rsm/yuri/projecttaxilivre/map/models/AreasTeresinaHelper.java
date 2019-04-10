@@ -2,11 +2,16 @@ package com.rsm.yuri.projecttaxilivre.map.models;
 
 import static java.lang.Math.abs;
 
-public class AreasTeresinaHelper implements AreasHelper{
+public class AreasTeresinaHelper extends AreasHelper{
 
-    private final static double LAT_INI = -4.975419;
-    private final static double LONG_INI = -42.866530;
-    private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
+    private final static double LAT_INI_TERESINA = -4.975419;
+    private final static double LONG_INI_TERESINA = -42.866530;
+
+    public AreasTeresinaHelper() {
+        setInitialLatLong(LAT_INI_TERESINA, LONG_INI_TERESINA);
+    }
+
+    /*private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
     private final static double SIZE_AREA_X[]= {0.04, 0.03, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.007, 0.01, 0.01, 0.02, 0.02, 0.04 };
 
     public GroupAreas getGroupAreas(double latitude, double longitude){
@@ -72,6 +77,6 @@ public class AreasTeresinaHelper implements AreasHelper{
         }
 
         return sideAreaCoordenada;
-    }
+    }*/
 
 }

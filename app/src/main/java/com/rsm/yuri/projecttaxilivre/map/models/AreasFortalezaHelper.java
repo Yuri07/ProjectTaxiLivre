@@ -6,12 +6,17 @@ import static java.lang.Math.abs;
  * Created by yuri_ on 03/02/2018.
  */
 
-public class AreasFortalezaHelper implements AreasHelper{
+public class AreasFortalezaHelper extends AreasHelper{
 
 
-    private final static double LAT_INI = -3.668985;
-    private final static double LONG_INI = -38.672476;
-    private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
+    private final static double LAT_INI_FORTALEZA = -3.668985;
+    private final static double LONG_INI_FORTALEZA = -38.672476;
+
+    public AreasFortalezaHelper() {
+        setInitialLatLong(LAT_INI_FORTALEZA, LONG_INI_FORTALEZA);
+    }
+
+    /*private final static double SIZE_AREA_Y[]= {0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05};
     private final static double SIZE_AREA_X[]= {0.04, 0.03, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.007, 0.01, 0.01, 0.02, 0.02, 0.04 };
 
     public GroupAreas getGroupAreas(double latitude, double longitude){
@@ -77,6 +82,6 @@ public class AreasFortalezaHelper implements AreasHelper{
         }
 
         return sideAreaCoordenada;
-    }
+    }*/
 
 }

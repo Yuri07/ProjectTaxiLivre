@@ -40,6 +40,7 @@ public class FirebaseAPI {
     private final static String URL_PHOTO_DRIVER_PATH = "urlPhotoDriver";
     private final static String NEAR_DRIVERS_PATH = "neardrivers";
     private final static String AREAS_PATH = "areas";
+    private final static String CIDADES_PATH = "cidades";
     private final static String CHATS_PATH = "chats";
     private final static String HISTORICCHATS_PATH = "historicchats";
     private final static String HISTORICTRAVELS_PATH = "historictravels";
@@ -120,7 +121,7 @@ public class FirebaseAPI {
 
     }
 
-    public void subscribeForNearDriversUpdate(final GroupAreas groupAreas, final FirebaseEventListenerCallback listener){
+    public void subscribeForNearDriversUpdate(final GroupAreas groupAreas, final String cidade, final FirebaseEventListenerCallback listener){
 
         if(areasEventListener==null){
             Log.d("d", "FirebaseAPI - subscribeForNearDriversUpdates() - areasEventListener = new ChildEventListener");
@@ -151,13 +152,13 @@ public class FirebaseAPI {
                 }
             };
 
-            mainAreaDataReference = getAreaDataReference(groupAreas.getMainArea().getId());
+            mainAreaDataReference = getAreaDataReference(groupAreas.getMainArea().getId(), cidade);
             //mainAreaDataReference.keepSynced(false);
-            areaVerticalSideDataReference= getAreaDataReference(groupAreas.getAreaVerticalSide().getId());
+            areaVerticalSideDataReference= getAreaDataReference(groupAreas.getAreaVerticalSide().getId(), cidade);
             //areaVerticalSideDataReference.keepSynced(false);
-            areaHorizontalSideDataReference = getAreaDataReference(groupAreas.getAreaHorizontalSide().getId());
+            areaHorizontalSideDataReference = getAreaDataReference(groupAreas.getAreaHorizontalSide().getId(), cidade);
             //areaHorizontalSideDataReference.keepSynced(false);
-            areaDiagonalDataReference = getAreaDataReference(groupAreas.getAreaDiagonal().getId());
+            areaDiagonalDataReference = getAreaDataReference(groupAreas.getAreaDiagonal().getId(), cidade);
             //areaDiagonalDataReference.keepSynced(false);
 
             mainAreaDataReference.addChildEventListener(areasEventListener);
@@ -424,7 +425,8 @@ public class FirebaseAPI {
         });
     }
 
-    public void setTravelRequest(TravelRequest travelRequest, String requestedDriverEmail, Area areaRequestedDriver){
+    public void setTravelRequest(TravelRequest travelRequest, String requestedDriverEmail,
+                                                        Area areaRequestedDriver, String cidade){
 
         Map<String, Object> updates = new HashMap<String, Object>();
         updates.put("requesterEmail", travelRequest.getRequesterEmail());
@@ -442,7 +444,7 @@ public class FirebaseAPI {
         updates.put("travelPrice", travelRequest.getTravelPrice());
         updates.put("urlPhotoTravel", travelRequest.getUrlPhotoMap());
 
-        getAreaDataReference(areaRequestedDriver.getId()).
+        getAreaDataReference(areaRequestedDriver.getId(), cidade).
                 child(requestedDriverEmail.replace(".","_")).updateChildren(updates);
 
     }
@@ -488,10 +490,10 @@ public class FirebaseAPI {
         return getUserReference(email).child(HISTORICCHATS_PATH);
     }
 
-    private DatabaseReference getAreaDataReference(String id) {
+    private DatabaseReference getAreaDataReference(String id, String cidade) {
         DatabaseReference areaReference = null;
         if(id!=null){
-            areaReference = databaseReference.getRoot().child(AREAS_PATH).child(id);
+            areaReference = databaseReference.getRoot().child(CIDADES_PATH).child(cidade).child(AREAS_PATH).child(id);
         }
         return areaReference;
 

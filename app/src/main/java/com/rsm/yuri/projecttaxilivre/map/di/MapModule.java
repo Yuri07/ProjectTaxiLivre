@@ -25,9 +25,12 @@ import dagger.Provides;
 public class MapModule {
 
     MapView mapView;
+    private AreasHelper areasHelper = null;
+    String cidade;
 
-    public MapModule(MapView mapView){
+    public MapModule(MapView mapView, String cidade){
         this.mapView = mapView;
+        this.cidade = cidade;
     }
 
     @Provides
@@ -51,13 +54,29 @@ public class MapModule {
     @Provides
     @Singleton
     MapRepository providesMapRepository(FirebaseAPI firebase, EventBus eventBus, AreasHelper areasHelper){
-        return new MapRepositoryImpl(firebase, eventBus, areasHelper);
+        return new MapRepositoryImpl(firebase, eventBus, areasHelper, cidade);
     }
 
     @Provides
     @Singleton
     AreasHelper providesAreasHelper(){
-        return new AreasTeresinaHelper();
+        //        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.Areas" + cidade +"Helper";
+        String nomeDaClasse = "com.rsm.yuri.projecttaxilivre.map.models.AreasTeresinaHelper";
+//        Log.d("d", "HomeModule - providesAreasHelper() - nome da classe: " + nomeDaClasse);
+        Class classe = null;//carregar a classe com o nome da String passada
+        try {
+            classe = Class.forName(nomeDaClasse);
+            areasHelper = (AreasHelper) classe.newInstance();
+        }catch (ClassNotFoundException e){
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
+        return areasHelper;
     }
 
 }

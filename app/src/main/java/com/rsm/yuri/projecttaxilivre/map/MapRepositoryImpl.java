@@ -29,18 +29,20 @@ public class MapRepositoryImpl implements MapRepository {
     private EventBus eventBus;
     GroupAreas groupAreas;
     private AreasHelper areasHelper;
+    private String cidade;
 
-    public MapRepositoryImpl(FirebaseAPI firebase, EventBus eventBus, AreasHelper areasHelper) {
+    public MapRepositoryImpl(FirebaseAPI firebase, EventBus eventBus, AreasHelper areasHelper, String cidade) {
         this.firebase = firebase;
         this.eventBus = eventBus;
         this.areasHelper = areasHelper;
+        this.cidade = cidade;
     }
 
     @Override
     public void subscribeForDriversEvents(LatLng location) {
         Log.d("d", "MapRepositoryImpl - subscribeForDriversEvents()");
         groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
-        firebase.subscribeForNearDriversUpdate(groupAreas, new FirebaseEventListenerCallback(){
+        firebase.subscribeForNearDriversUpdate(groupAreas, cidade, new FirebaseEventListenerCallback(){
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot) {
@@ -105,7 +107,7 @@ public class MapRepositoryImpl implements MapRepository {
     public void requestDriver(NearDriver requestedDriver, TravelRequest travelRequest){
         GroupAreas groupAreasRequestedDriver = areasHelper.getGroupAreas(requestedDriver.getLatitude(), requestedDriver.getLongitude());
         Area areaRequestedDriver = groupAreasRequestedDriver.getMainArea();
-        firebase.setTravelRequest(travelRequest, requestedDriver.getEmail(), areaRequestedDriver);
+        firebase.setTravelRequest(travelRequest, requestedDriver.getEmail(), areaRequestedDriver, cidade);
     }
 
     @Override
