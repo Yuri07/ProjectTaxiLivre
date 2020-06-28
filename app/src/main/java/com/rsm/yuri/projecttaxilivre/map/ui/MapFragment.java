@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -48,7 +47,6 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -138,6 +136,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     private MapInfoWindowFragment mapInfoWindowFragment;
     private GoogleMap map;
+    private String cidade=null;
     private HashMap<Marker, NearDriver> markers;
     private HashMap<Marker, Driver> myDriverMarkerHasMap;
 
@@ -172,20 +171,83 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = (TaxiLivreApp) getActivity().getApplication();
-        setupInjection();
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        inicializaVariavelCidade();
+
+//        setupInjection(cidade);
 
         markers = new HashMap<Marker, NearDriver>();
         nearDriversList = new ArrayList<>();
 
         myDriverMarkerHasMap = new HashMap<Marker, Driver>();
 
-        mapPresenter.onCreate();
+//        mapPresenter.onCreate();
         //mapPresenter.subscribe();
     }
 
-    private void setupInjection() {
-        app.getMapComponent(this, this).inject(this);
+    private String inicializaVariavelCidade() {
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            int permissionLocation = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+            }
+            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
+            }
+
+        }
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+
+                            lastLocation = location;
+
+
+                            LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+//                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                            geocoder = new Geocoder(getContext(), Locale.getDefault());
+                            List<Address> addresses;
+                            try {
+                                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 2); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                String address = addresses.get(1).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                String[] addressLines = address.split(", ");
+                                String[] cidadeLine = addressLines[2].split(" - ");
+                                cidade = cidadeLine[0];
+                                if(cidade.equals("Caucaia")){
+                                    cidade="Fortaleza";
+                                }
+                                Log.d("d", "MapFragment - inicializaVariavelCidade()- cidade: " + cidade);
+
+                                setupInjection(cidade);
+                                mapPresenter.onCreate();
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }
+                });
+
+
+
+        return "";
+    }
+
+    private void setupInjection(String cidade) {
+        app = (TaxiLivreApp) getActivity().getApplication();
+        app.getMapComponent(this, this, cidade).inject(this);
     }
 
     @Override
@@ -336,7 +398,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             polyline.remove();
 
         if(!travelID.equals("travelNotAcceptedAck")){
-            setupScreenInTravel();
+            setupAckReceivedBottomLayout();
             Log.d("d", "MapFragment - onTravelAckReceived() - travelID nao e igual a travelNotAcceptedAck ");
 
             if(travelID.equals("rejected")){
@@ -344,8 +406,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             }else{
                 Log.d("d", "MapFragment - onTravelAckReceived() - travelID != rejected: " + travelID);
                 mapPresenter.subscribeForMyDriverLocationUpdate(requestedDriver.getEmail(),currentTravelID);
-
             }
+
         }else{
             Log.d("d", "MapFragment - onTravelAckReceived() - travelID e igual a travelNotAcceptedAck ");
             Toast.makeText(getContext(), "Motorista não respondeu requisição.",Toast.LENGTH_SHORT).show();
@@ -526,7 +588,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         if (!checkReady()) {
             return null;
         }
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -903,8 +965,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         unbinder.unbind();
     }
 
-    private void setupScreenInTravel(){
-        frameLayoutWaitingForResponse.setVisibility(View.GONE);
+    private void setupAckReceivedBottomLayout(){
+        //frameLayoutWaitingForResponse.setVisibility(View.GONE);
+        resetBottomLayout();
         frameLayoutBottom.setVisibility(View.VISIBLE);
     }
 
@@ -916,12 +979,15 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     }
 
     private void setupOnTravelTerminateBottomLayout(){
+        resetBottomLayout();
         frameLayoutBottom.setVisibility(View.GONE);
+    }
+
+    private void resetBottomLayout() {
         linearLayoutStatus.setGravity(Gravity.NO_GRAVITY);
         buttonChat.setVisibility(View.VISIBLE);
         textViewCurrentStreet.setVisibility(View.GONE);
         textViewStatusTravel.setText("Aguardando Motorista");
-
     }
 
     private Rating setupRatingFromAvaliationFrameLayout(){

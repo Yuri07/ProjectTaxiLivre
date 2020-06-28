@@ -125,7 +125,7 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
-    public MapComponent getMapComponent(Fragment fragment, MapView mapView){
+    public MapComponent getMapComponent(Fragment fragment, MapView mapView, String cidade){
         libsModule.setContext(fragment.getContext());//era libsModule.setFragment(fragment);(ainda nao testado alteracao)
 
         return DaggerMapComponent
@@ -133,7 +133,7 @@ public class TaxiLivreApp extends Application{
                 .taxiLivreAppModule(taxiLivreAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .mapModule(new MapModule(mapView))
+                .mapModule(new MapModule(mapView, cidade))
                 .build();
     }
 

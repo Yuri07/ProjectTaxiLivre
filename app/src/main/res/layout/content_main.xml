@@ -181,8 +181,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:visibility="gone"
-        android:background="@color/colorPrimaryLight">
+        android:background="@color/colorPrimaryLight"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -200,19 +200,18 @@
                     android:id="@+id/map_bottom_frame_chat_img_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:civ_border_color="#FFFFFFFF"
-                    app:civ_border_width="0dp"
-                    app:civ_border_overlay="true"
-                    android:clickable="true"
-                    app:civ_fill_color="@color/colorPrimaryDark"
-                    android:paddingVertical="16dp"
-                    android:focusable="true"
-                    android:layout_marginVertical="8dp"
                     android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:paddingHorizontal="8dp"
-                    android:src="@drawable/icons8_balao_de_fala_48" />
+                    android:paddingVertical="16dp"
+                    android:src="@drawable/icons8_balao_de_fala_48"
+                    app:civ_border_color="#FFFFFFFF"
+                    app:civ_border_overlay="true"
+                    app:civ_border_width="0dp"
+                    app:civ_fill_color="@color/colorPrimaryDark" />
             </FrameLayout>
-
 
 
             <LinearLayout
@@ -226,11 +225,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="gone"
                     android:layout_marginTop="4dp"
-                    android:textColor="#ffffff"
                     android:text="Rua atual"
-                    android:textSize="24sp" />
+                    android:textColor="#ffffff"
+                    android:textSize="24sp"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/map_bottom_frame_linearlayout_status_travel"
@@ -242,9 +241,9 @@
                         android:id="@+id/map_label_status_travel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#ffffff"
                         android:layout_marginVertical="4dp"
                         android:text="Aguardando motorista"
+                        android:textColor="#ffffff"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 

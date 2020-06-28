@@ -66,8 +66,9 @@ public class HomeModule {
     @Provides
     @Singleton
     AreasHelper providesAreasHelper(){
-//        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.Areas" + cidade +"Helper";
-        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.AreasTeresinaHelper";
+        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.Areas" + cidade +"Helper";
+//        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.AreasTeresinaHelper";
+//        String nomeDaClasse = "com.rsm.yuri.projecttaxilivredriver.home.models.AreasFortalezaHelper";
 //        Log.d("d", "HomeModule - providesAreasHelper() - nome da classe: " + nomeDaClasse);
         Class classe = null;//carregar a classe com o nome da String passada
         try {

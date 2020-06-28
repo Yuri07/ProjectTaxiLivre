@@ -137,6 +137,10 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
+//    public void setCidadeInHomeModule(String cidade){
+//
+//    }
+
     public AvaliationComponent getAvaliationComponent(AvaliationView view, Fragment fragment){
         libsModule.setContext(fragment.getContext());
         return DaggerAvaliationComponent

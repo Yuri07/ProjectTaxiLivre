@@ -200,13 +200,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         inicializaVariavelCidade();
-        Log.d("d", "HomeFragment - onCreate()- cidade: " + cidade);
-        setupInjection(cidade);
 
-        presenter.onCreate();
-
-        presenter.saveCity(cidade);
-        sharedPreferences.edit().putString(TaxiLivreDriverApp.CIDADE_KEY, cidade).apply();
+        //setupInjection();
+        //presenter.onCreate();
+        //presenter.saveCity(cidade);
+        //sharedPreferences.edit().putString(TaxiLivreDriverApp.CIDADE_KEY, cidade).apply();
 
         createLocationRequest();
         createLocationCallback();
@@ -216,6 +214,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     }
 
     private String inicializaVariavelCidade() {
+
+        Log.d("d", "HomeFragment - inicializaVariavelCidade()");
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -247,14 +247,40 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             geocoder = new Geocoder(getContext(), Locale.getDefault());
                             List<Address> addresses;
                             try {
-                                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                                cidade = addresses.get(0).getLocality();
+                                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 2); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                String address = addresses.get(1).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                                String[] addressLines = address.split(", ");
+                                String[] cidadeLine = addressLines[2].split(" - ");
+                                cidade = cidadeLine[0];
+                                if(cidade.equals("Caucaia")){
+                                    cidade="Fortaleza";
+                                }
+                                //Log.d("d", "HomeFragment - inicializaVariavelCidade()- address: " + address);
+                                //Log.d("d", "HomeFragment - inicializaVariavelCidade()- cidadeLine: " + cidadeLine);
                                 Log.d("d", "HomeFragment - inicializaVariavelCidade()- cidade: " + cidade);
-                                /*String state = addresses.get(0).getAdminArea();
-                                String country = addresses.get(0).getCountryName();
-                                String postalCode = addresses.get(0).getPostalCode();
-                                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
+
+//                                for(int i = 0;i<5;i++) {
+//                                    Log.d("d", "HomeFragment - inicializaVariavelCidade()- getMaxAddressLine(): " + addresses.get(i).getMaxAddressLineIndex());
+//                                    String cityName = addresses.get(i).getAddressLine(0);
+//                                    String stateName = addresses.get(i).getAddressLine(1);
+//                                    cidade = addresses.get(i).getLocality();
+//                                    Log.d("d", "HomeFragment - inicializaVariavelCidade()- getLocality(): " + cidade);
+//
+//                                    String countryName = addresses.get(i).getAddressLine(2);
+//                                    Log.d("d", "HomeFragment - inicializaVariavelCidade()- cityname: " + cityName);
+//                                    Log.d("d", "HomeFragment - inicializaVariavelCidade()- staatename: " + stateName);
+//                                    Log.d("d", "HomeFragment - inicializaVariavelCidade()- countryname: " + countryName);
+//                                }
+                                setupInjection(cidade);
+                                presenter.onCreate();
+                                presenter.saveCity(cidade);
+                                sharedPreferences.edit().putString(TaxiLivreDriverApp.CIDADE_KEY, cidade).apply();
+
+//                                String state = addresses.get(0).getAdminArea();
+//                                String country = addresses.get(0).getCountryName();
+//                                String postalCode = addresses.get(0).getPostalCode();
+//                                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -270,9 +296,65 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     }
 
     private void setupInjection(String cidade) {
+
+//        Log.d("d", "HomeFragment - setupInjection(String cidade)");
+//
+//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+//                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+//            int permissionLocation = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+//            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+//            }
+//            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+//
+//            }
+//
+//        }
+//
+//        mFusedLocationClient.getLastLocation()
+//                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+//                    @Override
+//                    public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
+//                        if (location != null) {
+//                            // Logic to handle location object
+//
+//                            lastLocation = location;
+//
+//
+//                            LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+////                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+//                            geocoder = new Geocoder(getContext(), Locale.getDefault());
+//                            List<Address> addresses;
+//                            try {
+//                                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 2); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+//                                String address = addresses.get(1).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+//
+//                                String[] addressLines = address.split(", ");
+//                                String[] cidadeLine = addressLines[2].split(" - ");
+//                                cidade = cidadeLine[0];
+//                                if(cidade.equals("Caucaia")){
+//                                    cidade="Fortaleza";
+//                                }
+//
+//                                Log.d("d", "HomeFragment - inicializaVariavelCidade()- cidade: " + cidade);
+//
+//                                TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
+//                                app.getHomeComponent(getPare(), getParentFragment(), cidade).inject(this);
+//
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//
+//                        }
+//                    }
+//                });
+
         TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
         app.getHomeComponent(this, this, cidade).inject(this);
-        //Log.d("d", "ProfileFragment.setupInjection:finalizada");
     }
 
     @Override
@@ -506,7 +588,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                     public void onSuccess(Location location) {// Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             // Logic to handle location object
-                            Log.d("Fragment", "onSuccess");
+                            Log.d("d", "onSuccessListener");
                             lastLocation = location;
                             Log.d("d", "HomeFragment - movCameratoLastKnowLocation - lastlocation.getLat: " + lastLocation.getLatitude());
                             LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());

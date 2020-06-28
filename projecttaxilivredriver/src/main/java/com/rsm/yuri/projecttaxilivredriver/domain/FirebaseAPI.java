@@ -283,19 +283,18 @@ public class FirebaseAPI {
     }
 
     public String acceptTravel(Travel travel, String cidade, String idArea){
+        Log.d("d", "FirebaseAPI.acceptTravel()");
         getAreaDataReference(idArea, cidade).child(travel.getDriverEmail().replace(".","_")).removeValue();
 
-        String newTravelId = createTravelId();
+        Log.d("d", "FirebaseAPI.acceptTravel() - remove driver da area");
+        String newTravelId = createTravelId(travel.getRequesterEmail());
 
+        Log.d("d", "FirebaseAPI.acceptTravel() - newTravelId: " + newTravelId);
         travel.setTravelId(newTravelId);
 
         HistoricTravelItem historicTravelItem = new HistoricTravelItem(travel);
 
-        //getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).child(newTravelId).setValue(travel);
-
         getTravelsReference(travel.getRequesterEmail()).child(newTravelId).setValue(travel);
-
-        //getUserReference(travenl.getRequesterEmail()).child(TRAVEL_ACK_PATH).setValue(newTravelId);
 
         getDriverReference(travel.getDriverEmail()).child(HISTORICTRAVELS_PATH).child(newTravelId)
                 .setValue(historicTravelItem);
@@ -303,8 +302,12 @@ public class FirebaseAPI {
         getUserReference(travel.getRequesterEmail()).child(HISTORICTRAVELS_PATH).child(newTravelId)
                 .setValue(historicTravelItem);
 
-        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH)
-                        .child(TRAVEL_ACK_CHILD_PATH).setValue(newTravelId);
+//        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH)
+//                        .child(TRAVEL_ACK_CHILD_PATH).setValue(newTravelId);
+
+        Map<String, Object> update = new HashMap<String, Object>();
+        update.put(TRAVEL_ACK_CHILD_PATH, newTravelId);
+//        getUserReference(travel.getRequesterEmail()).child(TRAVEL_ACK_PATH).updateChildren(update);
 
         return newTravelId;
 
@@ -315,8 +318,9 @@ public class FirebaseAPI {
                 .child(TRAVEL_ACK_CHILD_PATH).setValue(TRAVEL_NOT_ACCEPTED_ACK);
     }
 
-    public String createTravelId() {
-        return getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).push().getKey();
+    public String createTravelId(String requesterEmail) {
+        //return getTravelByDriverKeyReference(getAuthUserEmail().replace(".","_")).push().getKey();
+        return getTravelByDriverKeyReference(requesterEmail.replace(".","_")).push().getKey();
 
     }
 
@@ -346,7 +350,6 @@ public class FirebaseAPI {
                         }
                     }
                 });
-
     }
 
     public void updateMyLocationForTravel(final LatLng location, final String requesterEmail, final String newTravelID,

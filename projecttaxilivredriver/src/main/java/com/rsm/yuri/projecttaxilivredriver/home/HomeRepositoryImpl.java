@@ -91,6 +91,7 @@ public class HomeRepositoryImpl implements HomeRepository {
         Log.d("d", "HomeRepositoryImpl.acceptTravel()");
         groupAreas = areasHelper.getGroupAreas(travel.getLatDriver(), travel.getLongDriver());
         String newTravelID = firebase.acceptTravel(travel, cidade, groupAreas.getMainArea().getId());
+        Log.d("d", "HomeRepositoryImpl.acceptTravel() - newTravelId: " + newTravelID);
         post(MapHomeEvent.ON_TRAVEL_CREATED, newTravelID);
     }
 

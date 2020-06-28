@@ -106,6 +106,11 @@ public class MapRepositoryImpl implements MapRepository {
     @Override
     public void requestDriver(NearDriver requestedDriver, TravelRequest travelRequest){
         GroupAreas groupAreasRequestedDriver = areasHelper.getGroupAreas(requestedDriver.getLatitude(), requestedDriver.getLongitude());
+        Log.d("d", "MapRepository - requestDriver() - groupAreas:" +
+                groupAreasRequestedDriver.getMainArea().getId()+", "+
+                groupAreasRequestedDriver.getAreaDiagonal().getId()+", "+
+                groupAreasRequestedDriver.getAreaHorizontalSide().getId()+", "+
+                groupAreasRequestedDriver.getAreaVerticalSide().getId());
         Area areaRequestedDriver = groupAreasRequestedDriver.getMainArea();
         firebase.setTravelRequest(travelRequest, requestedDriver.getEmail(), areaRequestedDriver, cidade);
     }
@@ -121,15 +126,15 @@ public class MapRepositoryImpl implements MapRepository {
 
                 Log.d("d", "MapRepository - subscribeForStatusReceiverUpdates() onchildAdded()" );
 
-                //firebase.deleteAckTravelRequest();
+//                String idTravel = (String) dataSnapshot.getValue();
+//
+//                Log.d("d", "MapRepository - subscribeForResponseofDriverRequested() " +
+//                        "onchildAdded idTravel dataSnapshot.getValue()) = " + idTravel);
+//
+//
+//                if(idTravel!=null && !idTravel.equals(""))
+//                    post(MapEvent.onTravelAckReceived, idTravel);
 
-                /*String idTravel = dataSnapshot.getKey();
-                String email = (String) dataSnapshot.getValue();
-                Log.d("d", "MapRepositoryImpl - subscribeForStatusReceiverUpdates onchildAdded idTravel dataSnapshot.getValue()) = " + idTravel);*/
-                /*long status = (long) dataSnapshot.getValue();
-                Log.d("d", "subscribeForStatusReceiverUpdates onchildAdded status((long) dataSnapshot.getValue()) = " + status);*/
-
-                //post(MapEvent.onTravelAckReceived, idTravel);
             }
 
             @Override
@@ -140,7 +145,6 @@ public class MapRepositoryImpl implements MapRepository {
                 //String travelAck = (String) dataSnapshot.getValue();
                 Log.d("d", "MapRepository - subscribeForResponseofDriverRequested() " +
                         "onchildChanged idTravel dataSnapshot.getValue()) = " + idTravel);
-
 
                 if(idTravel!=null && !idTravel.equals(""))
                     post(MapEvent.onTravelAckReceived, idTravel);
