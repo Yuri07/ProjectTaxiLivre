@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "113540742385",
+    "firebase_url": "https://projecttaxilivre-1515301730986.firebaseio.com",
+    "project_id": "projecttaxilivre-1515301730986",
+    "storage_bucket": "projecttaxilivre-1515301730986.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113540742385:android:100de6d279163c45",
+        "android_client_info": {
+          "package_name": "com.rsm.yuri.projecttaxilivre"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113540742385-uov9tuq9optf7tplse6hkv3bbvh38nr1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsm.yuri.projecttaxilivre",
+            "certificate_hash": "a0d96ea6addbdcbf0bcae16251089799c12e5780"
+          }
+        },
+        {
+          "client_id": "113540742385-i8m93376l991o0e9tcr6p6srehdn5iso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0qZyRWMgiPPIXRYCfpipoBgd058LrXcE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113540742385-i8m93376l991o0e9tcr6p6srehdn5iso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113540742385:android:eb106a98fb079ee6",
+        "android_client_info": {
+          "package_name": "com.rsm.yuri.projecttaxilivredriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113540742385-5e5eondlufinbmskr8h5aru1rf691fh5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsm.yuri.projecttaxilivredriver",
+            "certificate_hash": "a0d96ea6addbdcbf0bcae16251089799c12e5780"
+          }
+        },
+        {
+          "client_id": "113540742385-i8m93376l991o0e9tcr6p6srehdn5iso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0qZyRWMgiPPIXRYCfpipoBgd058LrXcE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113540742385-i8m93376l991o0e9tcr6p6srehdn5iso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

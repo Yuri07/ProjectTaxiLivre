@@ -1,0 +1,10 @@
+String token = FirebaseInstallations.getInstance().
+                getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+            @Override
+            public void onComplete(@NonNull  Task<InstallationTokenResult> task) {
+
+            }
+
+
+        );
+        }
