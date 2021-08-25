@@ -3,7 +3,9 @@
     package="com.rsm.yuri.projecttaxilivredriver">
 
     <!--
-    As permissões a seguir são definidas no manifesto do Google Play Services e automaticamente incorporadas ao manifesto do aplicativo durante a compilação. Não é necessário adicioná-las explicitamente ao manifesto
+    As permissões a seguir são definidas no manifesto do Google Play Services e automaticamente
+     incorporadas ao manifesto do aplicativo durante a compilação. Não é necessário adicioná-las
+     explicitamente ao manifesto
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     -->
@@ -67,11 +69,11 @@
             android:name=".editprofile.ui.EditProfileActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".FirebaseService.MyFirebaseInstanceIDService">
+        <!--<service android:name=".FirebaseService.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
-        </service>
+        </service>-->
         <service android:name=".FirebaseService.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

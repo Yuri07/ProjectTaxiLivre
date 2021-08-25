@@ -19,4 +19,9 @@ public class ProfileInteractorImpl implements ProfileInteractor {
     public void execute(Uri selectedImageUri) {
         repository.uploadPhoto(selectedImageUri);
     }
+
+    @Override
+    public void retrieveDataUser() {
+        repository.retrieveDataUser();
+    }
 }

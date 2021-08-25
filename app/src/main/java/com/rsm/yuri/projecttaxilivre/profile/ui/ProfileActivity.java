@@ -1,7 +1,6 @@
 package com.rsm.yuri.projecttaxilivre.profile.ui;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,22 +11,22 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.design.widget.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+//import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
-import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.dialoglistenercallback.AddDialogFragmentListener;
 import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogFragment;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainActivity;
 import com.rsm.yuri.projecttaxilivre.profile.ProfilePresenter;
@@ -62,7 +61,6 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
     @BindView(R.id.profileActivityContainer)
     LinearLayout linearLayout;
 
-
     @Inject
     ProfilePresenter presenter;
     @Inject
@@ -88,13 +86,15 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
 
         presenter.onCreate();
 
-        String email = sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, "");
+        /*String email = sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, "");
         String nome = sharedPreferences.getString(TaxiLivreApp.NOME_KEY, "");
-        String urlPhotoUser = sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, "");
+        String urlPhotoUser = sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, "");*/
 
-        imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
+        /*imageLoader.load(imgAvatarProfileAct, urlPhotoUser);
         nomeUserProfileAct.setText(nome);
-        emailUserProfileAct.setText(email);
+        emailUserProfileAct.setText(email);*/
+
+        presenter.retrieveDataUser();
 
 
 
@@ -197,6 +197,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == REQUEST_PICTURE) {
             boolean isCamera = (data == null ||
                     data.getData() == null);
@@ -304,6 +305,22 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
     @Override
     public void onUploadError(String error) {
         Snackbar.make(linearLayout, error, Snackbar.LENGTH_SHORT).show();
-
     }
+
+    @Override
+    public void onSuccessToGetDataUser(User currentUser) {
+        displayDateUser(currentUser);
+    }
+
+    @Override
+    public void onFailedToGetDataUser(String error) {
+        Snackbar.make(linearLayout, error, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void displayDateUser(User currentUser) {
+        imageLoader.load(imgAvatarProfileAct, currentUser.getUrlPhotoUser());
+        nomeUserProfileAct.setText(currentUser.getNome());
+        emailUserProfileAct.setText(currentUser.getEmail());
+    }
+
 }

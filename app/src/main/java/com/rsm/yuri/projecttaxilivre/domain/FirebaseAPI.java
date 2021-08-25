@@ -1,8 +1,10 @@
 package com.rsm.yuri.projecttaxilivre.domain;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+//import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -649,9 +651,11 @@ public class FirebaseAPI {
 
     public void updateAvatarPhoto(final Uri selectedImageUri, final FirebaseStorageFinishedListener firebaseStorageFinishedListener) {//,(String previousImageUrl,
 
-        //final StorageReference photoRef = getUsersPhotosStorageReference().child(selectedImageUri.getLastPathSegment());
+        //final StorageReference photoRef = getUsersPhotosStorageReference().
+        //                                          child(selectedImageUri.getLastPathSegment());
 
-        StorageReference photoRef = getUsersPhotosStorageReference().child(getAuthUserEmail().replace(".","_"));
+        StorageReference photoRef = getUsersPhotosStorageReference()
+                            .child(getAuthUserEmail().replace(".","_"));
 
         //StorageReference photoDeleteRef = getUsersPhotosStorageReference().child(previousImageUrl);
 
@@ -660,9 +664,18 @@ public class FirebaseAPI {
         photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                myUrlPhotoReference.setValue(downloadUrl.toString());
-                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                //Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                //myUrlPhotoReference.setValue(downloadUrl.toString());
+                //firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String downloadUrl = uri.toString();
+                        myUrlPhotoReference.setValue(downloadUrl.toString());
+                        firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -728,17 +741,17 @@ public class FirebaseAPI {
 
     public void sendTokenToServer(String token, FirebaseActionListenerCallback listener) {
         String userEmail = getAuthUserEmail();
-        if(userEmail!=null) {
-            String userEmailKey = userEmail.replace(".","_");
-            DatabaseReference myTokenReference = databaseReference.getRoot()
-                    .child(NOTIFICATION_TOKEN_PATH)
-                    .child(userEmailKey)
-                    .child(TOKEN_PATH);
-            myTokenReference.setValue(token);
-            listener.onSuccess();
-        }else{
-            listener.onError(null);
-        }
+            if (userEmail != null) {
+                String userEmailKey = userEmail.replace(".", "_");
+                DatabaseReference myTokenReference = databaseReference.getRoot()
+                        .child(NOTIFICATION_TOKEN_PATH)
+                        .child(userEmailKey)
+                        .child(TOKEN_PATH);
+                myTokenReference.setValue(token);
+                listener.onSuccess();
+            } else {
+                listener.onError(null);
+            }
 
     }
 

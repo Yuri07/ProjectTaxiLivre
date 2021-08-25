@@ -2,10 +2,15 @@ package com.rsm.yuri.projecttaxilivredriver.main;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseActionListenerCallback;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseEventListenerCallback;
@@ -123,6 +128,33 @@ public class MainRepositoryImpl implements MainRepository {
     }
 
     @Override
+    public void verifyToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("d", "Fetching FCM registration token failed",
+                                    task.getException());
+                            post(MainEvent.onFailedToSaveFirebaseTokenInServer,
+                                    "getToken() Task dont complete!");
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        sendFirebaseNotificationTokenToServer(token);
+
+                        // Log and toast
+                        //String msg = getString(R.string.msg_token_fmt, token);
+                        Log.d("d", "FirebaseMessaging.getToken()");
+                        //Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    //@Override
     public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
         firebase.sendTokenToServer(firebaseNotificationToken, new FirebaseActionListenerCallback() {
             @Override

@@ -1,8 +1,10 @@
 package com.rsm.yuri.projecttaxilivredriver.domain;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+//import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -448,7 +450,11 @@ public class FirebaseAPI {
     }
 
     public void saveCity(String city){
-        getMyUserReference().child("cidade").setValue(city);
+        DatabaseReference myUserReference = getMyUserReference();
+        if(myUserReference!=null)
+            myUserReference.child("cidade").setValue(city);
+            //getMyUserReference().child("cidade").setValue(city);
+
     }
 
     public void removeDriverFromArea(String cidade, GroupAreas groupAreas, final FirebaseActionListenerCallback listenerCallback) {
@@ -486,7 +492,7 @@ public class FirebaseAPI {
         Map<String, Object> carValues = car.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/"+DRIVER_PATH+"/"+ driver.getEmail().replace(".","_") +"/"+NOME_PATH, driver.getNome());
-        childUpdates.put("/"+CAR_PATH+"/" + car.getEmail().replace(".","_") , carValues);
+        childUpdates.put("/"+CAR_PATH+"/"   + car.getEmail().replace(".","_")                  , carValues       );
 
         databaseReference.updateChildren(childUpdates, new DatabaseReference.CompletionListener() {
             @Override
@@ -809,9 +815,18 @@ public class FirebaseAPI {
         photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                myUrlPhotoReference.setValue(downloadUrl.toString());
-                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                //Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                //myUrlPhotoReference.setValue(downloadUrl.toString());
+                //firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String downloadUrl = uri.toString();
+                        myUrlPhotoReference.setValue(downloadUrl.toString());
+                        firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -835,9 +850,18 @@ public class FirebaseAPI {
         photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                myCarUrlPhotoReference.setValue(downloadUrl.toString());
-                firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                //Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                //myCarUrlPhotoReference.setValue(downloadUrl.toString());
+                //firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String downloadUrl = uri.toString();
+                        myCarUrlPhotoReference.setValue(downloadUrl.toString());
+                        firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -857,7 +881,8 @@ public class FirebaseAPI {
         photoRef.putFile(selectedImageUri).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
                 myUrlPhotoReference.setValue(downloadUrl.toString());
                 firebaseStorageFinishedListener.onSuccess(downloadUrl.toString());
             }

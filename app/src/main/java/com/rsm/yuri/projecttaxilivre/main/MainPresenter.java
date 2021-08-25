@@ -17,5 +17,7 @@ public interface MainPresenter {
     void logout();
     void checkForSession();
 
-    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+    //void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+                                                        //FirebaseInstanceId obsoleto
+    void verifyToken();
 }

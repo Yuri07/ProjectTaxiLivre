@@ -4,48 +4,58 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.AvaliationModule;
+//import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
 //import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.di.DaggerAvaliationComponent;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationView;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatComponet;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.ChatModule;
+//import com.rsm.yuri.projecttaxilivredriver.chat.di.DaggerChatComponet;
 import com.rsm.yuri.projecttaxilivredriver.chat.di.DaggerChatComponet;
 import com.rsm.yuri.projecttaxilivredriver.chat.ui.ChatView;
 import com.rsm.yuri.projecttaxilivredriver.domain.di.DomainModule;
+//import com.rsm.yuri.projecttaxilivredriver.editprofile.di.DaggerEditProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.editprofile.di.DaggerEditProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.editprofile.di.EditProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.editprofile.di.EditProfileModule;
 import com.rsm.yuri.projecttaxilivredriver.editprofile.ui.EditProfileView;
+//import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.di.HistoricChatsListModule;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivredriver.historicchatslist.ui.OnItemClickListener;
+//import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.DaggerHistoricTravelsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.DaggerHistoricTravelsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.HistoricTravelsListComponent;
 import com.rsm.yuri.projecttaxilivredriver.historictravelslist.di.HistoricTravelsListModule;
 import com.rsm.yuri.projecttaxilivredriver.historictravelslist.ui.HistoricTravelListView;
 import com.rsm.yuri.projecttaxilivredriver.historictravelslist.ui.OnHistoricTravelItemClickListener;
+//import com.rsm.yuri.projecttaxilivredriver.home.di.DaggerHomeComponent;
 import com.rsm.yuri.projecttaxilivredriver.home.di.DaggerHomeComponent;
 import com.rsm.yuri.projecttaxilivredriver.home.di.HomeComponent;
 import com.rsm.yuri.projecttaxilivredriver.home.di.HomeModule;
-import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
 import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeView;
 import com.rsm.yuri.projecttaxilivredriver.lib.di.LibsModule;
+//import com.rsm.yuri.projecttaxilivredriver.login.di.DaggerLoginComponent;
 import com.rsm.yuri.projecttaxilivredriver.login.di.DaggerLoginComponent;
 import com.rsm.yuri.projecttaxilivredriver.login.di.LoginComponent;
 import com.rsm.yuri.projecttaxilivredriver.login.di.LoginModule;
 import com.rsm.yuri.projecttaxilivredriver.login.ui.LoginView;
+//import com.rsm.yuri.projecttaxilivredriver.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivredriver.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainModule;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainView;
+//import com.rsm.yuri.projecttaxilivredriver.profile.di.DaggerProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.profile.di.DaggerProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.profile.di.ProfileComponent;
 import com.rsm.yuri.projecttaxilivredriver.profile.di.ProfileModule;
@@ -113,7 +123,8 @@ public class TaxiLivreDriverApp extends Application {
                 .build();
     }
 
-    public MainComponent getMainComponent(Context context, MainView view, FragmentManager manager, Fragment[] fragments) {
+    public MainComponent getMainComponent(Context context, MainView view, FragmentManager manager,
+                                                                                Fragment[] fragments) {
         libsModule.setContext(context);
 
         return DaggerMainComponent

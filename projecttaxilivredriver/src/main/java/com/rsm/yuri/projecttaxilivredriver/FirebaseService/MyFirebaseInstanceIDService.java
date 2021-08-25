@@ -2,8 +2,8 @@ package com.rsm.yuri.projecttaxilivredriver.FirebaseService;
 
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+//import com.google.firebase.iid.FirebaseInstanceId;
+//import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.rsm.yuri.projecttaxilivredriver.FirebaseService.di.FIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 
@@ -15,7 +15,7 @@ import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 * Classe não utilizada no projeto(service é inicializado sem que app possa ter nenhum controle e não é possível instanciar os recursos para enviar o token para o servidor em alguns momentos)
 */
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
+public class MyFirebaseInstanceIDService {//extends FirebaseInstanceIdService {
 
     //@Inject
     //SharedPreferences sharedPreferences;
@@ -57,10 +57,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * is initially generated so this is where you would retrieve the token.
      */
     // [START refresh_token]
-    @Override
+    //@Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        String refreshedToken = null;//FirebaseInstanceId.getInstance().getToken();
         Log.d("d", "Refreshed token: " + refreshedToken);
 
         // If you want to send messages to this application instance or

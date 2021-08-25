@@ -4,20 +4,26 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+//import com.rsm.yuri.projecttaxilivre.FirebaseService.di.DaggerFIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.FirebaseService.di.DaggerFIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.FirebaseService.di.FIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.AddDialogModule;
+//import com.rsm.yuri.projecttaxilivre.adddialog.di.DaggerAddDialogComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.di.DaggerAddDialogComponent;
 import com.rsm.yuri.projecttaxilivre.adddialog.ui.AddDialogView;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatComponet;
 import com.rsm.yuri.projecttaxilivre.chat.di.ChatModule;
+//import com.rsm.yuri.projecttaxilivre.chat.di.DaggerChatComponet;
+
 import com.rsm.yuri.projecttaxilivre.chat.di.DaggerChatComponet;
 import com.rsm.yuri.projecttaxilivre.chat.ui.ChatView;
 import com.rsm.yuri.projecttaxilivre.domain.di.DomainModule;
+//import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
+
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.DaggerHistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListComponent;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.di.HistoricChatsListModule;
@@ -25,22 +31,32 @@ import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.ConnectivityListener;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.HistoricChatsListView;
 import com.rsm.yuri.projecttaxilivre.historicchatslist.ui.OnItemClickListener;
 import com.rsm.yuri.projecttaxilivre.lib.di.LibsModule;
+//import com.rsm.yuri.projecttaxilivre.login.di.DaggerLoginComponent;
+
 import com.rsm.yuri.projecttaxilivre.login.di.DaggerLoginComponent;
 import com.rsm.yuri.projecttaxilivre.login.di.LoginComponent;
 import com.rsm.yuri.projecttaxilivre.login.di.LoginModule;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginView;
+//import com.rsm.yuri.projecttaxilivre.main.di.DaggerMainComponent;
+
 import com.rsm.yuri.projecttaxilivre.main.di.DaggerMainComponent;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainView;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
 import com.rsm.yuri.projecttaxilivre.main.di.MainModule;
+//import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.DaggerInfoWindowComponent;
+
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.DaggerInfoWindowComponent;
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.InfoWindowComponent;
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.di.InfoWindowModule;
+//import com.rsm.yuri.projecttaxilivre.map.di.DaggerMapComponent;
+
 import com.rsm.yuri.projecttaxilivre.map.di.DaggerMapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapComponent;
 import com.rsm.yuri.projecttaxilivre.map.di.MapModule;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapView;
+//import com.rsm.yuri.projecttaxilivre.profile.di.DaggerProfileComponent;
+
 import com.rsm.yuri.projecttaxilivre.profile.di.DaggerProfileComponent;
 import com.rsm.yuri.projecttaxilivre.profile.di.ProfileComponent;
 import com.rsm.yuri.projecttaxilivre.profile.di.ProfileModule;
@@ -113,7 +129,8 @@ public class TaxiLivreApp extends Application{
                 .build();
     }
 
-    public MainComponent getMainComponent(Context context, MainView view, FragmentManager manager, MapFragment mapFragment) {
+    public MainComponent getMainComponent(Context context, MainView view,
+                                          FragmentManager manager, MapFragment mapFragment) {
         libsModule.setContext(context);
 
         return DaggerMainComponent
@@ -127,6 +144,7 @@ public class TaxiLivreApp extends Application{
 
     public MapComponent getMapComponent(Fragment fragment, MapView mapView, String cidade){
         libsModule.setContext(fragment.getContext());//era libsModule.setFragment(fragment);(ainda nao testado alteracao)
+
 
         return DaggerMapComponent
                 .builder()
@@ -148,7 +166,8 @@ public class TaxiLivreApp extends Application{
                 .taxiLivreAppModule(taxiLivreAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
-                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener, connectivityListener))//.historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))//
+                .historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener,
+                                                                            connectivityListener))//.historicChatsListModule(new HistoricChatsListModule(view, onItemClickListener))//
                 .build();
 
     }

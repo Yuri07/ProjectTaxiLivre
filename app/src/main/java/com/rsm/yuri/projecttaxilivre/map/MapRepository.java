@@ -28,6 +28,8 @@ public interface MapRepository {
 
     void uploadMyRating(String emailDriver, Rating rating);
 
+    void retrieveDataUser();
+
     //void addNearDrivers();//nao tem essas funções para o usuario na tela do mapfragment.
     //void removeNearDrivers();
 

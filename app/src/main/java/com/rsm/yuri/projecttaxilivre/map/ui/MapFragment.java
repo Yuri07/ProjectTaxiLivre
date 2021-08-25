@@ -9,12 +9,17 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+//import android.support.annotation.NonNull;
+//import android.support.annotation.Nullable;
+//import android.support.design.widget.Snackbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+//import androidx.core.app.Fragment;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,7 +47,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
+//import com.google.android.gms.location.places.Place;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,9 +61,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivre.BuildConfig;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.main.ui.MainActivity;
 import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
@@ -167,23 +175,24 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     private static final int MAP_ZOOM_PADDING = 90;
     private static final int MAP_CAMERA_ANIMATION_DURATION_IN_MILLIS = 500;
+    private Place destinyPlace;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        inicializaVariavelCidade();
+//        inicializaVariavelCidade();
 
-//        setupInjection(cidade);
+        setupInjection("Fortaleza");
 
         markers = new HashMap<Marker, NearDriver>();
         nearDriversList = new ArrayList<>();
 
         myDriverMarkerHasMap = new HashMap<Marker, Driver>();
 
-//        mapPresenter.onCreate();
-        //mapPresenter.subscribe();
+        mapPresenter.onCreate();
+//        mapPresenter.subscribe();
     }
 
     private String inicializaVariavelCidade() {
@@ -228,7 +237,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                                 }
                                 Log.d("d", "MapFragment - inicializaVariavelCidade()- cidade: " + cidade);
 
-                                setupInjection(cidade);
+//                                setupInjection(cidade);
                                 mapPresenter.onCreate();
 
                             } catch (IOException e) {
@@ -239,8 +248,6 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                         }
                     }
                 });
-
-
 
         return "";
     }
@@ -271,6 +278,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         mapInfoWindowFragment.getMapAsync(this);
 
     }
+
 
     @Override
     public void onDriverMoved(NearDriver nearDriver) {
@@ -365,6 +373,118 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
             nearDriversList.remove(nearDriverIteractor);
         }*/
 
+    }
+
+    @Override
+    public void messageFromWindowInfoToMapFrag(Place destinyPlace) {
+
+        Log.d("d", "MapFragment - Place: " + destinyPlace.getName());
+
+        this.destinyPlace = destinyPlace;
+
+        mapPresenter.retrieveDataUser();
+
+    }
+
+    @Override
+    public void onSuccessToGetDataUser(User currentUser) {
+        if (markerClicked != null && markerSpecClicked != null && infoWindowFragmentClicked != null) {
+
+            final InfoWindow infoWindow = new InfoWindow(markerClicked, markerSpecClicked, infoWindowFragmentClicked);
+
+            markerClicked = null;
+            markerSpecClicked = null;
+            infoWindowFragmentClicked = null;
+            mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+
+            travelRequest = new TravelRequest();
+            travelRequest.setRequesterEmail(currentUser.getEmail());
+            travelRequest.setRequesterName(currentUser.getNome());
+            travelRequest.setUrlPhotoUser(currentUser.getUrlPhotoUser());
+            travelRequest.setAverageRatingsPassenger(currentUser.getAverageRating());
+            /*travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
+            travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
+            travelRequest.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
+            travelRequest.setAverageRatingsPassenger(sharedPreferences.getFloat(TaxiLivreApp.AVERAGE_RATINGS_PASSENGER_KEY, 1.0f));*/
+
+            List<Address> addresses;
+            geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+            travelRequest.setPlaceOriginAddress(destinyPlace.getAddress());
+            travelRequest.setPlaceDestinoAddress("default");
+            try {
+                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                /*String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
+
+                travelRequest.setPlaceDestinoAddress(address);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            travelRequest.setLatOrigem(lastLocation.getLatitude());
+            travelRequest.setLongOrigem(lastLocation.getLongitude());
+            travelRequest.setLatDestino(destinyPlace.getLatLng().latitude);
+            travelRequest.setLongDestino(destinyPlace.getLatLng().longitude);
+
+            Date currentTime = Calendar.getInstance().getTime();
+            Log.d("d", "MapFragment - travelDate: " + currentTime.toString());
+            travelRequest.setTravelDate(currentTime.toString());
+
+            String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
+            GoogleDirection.withServerKey(myApiKey)
+                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                    .to(destinyPlace.getLatLng())
+                    .transportMode(TransportMode.DRIVING)
+                    .execute(new DirectionCallback() {
+                        @Override
+                        public void onDirectionSuccess(@Nullable Direction direction) {
+                            if (direction.isOK()) {
+                                Route route = direction.getRouteList().get(0);
+                                Leg leg = route.getLegList().get(0);
+                                ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                                Info distanceInfo = leg.getDistance();
+                                Info durationInfo = leg.getDuration();
+                                String distanceReadable = distanceInfo.getText();
+                                String durationReadable = durationInfo.getText();
+
+                                //int distance = Integer.parseInt(distanceInfo.getValue());
+                                long distance = distanceInfo.getValue();
+                                Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
+                                double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+
+                                travelRequest.setTravelPrice(travelPrice);
+
+                                Log.d("d", "MapFragment - travelPrice: " + travelPrice);
+
+                                polylineOptions = DirectionConverter.createPolyline(
+                                        getContext(), directionPositionList, 5, Color.BLUE);
+
+                                polyline = map.addPolyline(polylineOptions);
+
+                                zoomRoute(map, directionPositionList);
+
+                                editTxtValorMap.setText(String.format( "%.2f", travelRequest.getTravelPrice())+"R$");
+                                frameLayoutConfirmar.setVisibility(View.VISIBLE);
+
+                            } else {
+                                Log.d("d", "MapFragment - messageFromWindowInfoToMapFrag direction.isOK == false");
+                            }
+                        }
+
+
+
+                        @Override
+                        public void onDirectionFailure(Throwable t) {
+                        }
+                    });
+        }
     }
 
     @OnClick(R.id.button_confirmar)
@@ -465,6 +585,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     }
 
+
+
     private void drawRoute(LatLng myDriverLocation, Location myLastLocation){
         String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
         GoogleDirection.withServerKey(myApiKey)
@@ -473,7 +595,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                 .transportMode(TransportMode.DRIVING)
                 .execute(new DirectionCallback() {
                     @Override
-                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                    public void onDirectionSuccess(@Nullable Direction direction) {
                         if (direction.isOK()) {
                             Route route = direction.getRouteList().get(0);
                             Leg leg = route.getLegList().get(0);
@@ -484,7 +606,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
                             String distanceReadable = distanceInfo.getText();
                             String durationReadable = durationInfo.getText();
 
-                            int distance = Integer.parseInt(distanceInfo.getValue());
+                            long distance = distanceInfo.getValue();//Integer.parseInt(distanceInfo.getValue());
                             Log.d("d", "MapFragment - drawRoute() - distanceInfo.getValue(): " + distance);
                             //double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
                             //travelRequest.setTravelPrice(travelPrice);
@@ -660,105 +782,8 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         }
         if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
-
         }
 
-    }
-
-    @Override
-    public void messageFromWindowInfoToMapFrag(Place destinyPlace) {
-
-        Log.d("d", "MapFragment - Place: " + destinyPlace.getName());
-
-        if (markerClicked != null && markerSpecClicked != null && infoWindowFragmentClicked != null) {
-
-            final InfoWindow infoWindow = new InfoWindow(markerClicked, markerSpecClicked, infoWindowFragmentClicked);
-            markerClicked = null;
-            markerSpecClicked = null;
-            infoWindowFragmentClicked = null;
-            mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
-
-            travelRequest = new TravelRequest();
-            travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
-            travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
-            travelRequest.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
-            travelRequest.setAverageRatingsPassenger(sharedPreferences.getFloat(TaxiLivreApp.AVERAGE_RATINGS_PASSENGER_KEY, 1.0f));
-
-            List<Address> addresses;
-            geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-            travelRequest.setPlaceOriginAddress(destinyPlace.getAddress().toString());
-            travelRequest.setPlaceDestinoAddress("default");
-            try {
-                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                /*String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
-                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
-
-                travelRequest.setPlaceDestinoAddress(address);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            travelRequest.setLatOrigem(lastLocation.getLatitude());
-            travelRequest.setLongOrigem(lastLocation.getLongitude());
-            travelRequest.setLatDestino(destinyPlace.getLatLng().latitude);
-            travelRequest.setLongDestino(destinyPlace.getLatLng().longitude);
-
-            Date currentTime = Calendar.getInstance().getTime();
-            Log.d("d", "MapFragment - travelDate: " + currentTime.toString());
-            travelRequest.setTravelDate(currentTime.toString());
-
-            String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
-            GoogleDirection.withServerKey(myApiKey)
-                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                    .to(destinyPlace.getLatLng())
-                    .transportMode(TransportMode.DRIVING)
-                    .execute(new DirectionCallback() {
-                        @Override
-                        public void onDirectionSuccess(Direction direction, String rawBody) {
-                            if (direction.isOK()) {
-                                Route route = direction.getRouteList().get(0);
-                                Leg leg = route.getLegList().get(0);
-                                ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
-
-                                Info distanceInfo = leg.getDistance();
-                                Info durationInfo = leg.getDuration();
-                                String distanceReadable = distanceInfo.getText();
-                                String durationReadable = durationInfo.getText();
-
-                                int distance = Integer.parseInt(distanceInfo.getValue());
-                                Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
-                                double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
-
-                                travelRequest.setTravelPrice(travelPrice);
-
-                                Log.d("d", "MapFragment - travelPrice: " + travelPrice);
-
-                                polylineOptions = DirectionConverter.createPolyline(
-                                        getContext(), directionPositionList, 5, Color.BLUE);
-
-                                polyline = map.addPolyline(polylineOptions);
-
-                                zoomRoute(map, directionPositionList);
-
-                                editTxtValorMap.setText(String.format( "%.2f", travelRequest.getTravelPrice())+"R$");
-                                frameLayoutConfirmar.setVisibility(View.VISIBLE);
-
-                            } else {
-                                Log.d("d", "MapFragment - messageFromWindowInfoToMapFrag direction.isOK == false");
-                            }
-                        }
-
-                        @Override
-                        public void onDirectionFailure(Throwable t) {
-                        }
-                    });
-        }
     }
 
 

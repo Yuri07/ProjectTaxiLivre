@@ -37,6 +37,11 @@ public class EditProfileInteractorImpl implements EditProfileInteractor {
         repository.uploadPhoto(selectedImageUri);
     }
 
+    @Override
+    public void retrieveDataUser() {
+        repository.retrieveDataUser();
+    }
+
 
     /*@Override
     public void uploadPhotoDriver(Uri selectedImageUri) {

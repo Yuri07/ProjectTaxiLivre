@@ -150,8 +150,14 @@ public class MainPresenterImpl implements MainPresenter {
         mainInteractor.getMyCar();
     }
 
-    @Override
+    /*@Override
     public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
         mainInteractor.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }*/
+
+    @Override
+    public void verifyToken() {
+        mainInteractor.verifyToken();
     }
+
 }

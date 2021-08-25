@@ -10,20 +10,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+/*import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import androidx.core.app.Fragment;
+import androidx.core.app.FragmentManager;
+import androidx.core.content.LocalBroadcastManager;
+import androidx.core.view.GravityCompat;
+import androidx.core.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar;*/
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +33,22 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
+//import com.google.firebase.iid.FirebaseInstanceId;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.ui.AvaliationFragment;
@@ -48,9 +63,10 @@ import com.rsm.yuri.projecttaxilivredriver.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivredriver.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivredriver.main.broadcast.LocalBroadcastMainActivity;
 import com.rsm.yuri.projecttaxilivredriver.main.di.MainComponent;
-import com.rsm.yuri.projecttaxilivredriver.main.entities.Travel;
 import com.rsm.yuri.projecttaxilivredriver.money.ui.MoneyFragment;
 import com.rsm.yuri.projecttaxilivredriver.profile.ui.ProfileFragment;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -266,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Override
     public void setLoggedUser(Driver loggedUser) {
         if (loggedUser.getEmail() != null) {
-            String emailKey = TaxiLivreDriverApp.EMAIL_KEY;
+            /*String emailKey = TaxiLivreDriverApp.EMAIL_KEY;
             String nomeKey = TaxiLivreDriverApp.NOME_KEY;
             String urlPhotoUserKey = TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY;
             String statusKey = TaxiLivreDriverApp.STATUS_KEY;
@@ -290,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             sharedPreferences.edit().putInt(count5StarsKey, loggedUser.getCount5Stars()).apply();
             Log.d("d", "MainActivity. loggedUser.getaverageRating(): " + loggedUser.getAverageRating());
             Log.d("d", "MainActivity. loggedUser.getTotalRating(): " + loggedUser.getTotalRatings());
-            Log.d("d", "MainActivity. loggedUser.getCount1Stars(): " + loggedUser.getCount1Stars());
+            Log.d("d", "MainActivity. loggedUser.getCount1Stars(): " + loggedUser.getCount1Stars());*/
             //Log.d("d", "MainActivity. loggedUser.getEmail(): "+loggedUser.getEmail());
             //Log.d("d", "MainActivity. loggedUser.getUrlPhotoDriver(): "+loggedUser.getUrlPhotoDriver());
             //listener.onSharedPreferencesReady(loggedUser.getEmail(), loggedUser.getNome(), loggedUser.getUrlPhotoDriver());
@@ -314,8 +330,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     }
 
     private void verifyToken() {
-        String firebaseNotificationToken = FirebaseInstanceId.getInstance().getToken();
-        presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+        //String firebaseNotificationToken FirebaseInstanceId.getInstance().getToken();
+        //presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+        presenter.verifyToken();
     }
 
     @Override
@@ -512,7 +529,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         if (Build.VERSION.SDK_INT >= 21) {
             Drawable color = new ColorDrawable(Color.parseColor("#009688"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
-            getSupportActionBar().setBackgroundDrawable(color);
+            Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(color);
+            //getSupportActionBar().setBackgroundDrawable(color);
             changeStatusBarColor(false);
         }
 
@@ -534,7 +552,8 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         if (Build.VERSION.SDK_INT >= 21) {
             Drawable color = new ColorDrawable(Color.parseColor("#FF9800"));//getResources().getColor(R.values.colors.colorAccent);//android.R.color.holo_green_dark));
-            getSupportActionBar().setBackgroundDrawable(color);
+            //getSupportActionBar().setBackgroundDrawable(color);
+            Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(color);
             changeStatusBarColor(true);
         }
 

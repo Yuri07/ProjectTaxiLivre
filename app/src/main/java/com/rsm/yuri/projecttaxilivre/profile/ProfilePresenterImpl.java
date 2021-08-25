@@ -46,6 +46,11 @@ public class ProfilePresenterImpl implements ProfilePresenter {
 
 
     @Override
+    public void retrieveDataUser() {
+        profileInteractor.retrieveDataUser();
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(ProfileEvent event) {
         String error = event.getError();
@@ -62,7 +67,14 @@ public class ProfilePresenterImpl implements ProfilePresenter {
                 case ProfileEvent.UPLOAD_ERROR:
                     view.onUploadError(error);
                     break;
+                case ProfileEvent.onSuccessToGetDateUser:
+                    view.onSuccessToGetDataUser(event.getCurrentUser());
+                    break;
+                case ProfileEvent.onFailedToGetDateUser:
+                    view.onFailedToGetDataUser(event.getError());
             }
         }
     }
+
+
 }

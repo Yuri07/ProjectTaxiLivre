@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.rsm.yuri.projecttaxilivredriver.login.ui.LoginActivity">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/wrapperEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,9 +23,9 @@
             android:hint="@string/login.message.email"
             android:inputType="textEmailAddress"
             android:id="@+id/editTxtEmail" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/wrapperPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
             android:hint="@string/login.message.password"
             android:inputType="textPassword"
             android:id="@+id/editTxtPassword" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

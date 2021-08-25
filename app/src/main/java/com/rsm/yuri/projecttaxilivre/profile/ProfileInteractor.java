@@ -11,4 +11,6 @@ public interface ProfileInteractor {
 
     void execute(Uri selectedImageUri);
 
+    void retrieveDataUser();
+
 }

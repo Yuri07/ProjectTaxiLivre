@@ -59,15 +59,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".profile.ui.ProfileActivity"/>
 
-
-
-        <service
+        <!--<service
             android:name=".FirebaseService.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
-        </service>
-        <service android:name=".FirebaseService.MyFirebaseMessagingService">
+        </service>-->
+        <service
+            android:name=".FirebaseService.MyFirebaseMessagingService"
+            android:stopWithTask="false">
+
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

@@ -15,6 +15,8 @@ public interface EditProfileInteractor {
     void updateDriver(Driver driver);
     void updateCar(Car car);
     void uploadPhoto(Uri selectedImageUri);
+
+    void retrieveDataUser();
     /*void uploadPhotoDriver(Uri selectedImageUri);
     void uploadPhotoCar(Uri selectedImageUri);*/
 

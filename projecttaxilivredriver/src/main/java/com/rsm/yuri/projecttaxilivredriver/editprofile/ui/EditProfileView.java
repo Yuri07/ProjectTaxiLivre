@@ -22,4 +22,7 @@ public interface EditProfileView {
     void profileEdited(Driver driver, Car car);
     void profileNotEdited(String msgError);
 
+    void onSuccessToGetDataUser(Driver currentUser, Car car);
+    void onFailedToGetDataUser(String error);
+
 }

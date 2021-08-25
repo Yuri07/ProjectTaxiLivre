@@ -11,10 +11,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.design.widget.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+//import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.editprofile.EditProfilePresenter;
@@ -94,8 +96,9 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
 
         setupInjection(EditProfileModule.UPLOADER_NULL);
         presenter.onCreate();
-        setTextFields();
-        setPhotos();
+        /*setTextFields();
+        setPhotos();*/
+        presenter.retrieveDataUser();
 
     }
 
@@ -104,37 +107,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
         app.getEditProfileComponent(this, this, uploaderInjection).inject(this);
     }
 
-    private void setTextFields() {
 
-        String email = sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr");
-        String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "nome_sh_pr");
-
-        urlPhotoCar = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_car_sh_pr");
-        String modelo = sharedPreferences.getString(TaxiLivreDriverApp.MODELO_KEY, "modelo_sh_pr");
-        String marca = sharedPreferences.getString(TaxiLivreDriverApp.MARCA_KEY, "marca_sh_pr");
-        String cor = sharedPreferences.getString(TaxiLivreDriverApp.COR_KEY, "cor_sh_pr");
-        long ano = sharedPreferences.getLong(TaxiLivreDriverApp.ANO_KEY, 2000);
-        String placa = sharedPreferences.getString(TaxiLivreDriverApp.PLACA_KEY, "placa_sh_pr");
-
-        editTxtNome.setText(nome);
-        editTxtEmail.setText(email);
-
-        editTxtModelo.setText(modelo);
-        editTxtMarca.setText(marca);
-        editTxtCor.setText(cor);
-        editTxtAno.setText(ano + "");
-        editTxtPlaca.setText(placa);
-
-    }
-
-    private void setPhotos(){
-        urlPhotoDriver = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_driver_sh_pr");
-        if ((!urlPhotoDriver.equals("default"))&&!(urlPhotoDriver.equals("url_driver_sh_pr")))
-            imageLoader.load(imgAvatarProfileAct, urlPhotoDriver);
-        urlPhotoCar = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_car_sh_pr");
-        if ((!urlPhotoCar.equals("default"))&&!(urlPhotoCar.equals("url_car_sh_pr")))
-            imageLoader.load(imgCarProfileAct, urlPhotoCar);
-    }
 
     @OnClick({R.id.ok_edit_profile, R.id.imgAvatarEditarProfileAct, R.id.imgCarEditarProfileAct})
     public void onViewClicked(View view) {
@@ -239,6 +212,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == REQUEST_PICTURE) {
             boolean isCamera = (data == null ||
                     data.getData() == null);
@@ -380,6 +354,17 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     }
 
     @Override
+    public void onSuccessToGetDataUser(Driver currentUser, Car car) {
+        setTextFields(currentUser, car);
+        displayPhotos(currentUser.getUrlPhotoDriver(), car.getUrlPhotoCar());
+    }
+
+    @Override
+    public void onFailedToGetDataUser(String error) {
+        Snackbar.make(relativeLayout, error, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
     protected void onDestroy() {
         presenter.onDestroy();
         super.onDestroy();
@@ -388,7 +373,43 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     @Override
     protected void onResume() {
         super.onResume();
-        setTextFields();
+        //setTextFields();
+    }
+
+    private void setTextFields(Driver currenUser, Car car) {
+
+        /*String email = sharedPreferences.getString(TaxiLivreDriverApp.EMAIL_KEY, "email_sh_pr");
+        String nome = sharedPreferences.getString(TaxiLivreDriverApp.NOME_KEY, "nome_sh_pr");
+
+        urlPhotoCar = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_car_sh_pr");
+        String modelo = sharedPreferences.getString(TaxiLivreDriverApp.MODELO_KEY, "modelo_sh_pr");
+        String marca = sharedPreferences.getString(TaxiLivreDriverApp.MARCA_KEY, "marca_sh_pr");
+        String cor = sharedPreferences.getString(TaxiLivreDriverApp.COR_KEY, "cor_sh_pr");
+        long ano = sharedPreferences.getLong(TaxiLivreDriverApp.ANO_KEY, 2000);
+        String placa = sharedPreferences.getString(TaxiLivreDriverApp.PLACA_KEY, "placa_sh_pr");*/
+
+        editTxtNome.setText(currenUser.getNome());
+        editTxtEmail.setText(currenUser.getEmail());
+
+        editTxtModelo.setText(car.getModelo());
+        editTxtMarca.setText(car.getMarca());
+        editTxtCor.setText(car.getCor());
+        editTxtAno.setText(car.getAno() + "");
+        editTxtPlaca.setText(car.getPlaca());
+
+    }
+
+    private void displayPhotos(String urlPhotoDriver, String urlPhotoCar){
+        //urlPhotoDriver = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_DRIVER_KEY, "url_driver_sh_pr");
+        this.urlPhotoDriver = urlPhotoDriver;
+        if ((!urlPhotoDriver.equals("default"))&&!(urlPhotoDriver.equals("url_driver_sh_pr")))
+            imageLoader.load(imgAvatarProfileAct, urlPhotoDriver);
+        //urlPhotoCar = sharedPreferences.getString(TaxiLivreDriverApp.URL_PHOTO_CAR_KEY, "url_car_sh_pr");
+        this.urlPhotoCar = urlPhotoCar;
+        if ((!urlPhotoCar.equals("default"))&&!(urlPhotoCar.equals("url_car_sh_pr")))
+            imageLoader.load(imgCarProfileAct, urlPhotoCar);
+
+
     }
 
 }

@@ -7,24 +7,38 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+/*import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+
+import androidx.core.app.Fragment;
+import androidx.core.app.FragmentManager;
+import androidx.core.content.LocalBroadcastManager;
+import androidx.core.view.GravityCompat;
+import androidx.core.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.TextView;*/
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.navigation.NavigationView;
+//import com.google.firebase.iid.FirebaseInstanceId;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.chat.ui.ChatActivity;
@@ -34,8 +48,6 @@ import com.rsm.yuri.projecttaxilivre.lib.base.ImageLoader;
 import com.rsm.yuri.projecttaxilivre.login.ui.LoginActivity;
 import com.rsm.yuri.projecttaxilivre.main.MainPresenter;
 import com.rsm.yuri.projecttaxilivre.main.di.MainComponent;
-import com.rsm.yuri.projecttaxilivre.map.InteractiveInfoWindow.InfoWindowFragment;
-import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.ui.MapFragment;
 import com.rsm.yuri.projecttaxilivre.profile.ui.ProfileActivity;
 
@@ -239,6 +251,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         presenter.onDestroy();
         super.onDestroy();
     }
+    //androidx.annotation.NonNull
+    /*@Override
+    public boolean onNavigationItemSelected(@NonNull @android.support.annotation.NonNull MenuItem item) {
+        return false;
+    }*/
 
     public interface OnTravelStatusChangedListener {
         public void onTravelInitiate();
@@ -328,8 +345,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void verifyToken() {
-        String firebaseNotificationToken = FirebaseInstanceId.getInstance().getToken();
-        presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+        presenter.verifyToken();
+        /*String firebaseNotificationToken = FirebaseInstanceId.getInstance().getToken();
+        if(firebaseNotificationToken!=null)
+            presenter.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);*/
     }
 
     @Override
@@ -358,11 +377,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void logout() {
         presenter.logout();
         sharedPreferences.edit().clear().apply();
-        Intent intent = new Intent(this, LoginActivity.class);
+        navigateToLoginScreen();
+        /*Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     /*@Override

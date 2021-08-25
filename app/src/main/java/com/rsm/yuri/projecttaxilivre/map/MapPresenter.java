@@ -32,4 +32,6 @@ public interface MapPresenter {
     void unsubscribeForMyDriverLocationUpdate(String driverEmail, String travelID);
 
     void uploadMyRating(String emailDriver, Rating rating);
+
+    void retrieveDataUser();
 }

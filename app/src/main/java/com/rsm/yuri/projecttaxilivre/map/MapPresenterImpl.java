@@ -3,6 +3,7 @@ package com.rsm.yuri.projecttaxilivre.map;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.Driver;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
@@ -98,32 +99,42 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
+    public void retrieveDataUser() {
+        mapInteractor.retrieveDataUser();
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(MapEvent event) {
-        String error = event.getError();
-        if (error != null) {
-            mapView.onDriverError(error);
-        } else {
-            LatLng locationOfMyDriver = event.getLocationOfMyDriver();
-            if(locationOfMyDriver!=null) {
-                mapView.onMyDriverMoved(locationOfMyDriver);
-            }else{
-                String travelAck = event.getTravelAck();
-                if (travelAck != null) {
-                    mapView.onTravelAckReceived(travelAck);
+        User currentUser = event.getCurrentUser();
+        if(currentUser!=null){
+            mapView.onSuccessToGetDataUser(event.getCurrentUser());
+        }else {
+            String error = event.getError();
+            if (error != null) {
+                mapView.onDriverError(error);
+            } else {
+                LatLng locationOfMyDriver = event.getLocationOfMyDriver();
+                if (locationOfMyDriver != null) {
+                    mapView.onMyDriverMoved(locationOfMyDriver);
                 } else {
-                    NearDriver nearDriver = event.getNearDriver();
-                    if(nearDriver!=null) {
-                        switch (event.getEventType()) {
-                            case MapEvent.onDriverAdded:
-                                onDriverAdded(nearDriver);
-                                break;
-                            case MapEvent.onDriverMoved:
-                                onDriverMoved(nearDriver);
-                                break;
-                            case MapEvent.onDriverRemoved:
-                                onDriverRemoved(nearDriver);
-                                break;
+                    String travelAck = event.getTravelAck();
+                    if (travelAck != null) {
+                        mapView.onTravelAckReceived(travelAck);
+                    } else {
+                        NearDriver nearDriver = event.getNearDriver();
+                        if (nearDriver != null) {
+                            switch (event.getEventType()) {
+                                case MapEvent.onDriverAdded:
+                                    onDriverAdded(nearDriver);
+                                    break;
+                                case MapEvent.onDriverMoved:
+                                    onDriverMoved(nearDriver);
+                                    break;
+                                case MapEvent.onDriverRemoved:
+                                    onDriverRemoved(nearDriver);
+                                    break;
+                            }
                         }
                     }
                 }

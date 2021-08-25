@@ -3,14 +3,17 @@ package com.rsm.yuri.projecttaxilivre.login.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.design.widget.Snackbar;
+//import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivre.R;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.login.LoginPresenter;

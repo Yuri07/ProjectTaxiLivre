@@ -33,9 +33,14 @@ public class MainInteractorImpl implements MainInteractor {
         mainRepository.changeUserConnectionStatus(status);
     }
 
-    @Override
+    /*@Override
     public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
         mainRepository.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }*/
+
+    @Override
+    public void verifyToken() {
+        mainRepository.verifyToken();
     }
 
 }

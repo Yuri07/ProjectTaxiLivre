@@ -21,6 +21,9 @@ public class EditProfileEvent {
     public final static int SAVE_PROFILE_SUCESS = 4;
     public final static int SAVE_PROFILE_ERROR = 5;
 
+    public final static int onSuccessToGetDateUser = 6;
+    public final static int onFailedToGetDateUser = 7;
+
     public Driver getDriver() {
         return driver;
     }

@@ -10,5 +10,10 @@ public interface MainRepository {
     void checkForSession();
     void changeUserConnectionStatus(int status);
 
-    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+    void verifyToken();
+
+    //void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+                                                    //FirebaseInstanceId obsoleto, agora é
+                                                    //usado pelo verifyToken()
+
 }

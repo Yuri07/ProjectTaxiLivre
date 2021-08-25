@@ -1,6 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.main.di;
 
-import android.support.v4.app.FragmentManager;
+
+import androidx.fragment.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
@@ -26,9 +27,9 @@ import dagger.Provides;
 @Module
 public class MainModule {
 
-    private MainView view;
-    private MapFragment fragment;
-    private FragmentManager fragmentManager;
+    private final MainView view;
+    private final MapFragment fragment;
+    private final FragmentManager fragmentManager;
 
     public MainModule(MainView view, FragmentManager fragmentManager, MapFragment mapFragment){
         this.view = view;
@@ -56,7 +57,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    MainPresenter providesMainPresenter(EventBus eventBus, MainView mainView, MainInteractor mainInteractor, SessionInteractor sessionInteractor) {
+    MainPresenter providesMainPresenter(EventBus eventBus, MainView mainView,
+                                        MainInteractor mainInteractor, SessionInteractor sessionInteractor) {
         return new MainPresenterImpl(eventBus, mainView, mainInteractor, sessionInteractor);
     }
 

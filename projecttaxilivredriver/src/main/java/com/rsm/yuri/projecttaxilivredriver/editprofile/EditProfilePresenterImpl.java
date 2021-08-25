@@ -60,6 +60,11 @@ public class EditProfilePresenterImpl implements EditProfilePresenter {
         editprofileInteractor.uploadPhoto(selectedImageUri);
     }
 
+    @Override
+    public void retrieveDataUser() {
+        editprofileInteractor.retrieveDataUser();
+    }
+
     /*@Override
     public void uploadPhotoDriver(Uri selectedImageUri) {
         editprofileInteractor.uploadPhotoDriver(selectedImageUri);
@@ -101,7 +106,14 @@ public class EditProfilePresenterImpl implements EditProfilePresenter {
                 case EditProfileEvent.SAVE_PROFILE_ERROR:
                     view.profileNotEdited(event.getError());
                     break;
+                case EditProfileEvent.onSuccessToGetDateUser:
+                    view.onSuccessToGetDataUser(event.getDriver(), event.getCar());
+                    break;
+                case EditProfileEvent.onFailedToGetDateUser:
+                    view.onFailedToGetDataUser(event.getError());
             }
         }
     }
+
+
 }

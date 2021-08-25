@@ -5,8 +5,8 @@ import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+//import com.google.firebase.iid.FirebaseInstanceId;
+//import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.rsm.yuri.projecttaxilivre.FirebaseService.di.FIIDServiceComponent;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreApp;
 import com.rsm.yuri.projecttaxilivre.TaxiLivreAppModule;
@@ -20,10 +20,11 @@ import javax.inject.Inject;
  */
 
 /*
-* Classe não utilizada no projeto(service é inicializado sem que app possa ter nenhum controle e não é possível instanciar os recursos para enviar o token para o servidor em alguns momentos)
+* Classe não utilizada no projeto(service é inicializado sem que app possa ter nenhum controle e
+* não é possível instanciar os recursos para enviar o token para o servidor em alguns momentos)
 */
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
+public class MyFirebaseInstanceIDService {//extends FirebaseInstanceIdService {
 
     //@Inject
     //SharedPreferences sharedPreferences;
@@ -44,13 +45,13 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     }
 
     private void setupInjection() {
-        TaxiLivreApp app = (TaxiLivreApp) getApplication();
+        /*TaxiLivreApp app = (TaxiLivreApp) getApplication();
         if( app!=null ) {
             FIIDServiceComponent fiidServiceComponent = app.getFIIDServiceComponent();
             fiidServiceComponent.inject(this);
         }else{
             Log.d("d", "App esta recebendo nulo em  MyFirebaseInstanceIDService");
-        }
+        }*/
 
     }
 
@@ -65,10 +66,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * is initially generated so this is where you would retrieve the token.
      */
     // [START refresh_token]
-    @Override
+    //@Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        String refreshedToken = null;//FirebaseInstanceId.getInstance().getToken();
         Log.d("d", "Refreshed token: " + refreshedToken);
 
         // If you want to send messages to this application instance or

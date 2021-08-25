@@ -5,9 +5,12 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseActionListenerCallback;
 import com.rsm.yuri.projecttaxilivre.domain.FirebaseEventListenerCallback;
+import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.map.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivre.map.entities.Rating;
@@ -17,6 +20,7 @@ import com.rsm.yuri.projecttaxilivre.map.models.Area;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasFortalezaHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.AreasHelper;
 import com.rsm.yuri.projecttaxilivre.map.models.GroupAreas;
+import com.rsm.yuri.projecttaxilivre.profile.events.ProfileEvent;
 import com.rsm.yuri.projecttaxilivre.travelslist.entities.Travel;
 
 /**
@@ -30,6 +34,8 @@ public class MapRepositoryImpl implements MapRepository {
     GroupAreas groupAreas;
     private AreasHelper areasHelper;
     private String cidade;
+
+    private DatabaseReference myUserReference;
 
     public MapRepositoryImpl(FirebaseAPI firebase, EventBus eventBus, AreasHelper areasHelper, String cidade) {
         this.firebase = firebase;
@@ -229,28 +235,71 @@ public class MapRepositoryImpl implements MapRepository {
         firebase.uploadMyRating(emailDriver, rating);
     }
 
+    @Override
+    public void retrieveDataUser() {
+        firebase.checkForSession(new FirebaseActionListenerCallback(){
+            @Override
+            public void onSuccess() {
+
+                myUserReference = firebase.getMyUserReference();//pega a referencia no
+                // database para o usuario atualmente autenticado
+
+                //myUserReference.keepSynced(true);
+
+                myUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        postOnSuccessRetrieveDataUser(snapshot);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError firebaseError) {
+                        post(firebaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(DatabaseError error) {
+                post("Falha em recuperar a sessao");
+            }
+        });
+    }
+
+    private void postOnSuccessRetrieveDataUser(DataSnapshot snapshot){
+        User currentUser = snapshot.getValue(User.class);//null caso seja a primeira vez que o metodo e executado para esse usuario
+        post(MapEvent.onSuccessToGetDateUser, currentUser);
+    }
+
+    private void post(int type, User currentUser){
+        post(type,null, null, null, currentUser,null);
+    }
+
     private void post(int type, NearDriver nearDriver){
-        post(type, nearDriver, null, null, null);
+        post(type, nearDriver, null, null, null, null);
     }
 
     private void post(int type, String travelAck){
-        post(type, null, travelAck, null, null);
+        post(type, null, travelAck,
+                null, null, null);
     }
 
     private void post(int type, LatLng locationOfMyDriver){
-        post(type, null, null, locationOfMyDriver, null);
+        post(type, null, null, locationOfMyDriver, null, null);
     }
 
     private void post(String error){
-        post(-1, null, null, null,error);
+        post(-1, null, null,
+                    null, null,error);
     }
 
-    private void post(int type, NearDriver nearDriver, String travelAck, LatLng locationOfMyDriver, String error){
+    private void post(int type, NearDriver nearDriver, String travelAck,
+                                            LatLng locationOfMyDriver, User currentUser, String error){
         MapEvent event = new MapEvent();
         event.setEventType(type);
         event.setNearDriver(nearDriver);
         event.setTravelAck(travelAck);
         event.setLocationOfMyDriver(locationOfMyDriver);
+        event.setCurrentUser(currentUser);
         event.setError(error);
 
         eventBus.post(event);

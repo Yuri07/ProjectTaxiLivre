@@ -18,4 +18,5 @@ public interface ProfilePresenter {
     void uploadPhoto(Uri selectedImageUri);
     void onEventMainThread(ProfileEvent event);
 
+    void retrieveDataUser();
 }

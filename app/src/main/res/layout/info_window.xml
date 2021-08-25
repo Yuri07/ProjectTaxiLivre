@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="248dp"
         android:layout_height="304dp">
 
@@ -50,7 +50,8 @@
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
                 android:text="corridas nos ultimos 4 meses"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:gravity="center_horizontal" />
 
         </LinearLayout>
 
@@ -127,7 +128,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -171,7 +172,7 @@
                         android:paddingHorizontal="16dp"
                         android:src="@drawable/icons8_informacoes_24" />
                 </LinearLayout>
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
 
         <Button
@@ -186,6 +187,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

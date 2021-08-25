@@ -1,5 +1,7 @@
 package com.rsm.yuri.projecttaxilivre.main;
 
+import android.util.Log;
+
 import com.rsm.yuri.projecttaxilivre.historicchatslist.entities.User;
 import com.rsm.yuri.projecttaxilivre.lib.base.EventBus;
 import com.rsm.yuri.projecttaxilivre.main.events.MainEvent;
@@ -18,7 +20,8 @@ public class MainPresenterImpl implements MainPresenter {
     MainInteractor mainInteractor;
     SessionInteractor sessionInteractor;
 
-    public MainPresenterImpl(EventBus eventBus, MainView mainView, MainInteractor mainInteractor, SessionInteractor sessionInteractor) {
+    public MainPresenterImpl(EventBus eventBus, MainView mainView, MainInteractor mainInteractor,
+                                                            SessionInteractor sessionInteractor) {
         this.eventBus = eventBus;
         this.mainView = mainView;
         this.mainInteractor = mainInteractor;
@@ -53,6 +56,7 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     @Subscribe
     public void onEventMainThread(MainEvent event) {
+        Log.d("d", "MainPresenter.onEventMainThread()");
         switch (event.getEventType()) {
             case MainEvent.onSuccessToRecoverSession:
                 onSuccessToRecoverSession(event.getLoggedUser());
@@ -101,8 +105,13 @@ public class MainPresenterImpl implements MainPresenter {
         sessionInteractor.checkForSession();
     }
 
-    @Override
+    /*@Override
     public void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken) {
         mainInteractor.sendFirebaseNotificationTokenToServer(firebaseNotificationToken);
+    }*/
+
+    @Override
+    public void verifyToken() {
+        mainInteractor.verifyToken();
     }
 }

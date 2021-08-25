@@ -1,7 +1,10 @@
 package com.rsm.yuri.projecttaxilivredriver.main.di;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+//import androidx.core.app.Fragment;
+//import androidx.core.app.FragmentManager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivredriver.lib.base.EventBus;
@@ -14,7 +17,6 @@ import com.rsm.yuri.projecttaxilivredriver.main.MainRepositoryImpl;
 import com.rsm.yuri.projecttaxilivredriver.main.SessionInteractor;
 import com.rsm.yuri.projecttaxilivredriver.main.SessionInteractorImpl;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainView;
-import com.rsm.yuri.projecttaxilivredriver.home.ui.HomeFragment;
 
 import javax.inject.Singleton;
 

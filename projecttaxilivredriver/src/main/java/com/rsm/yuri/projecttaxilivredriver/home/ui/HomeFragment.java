@@ -10,11 +10,15 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
+//import android.support.design.widget.Snackbar;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+//import androidx.core.app.Fragment;
+//import androidx.core.app.FragmentManager;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +59,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivredriver.BuildConfig;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
@@ -84,7 +89,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.view.animation.Animation.RELATIVE_TO_SELF;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeView, MainActivity.OnSwitchButtonClickedListener {
+public class HomeFragment extends Fragment implements OnMapReadyCallback,
+                                            HomeView, MainActivity.OnSwitchButtonClickedListener {
 
     @BindView(R.id.container)
     FrameLayout container;
@@ -251,9 +257,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                                 String address = addresses.get(1).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
                                 String[] addressLines = address.split(", ");
-                                String[] cidadeLine = addressLines[2].split(" - ");
-                                cidade = cidadeLine[0];
-                                if(cidade.equals("Caucaia")){
+                                String[] cidadeLine = addressLines[0].split(" - ");
+                                cidade = cidadeLine[1];
+                                if(cidade.equals(" Caucaia")){
                                     cidade="Fortaleza";
                                 }
                                 //Log.d("d", "HomeFragment - inicializaVariavelCidade()- address: " + address);
@@ -274,7 +280,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 //                                }
                                 setupInjection(cidade);
                                 presenter.onCreate();
-                                presenter.saveCity(cidade);
+                                //presenter.saveCity(cidade);
                                 sharedPreferences.edit().putString(TaxiLivreDriverApp.CIDADE_KEY, cidade).apply();
 
 //                                String state = addresses.get(0).getAdminArea();
@@ -354,7 +360,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 //                });
 
         TaxiLivreDriverApp app = (TaxiLivreDriverApp) getActivity().getApplication();
-        app.getHomeComponent(this, this, cidade).inject(this);
+        //app.getHomeComponent(this, this, cidade).inject(this);
+        app.getHomeComponent(this, this, "Fortaleza").inject(this);
     }
 
     @Override
@@ -541,7 +548,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        presenter.removeDriverFromArea();
+        if(presenter!=null)
+            presenter.removeDriverFromArea();
     }
 
     private  void stopLocationUpdatesForTravel(){
@@ -554,8 +562,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     @Override
     public void onDestroyView() {
-        presenter.onDestroy();
-        unbinder.unbind();
+        if(presenter != null)
+            presenter.onDestroy();
+        if(unbinder!=null)
+            unbinder.unbind();
+
         super.onDestroyView();
 
     }
@@ -758,7 +769,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                 .transportMode(TransportMode.DRIVING)
                 .execute(new DirectionCallback() {
                     @Override
-                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                    public void onDirectionSuccess(@Nullable  Direction direction) {
                         if(direction.isOK()){
                             Route route = direction.getRouteList().get(0);
                             Leg leg = route.getLegList().get(0);
@@ -769,7 +780,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             String distanceReadable = distanceInfo.getText();
                             String durationReadable = durationInfo.getText();
 
-                            int distance = Integer.parseInt(distanceInfo.getValue());
+                            //int distance = Integer.parseInt(distanceInfo.getValue());
+                            long distance = distanceInfo.getValue();
                             Log.d("d", "HomeFragment - distanceInfo.getValue(): " + distance);
                             //double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
 
@@ -779,7 +791,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
                             polyline = map.addPolyline(polylineOptions);
 
-                            int duration = Integer.parseInt(durationInfo.getValue());
+                            //int duration = Integer.parseInt(durationInfo.getValue());
+                            long duration = durationInfo.getValue();
                             Log.d("d", "HomeFragment - durationInfo.getValue(): " + duration);
                             double travelDuration = (duration*0.5)/30;
                             Log.d("d", "HomeFragment - travelDuration: " + travelDuration);
@@ -845,6 +858,73 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         fn_countdownSimulateArrival();
 
         //fn_countdownProgressBarWaitingPassenger();
+
+    }
+
+    private void fn_countdownProgressBarWaitingPassenger() {
+
+        progress = 1;
+        endTime = 60;
+
+        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                //setProgressBarWaitingPassengerProgress(progress, endTime);
+                progress = progress + 1;
+
+                int seconds = (int) (millisUntilFinished / 1000) % 60;
+                int minutes = (int) ((millisUntilFinished / (1000 * 60)) % 60);
+                //int hours = (int) ((millisUntilFinished / (1000 * 60 * 60)) % 24);
+                String newtime = minutes + ":" + seconds;
+
+                if (newtime.equals("0:0")) {
+                    tv_time.setText("00:00");
+                } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
+                    tv_time.setText("0" + minutes + ":0" + seconds);
+                } else if ((String.valueOf(minutes).length() == 1)) {
+                    tv_time.setText("0" + minutes + ":" + seconds);
+                } else if ((String.valueOf(seconds).length() == 1)) {
+                    tv_time.setText(minutes + ":0" + seconds);
+                } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
+                    tv_time.setText(minutes + ":0" + seconds);
+                } else if (String.valueOf(minutes).length() == 1) {
+                    tv_time.setText("0" + minutes + ":" + seconds);
+                } else if (String.valueOf(seconds).length() == 1) {
+                    tv_time.setText(minutes + ":0" + seconds);
+                } else {
+                    tv_time.setText(minutes + ":" + seconds);
+                }
+
+            }
+
+            @Override
+            public void onFinish() {
+                //setProgressBarWaitingPassengerProgress(progress, endTime);
+                onPassengerNotArriverd();
+
+            }
+        };
+        countDownTimer.start();
+
+    }
+
+    private void fn_countdownSimulateArrival() {
+
+        progress = 1;
+        endTime = 20;
+
+        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progress = progress + 1;
+            }
+
+            @Override
+            public void onFinish() {
+                onArrivalToGetPassenger();
+            }
+        };
+        countDownTimer.start();
 
     }
 
@@ -971,7 +1051,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                 .transportMode(TransportMode.DRIVING)
                 .execute(new DirectionCallback() {
                     @Override
-                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                    public void onDirectionSuccess(@Nullable  Direction direction) {
                         if (direction.isOK()) {
                             Route route = direction.getRouteList().get(0);
                             Leg leg = route.getLegList().get(0);
@@ -982,7 +1062,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
                             String distanceReadable = distanceInfo.getText();
                             String durationReadable = durationInfo.getText();
 
-                            int distance = Integer.parseInt(distanceInfo.getValue());
+                            //int distance = Integer.parseInt(distanceInfo.getValue());
+                            long distance = distanceInfo.getValue();
                             Log.d("d", "MapFragment - drawRoute() - distanceInfo.getValue(): " + distance);
                             //double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
                             //travelRequest.setTravelPrice(travelPrice);
@@ -1170,52 +1251,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
 
     }
 
-    private void fn_countdownProgressBarWaitingPassenger() {
 
-        progress = 1;
-        endTime = 60;
-
-        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                //setProgressBarWaitingPassengerProgress(progress, endTime);
-                progress = progress + 1;
-
-                int seconds = (int) (millisUntilFinished / 1000) % 60;
-                    int minutes = (int) ((millisUntilFinished / (1000 * 60)) % 60);
-                    //int hours = (int) ((millisUntilFinished / (1000 * 60 * 60)) % 24);
-                    String newtime = minutes + ":" + seconds;
-
-                    if (newtime.equals("0:0")) {
-                        tv_time.setText("00:00");
-                    } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
-                        tv_time.setText("0" + minutes + ":0" + seconds);
-                    } else if ((String.valueOf(minutes).length() == 1)) {
-                        tv_time.setText("0" + minutes + ":" + seconds);
-                    } else if ((String.valueOf(seconds).length() == 1)) {
-                        tv_time.setText(minutes + ":0" + seconds);
-                    } else if ((String.valueOf(minutes).length() == 1) && (String.valueOf(seconds).length() == 1)) {
-                        tv_time.setText(minutes + ":0" + seconds);
-                    } else if (String.valueOf(minutes).length() == 1) {
-                        tv_time.setText("0" + minutes + ":" + seconds);
-                    } else if (String.valueOf(seconds).length() == 1) {
-                        tv_time.setText(minutes + ":0" + seconds);
-                    } else {
-                        tv_time.setText(minutes + ":" + seconds);
-                    }
-
-            }
-
-            @Override
-            public void onFinish() {
-                //setProgressBarWaitingPassengerProgress(progress, endTime);
-                onPassengerNotArriverd();
-
-            }
-        };
-        countDownTimer.start();
-
-    }
 
     public void setProgressBarWaitingPassengerProgress(int startTime, int endTime) {
         viewProgressBarWaitingPassenger.setMax(endTime);
@@ -1223,25 +1259,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
         viewProgressBarWaitingPassenger.setProgress(startTime);
     }
 
-    private void fn_countdownSimulateArrival() {
 
-        progress = 1;
-        endTime = 20;
-
-        countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                progress = progress + 1;
-            }
-
-            @Override
-            public void onFinish() {
-                onArrivalToGetPassenger();
-            }
-        };
-        countDownTimer.start();
-
-    }
 
     private void fn_countdownSimulateArrivalInDestiny() {
 
@@ -1279,7 +1297,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeVi
     }
 
     public void uploadDriverDataToArea(){
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding

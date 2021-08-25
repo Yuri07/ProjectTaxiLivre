@@ -1,9 +1,11 @@
 package com.rsm.yuri.projecttaxilivre.FirebaseService;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+
+//import androidx.core.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -12,8 +14,6 @@ import com.rsm.yuri.projecttaxilivre.main.ui.MainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by yuri_ on 25/04/2018.

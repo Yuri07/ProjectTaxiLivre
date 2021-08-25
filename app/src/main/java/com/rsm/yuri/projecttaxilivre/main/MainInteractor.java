@@ -8,5 +8,7 @@ public interface MainInteractor {
 
     void setRecipient(String recipient);
 
-    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+    //void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+                                                    ////FirebaseInstanceId obsoleto
+    void verifyToken();
 }

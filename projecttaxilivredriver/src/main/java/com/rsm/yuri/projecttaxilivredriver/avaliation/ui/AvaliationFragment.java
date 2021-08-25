@@ -2,11 +2,11 @@ package com.rsm.yuri.projecttaxilivredriver.avaliation.ui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+/*import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import androidx.core.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView;*/
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +15,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.google.android.material.snackbar.Snackbar;
 import com.rsm.yuri.projecttaxilivredriver.R;
 import com.rsm.yuri.projecttaxilivredriver.TaxiLivreDriverApp;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.AvaliationPresenter;

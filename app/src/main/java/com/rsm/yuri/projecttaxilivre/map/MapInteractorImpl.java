@@ -72,6 +72,11 @@ public class MapInteractorImpl implements MapInteractor {
         mapRepository.uploadMyRating(emailDriver, rating);
     }
 
+    @Override
+    public void retrieveDataUser() {
+        mapRepository.retrieveDataUser();
+    }
+
     /*@Override//nao tem essas funcoes disponiveis para o usuario na tela do mapfragment
     public void addNearDrivers() {
         mapRepository.addNearDrivers();

@@ -11,6 +11,7 @@ public interface MainRepository {
     void changeUserConnectionStatus(int status);
     //void uploadCompletedTravelStatus(int status);
     void getMyCar();
-    void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
+    //void sendFirebaseNotificationTokenToServer(String firebaseNotificationToken);
 
+    void verifyToken();
 }

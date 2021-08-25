@@ -1,7 +1,9 @@
 package com.rsm.yuri.projecttaxilivre.lib.di;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+//import androidx.core.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 
 import com.rsm.yuri.projecttaxilivre.lib.GlideImageLoader;
 import com.rsm.yuri.projecttaxilivre.lib.GreenRobotEventBus;

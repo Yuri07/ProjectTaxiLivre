@@ -11,4 +11,6 @@ public interface ProfileRepository {
 
     void uploadPhoto(Uri selectedImageUri);
 
+    void retrieveDataUser();
+
 }

@@ -3,20 +3,19 @@ package com.rsm.yuri.projecttaxilivredriver.FirebaseService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
+//import androidx.core.content.LocalBroadcastManager;
+
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.rsm.yuri.projecttaxilivredriver.FirebaseService.utils.NotificationUtils;
 import com.rsm.yuri.projecttaxilivredriver.main.ui.MainActivity;
-import com.rsm.yuri.projecttaxilivredriver.main.ui.MainOnTravelRequestActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by yuri_ on 25/04/2018.

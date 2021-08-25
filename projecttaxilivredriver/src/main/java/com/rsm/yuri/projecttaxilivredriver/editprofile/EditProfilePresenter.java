@@ -23,4 +23,5 @@ public interface EditProfilePresenter {
     void uploadPhotoCar(Uri selectedImageUri);*/
     void onEventMainThread(EditProfileEvent event);
 
+    void retrieveDataUser();
 }
