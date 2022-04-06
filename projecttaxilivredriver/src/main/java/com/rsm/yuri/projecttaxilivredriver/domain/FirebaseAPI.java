@@ -77,7 +77,7 @@ public class FirebaseAPI {
 
     //private AreasFortalezaHelper areasHelper;
 
-    private DatabaseReference databaseReference;
+    private final DatabaseReference databaseReference;
 
     private ChildEventListener historicChatsListEventListener;
     private ChildEventListener historicTravelsListEventListener;

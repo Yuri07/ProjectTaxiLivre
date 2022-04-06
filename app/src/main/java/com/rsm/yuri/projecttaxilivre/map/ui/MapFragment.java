@@ -175,7 +175,9 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     private static final int MAP_ZOOM_PADDING = 90;
     private static final int MAP_CAMERA_ANIMATION_DURATION_IN_MILLIS = 500;
+
     private Place destinyPlace;
+    private double travelPrice;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -388,103 +390,22 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
 
     @Override
     public void onSuccessToGetDataUser(User currentUser) {
-        if (markerClicked != null && markerSpecClicked != null && infoWindowFragmentClicked != null) {
+        drawRouteTravel(new MapFragmentListenerCallback() {
+            @Override
+            public void onSuccess() {
 
-            final InfoWindow infoWindow = new InfoWindow(markerClicked, markerSpecClicked, infoWindowFragmentClicked);
+                travelRequest = assembleTravelRequest(currentUser);
 
-            markerClicked = null;
-            markerSpecClicked = null;
-            infoWindowFragmentClicked = null;
-            mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+                frameLayoutConfirmar.setVisibility(View.VISIBLE);
 
-            travelRequest = new TravelRequest();
-            travelRequest.setRequesterEmail(currentUser.getEmail());
-            travelRequest.setRequesterName(currentUser.getNome());
-            travelRequest.setUrlPhotoUser(currentUser.getUrlPhotoUser());
-            travelRequest.setAverageRatingsPassenger(currentUser.getAverageRating());
-            /*travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
-            travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
-            travelRequest.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
-            travelRequest.setAverageRatingsPassenger(sharedPreferences.getFloat(TaxiLivreApp.AVERAGE_RATINGS_PASSENGER_KEY, 1.0f));*/
-
-            List<Address> addresses;
-            geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-            travelRequest.setPlaceOriginAddress(destinyPlace.getAddress());
-            travelRequest.setPlaceDestinoAddress("default");
-            try {
-                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                /*String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
-                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
-
-                travelRequest.setPlaceDestinoAddress(address);
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
-            travelRequest.setLatOrigem(lastLocation.getLatitude());
-            travelRequest.setLongOrigem(lastLocation.getLongitude());
-            travelRequest.setLatDestino(destinyPlace.getLatLng().latitude);
-            travelRequest.setLongDestino(destinyPlace.getLatLng().longitude);
-
-            Date currentTime = Calendar.getInstance().getTime();
-            Log.d("d", "MapFragment - travelDate: " + currentTime.toString());
-            travelRequest.setTravelDate(currentTime.toString());
-
-            String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
-            GoogleDirection.withServerKey(myApiKey)
-                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                    .to(destinyPlace.getLatLng())
-                    .transportMode(TransportMode.DRIVING)
-                    .execute(new DirectionCallback() {
-                        @Override
-                        public void onDirectionSuccess(@Nullable Direction direction) {
-                            if (direction.isOK()) {
-                                Route route = direction.getRouteList().get(0);
-                                Leg leg = route.getLegList().get(0);
-                                ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
-
-                                Info distanceInfo = leg.getDistance();
-                                Info durationInfo = leg.getDuration();
-                                String distanceReadable = distanceInfo.getText();
-                                String durationReadable = durationInfo.getText();
-
-                                //int distance = Integer.parseInt(distanceInfo.getValue());
-                                long distance = distanceInfo.getValue();
-                                Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
-                                double travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
-
-                                travelRequest.setTravelPrice(travelPrice);
-
-                                Log.d("d", "MapFragment - travelPrice: " + travelPrice);
-
-                                polylineOptions = DirectionConverter.createPolyline(
-                                        getContext(), directionPositionList, 5, Color.BLUE);
-
-                                polyline = map.addPolyline(polylineOptions);
-
-                                zoomRoute(map, directionPositionList);
-
-                                editTxtValorMap.setText(String.format( "%.2f", travelRequest.getTravelPrice())+"R$");
-                                frameLayoutConfirmar.setVisibility(View.VISIBLE);
-
-                            } else {
-                                Log.d("d", "MapFragment - messageFromWindowInfoToMapFrag direction.isOK == false");
-                            }
-                        }
-
-
-
-                        @Override
-                        public void onDirectionFailure(Throwable t) {
-                        }
-                    });
-        }
+            @Override
+            public void onError(String error) {
+                Log.d("e", error);
+            }
+        });
+        //travelRequest = assembleTravelRequest(currentUser);
     }
 
     @OnClick(R.id.button_confirmar)
@@ -991,7 +912,7 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
     }
 
     private void setupAckReceivedBottomLayout(){
-        //frameLayoutWaitingForResponse.setVisibility(View.GONE);
+        frameLayoutWaitingForResponse.setVisibility(View.GONE);
         resetBottomLayout();
         frameLayoutBottom.setVisibility(View.VISIBLE);
     }
@@ -1031,6 +952,116 @@ public class MapFragment extends Fragment implements MapView, OnMapReadyCallback
         rating.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
 
         return rating;
+    }
+
+    TravelRequest assembleTravelRequest(User currentUser){
+        TravelRequest travelRequest = null;
+        if (markerClicked != null && markerSpecClicked != null && infoWindowFragmentClicked != null) {
+
+            final InfoWindow infoWindow = new InfoWindow(markerClicked, markerSpecClicked, infoWindowFragmentClicked);
+
+            markerClicked = null;
+            markerSpecClicked = null;
+            infoWindowFragmentClicked = null;
+            mapInfoWindowFragment.infoWindowManager().toggle(infoWindow, true);
+
+            travelRequest = new TravelRequest();
+            travelRequest.setRequesterEmail(currentUser.getEmail());
+            travelRequest.setRequesterName(currentUser.getNome());
+            travelRequest.setUrlPhotoUser(currentUser.getUrlPhotoUser());
+            travelRequest.setAverageRatingsPassenger(currentUser.getAverageRating());
+            /*travelRequest.setRequesterEmail(sharedPreferences.getString(TaxiLivreApp.EMAIL_KEY, ""));
+            travelRequest.setRequesterName(sharedPreferences.getString(TaxiLivreApp.NOME_KEY, ""));
+            travelRequest.setUrlPhotoUser(sharedPreferences.getString(TaxiLivreApp.URL_PHOTO_USER_KEY, ""));
+            travelRequest.setAverageRatingsPassenger(sharedPreferences.getFloat(TaxiLivreApp.AVERAGE_RATINGS_PASSENGER_KEY, 1.0f));*/
+
+            List<Address> addresses;
+            geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+            travelRequest.setPlaceDestinoAddress(destinyPlace.getAddress());
+            travelRequest.setPlaceOriginAddress("default");
+            try {
+                addresses = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                /*String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL*/
+
+                travelRequest.setPlaceOriginAddress(address);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            travelRequest.setLatOrigem(lastLocation.getLatitude());
+            travelRequest.setLongOrigem(lastLocation.getLongitude());
+            travelRequest.setLatDestino(destinyPlace.getLatLng().latitude);
+            travelRequest.setLongDestino(destinyPlace.getLatLng().longitude);
+
+            Date currentTime = Calendar.getInstance().getTime();
+            Log.d("d", "MapFragment - travelDate: " + currentTime.toString());
+            travelRequest.setTravelDate(currentTime.toString());
+
+            travelRequest.setTravelPrice(travelPrice);
+
+        }
+
+        return travelRequest;
+    }
+
+    void drawRouteTravel(final MapFragmentListenerCallback listenerCallback){
+        String myApiKey = BuildConfig.GOOGLE_MAPS_API_KEY_GRADLE_PROPERTY;
+        GoogleDirection.withServerKey(myApiKey)
+                .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                .to(destinyPlace.getLatLng())
+                .transportMode(TransportMode.DRIVING)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(@Nullable Direction direction) {
+                        if (direction.isOK()) {
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                            Info distanceInfo = leg.getDistance();
+                            Info durationInfo = leg.getDuration();
+                            String distanceReadable = distanceInfo.getText();
+                            String durationReadable = durationInfo.getText();
+
+                            //int distance = Integer.parseInt(distanceInfo.getValue());
+                            long distance = distanceInfo.getValue();
+                            Log.d("d", "MapFragment - distanceInfo.getValue(): " + distance);
+                            travelPrice = (distance*Travel.PRICE_PER_KM)/1000;
+
+                            //travelRequest.setTravelPrice(travelPrice);
+
+                            Log.d("d", "MapFragment - travelPrice: " + travelPrice);
+
+                            polylineOptions = DirectionConverter.createPolyline(
+                                    getContext(), directionPositionList, 5, Color.BLUE);
+
+                            polyline = map.addPolyline(polylineOptions);
+
+                            zoomRoute(map, directionPositionList);
+
+                            editTxtValorMap.setText(String.format( "%.2f", travelRequest.getTravelPrice())+"R$");
+                            //frameLayoutConfirmar.setVisibility(View.VISIBLE);
+                            listenerCallback.onSuccess();
+
+
+                        } else {
+                            listenerCallback.onError("MapFragment - messageFromWindowInfoToMapFrag direction.isOK == false");
+                        }
+                    }
+
+
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                    }
+                });
     }
 
 

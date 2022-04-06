@@ -114,13 +114,13 @@ public class TaxiLivreDriverApp extends Application {
     }
 
     public LoginComponent getLoginComponent(LoginView view) {
-        return DaggerLoginComponent
+        return null;/*DaggerLoginComponent
                 .builder()
                 .taxiLivreDriverAppModule(taxiLivreDriverAppModule)
                 .domainModule(domainModule)
                 .libsModule(libsModule)
                 .loginModule(new LoginModule(view))
-                .build();
+                .build();*/
     }
 
     public MainComponent getMainComponent(Context context, MainView view, FragmentManager manager,

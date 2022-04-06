@@ -827,7 +827,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
         frameLayoutAceitar.setVisibility(View.GONE);
         Toast.makeText(getContext(),"Corrida aceita!", Toast.LENGTH_LONG).show();
 
-        currentTravel = getTravel(dataTravelRequester, lastLocation);
+        //currentTravel = getTravel(dataTravelRequester, lastLocation);
+        presenter.retrieveDataUser();
 
         informMainActivityTravelAccepted();
 

@@ -34,4 +34,6 @@ public interface HomePresenter {
     void uploadUserRating(String userEmail, Rating rating);
 
     void saveCity(String cidade);
+
+    void retrieveDataUser();
 }

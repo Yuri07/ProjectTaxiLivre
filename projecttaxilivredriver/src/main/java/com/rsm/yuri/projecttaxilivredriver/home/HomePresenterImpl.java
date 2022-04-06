@@ -91,6 +91,11 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     @Override
+    public void retrieveDataUser() {
+        interactor.retrieveDataUser();
+    }
+
+    @Override
     @Subscribe
     public void onEventMainThread(MapHomeEvent event) {
         Log.d("d", "HomePresenterImpl.onEventMainThread");

@@ -266,7 +266,7 @@ public class ProfileActivity extends AppCompatActivity implements AddDialogFragm
 
     @Override
     public void onBackPressed() {
-        Intent intent=new Intent();
+        Intent intent = new Intent();
         setResult(MainActivity.UPDATE_PROFILE, intent);
         finish();
     }

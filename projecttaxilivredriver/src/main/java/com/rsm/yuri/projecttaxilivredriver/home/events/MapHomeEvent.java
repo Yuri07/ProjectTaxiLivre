@@ -12,6 +12,9 @@ public class MapHomeEvent {
 
     public static int ON_TRAVEL_CREATED = 22;
 
+    public final static int onSuccessToGetDateUser = 101;
+    public final static int onFailedToGetDateUser = 102;
+
     public String getNewTravelID() {
         return newTravelID;
     }

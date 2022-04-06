@@ -7,9 +7,17 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.2" />
         <entry key="app/src/main/res/layout/info_window.xml" value="0.19791666666666666" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/activity_chat.xml" value="0.15" />
         <entry key="projecttaxilivredriver/src/main/res/layout/activity_edit_profile.xml" value="0.19791666666666666" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/activity_login.xml" value="0.1" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/activity_main.xml" value="0.11548913043478261" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/app_bar_main.xml" value="0.10643115942028986" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/content_avaliation.xml" value="0.25" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/content_chat.xml" value="0.1" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/fragment_avaliation.xml" value="0.11548913043478261" />
         <entry key="projecttaxilivredriver/src/main/res/layout/fragment_home.xml" value="0.1" />
-        <entry key="projecttaxilivredriver/src/main/res/layout/fragment_profile.xml" value="0.10643115942028986" />
+        <entry key="projecttaxilivredriver/src/main/res/layout/fragment_profile.xml" value="0.25" />
+        <entry key="projecttaxilivredriver/src/main/res/menu/main_navigation_items.xml" value="0.19791666666666666" />
       </map>
     </option>
   </component>

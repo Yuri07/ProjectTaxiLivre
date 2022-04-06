@@ -26,4 +26,6 @@ public interface HomeRepository {
     void uploadUserRating(String userEmail, Rating rating);
 
     void saveCity(String cidade);
+
+    void retrieveDataUser();
 }

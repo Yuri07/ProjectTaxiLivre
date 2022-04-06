@@ -66,4 +66,9 @@ public class HomeInteractorImpl implements HomeInteractor {
     public void saveCity(String cidade) {
         repository.saveCity(cidade);
     }
+
+    @Override
+    public void retrieveDataUser() {
+        repository.retrieveDataUser();
+    }
 }

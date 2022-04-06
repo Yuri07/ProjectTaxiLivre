@@ -26,8 +26,8 @@ import com.rsm.yuri.projecttaxilivredriver.main.events.MainEvent;
 
 public class MainRepositoryImpl implements MainRepository {
 
-    private EventBus eventBus;
-    private FirebaseAPI firebase;
+    private EventBus eventBus = null;
+    private FirebaseAPI firebase = null;
 
     private DatabaseReference myUserReference;
     //private Driver loggedDriver;
@@ -42,7 +42,8 @@ public class MainRepositoryImpl implements MainRepository {
 
     @Override
     public void logout() {
-        firebase.logout();
+        if(firebase!=null)
+            firebase.logout();
     }
 
     @Override

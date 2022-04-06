@@ -1,12 +1,13 @@
 package com.rsm.yuri.projecttaxilivre.map.entities;
 
 public class TravelRequest {
-
+    //dados do usuario
     private String requesterEmail;
     private String requesterName;
     private String urlPhotoUser;
     private double averageRatingsPassenger;
 
+    //dados de posição da viagem
     private String placeOriginAddress;
     private String placeDestinoAddress;
     private double latOrigem;
@@ -14,6 +15,7 @@ public class TravelRequest {
     private double latDestino;
     private double longDestino;
 
+    //dados da viagem
     private String travelDate;
     private double travelPrice;
     private String urlPhotoMap;

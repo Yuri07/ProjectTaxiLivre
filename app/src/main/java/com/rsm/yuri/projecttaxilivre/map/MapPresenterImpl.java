@@ -143,7 +143,7 @@ public class MapPresenterImpl implements MapPresenter {
 
     }
 
-        private void onDriverAdded(NearDriver nearDriver) {
+    private void onDriverAdded(NearDriver nearDriver) {
         if(mapView!=null){
             mapView.onDriverAdded(nearDriver);
         }

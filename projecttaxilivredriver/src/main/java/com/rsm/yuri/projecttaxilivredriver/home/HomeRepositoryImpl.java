@@ -3,10 +3,14 @@ package com.rsm.yuri.projecttaxilivredriver.home;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.rsm.yuri.projecttaxilivredriver.avaliation.entities.Rating;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseAPI;
 import com.rsm.yuri.projecttaxilivredriver.domain.FirebaseActionListenerCallback;
+import com.rsm.yuri.projecttaxilivredriver.historicchatslist.entities.Driver;
 import com.rsm.yuri.projecttaxilivredriver.home.entities.NearDriver;
 import com.rsm.yuri.projecttaxilivredriver.home.events.MapHomeEvent;
 import com.rsm.yuri.projecttaxilivredriver.home.models.AreasFortalezaHelper;
@@ -27,6 +31,8 @@ public class HomeRepositoryImpl implements HomeRepository {
     private AreasHelper areasHelper;
     private String cidade;
 
+    private DatabaseReference myUserReference;
+
     public HomeRepositoryImpl(FirebaseAPI firebase, EventBus eventBus/*, GroupAreas groupAreas*/,
                               AreasHelper areasHelper, String cidade) {
         this.firebase = firebase;
@@ -40,7 +46,7 @@ public class HomeRepositoryImpl implements HomeRepository {
     @Override
     public void updateLocation(LatLng location) {
         groupAreas = areasHelper.getGroupAreas(location.latitude, location.longitude);
-        firebase.updateMyLocation(location, cidade, groupAreas.getMainArea().getId(), new FirebaseActionListenerCallback() {
+        /*firebase.updateMyLocation(location, cidade, groupAreas.getMainArea().getId(), new FirebaseActionListenerCallback() {
             @Override
             public void onSuccess() {
                 Log.d("d", "HomeRepositoryImpl().updateLocation on Sucess()");
@@ -49,7 +55,7 @@ public class HomeRepositoryImpl implements HomeRepository {
             public void onError(DatabaseError error) {
                 post(error.getMessage());
             }
-        });
+        });*/
     }
 
     @Override
@@ -135,16 +141,55 @@ public class HomeRepositoryImpl implements HomeRepository {
         firebase.saveCity(cidade);
     }
 
+    @Override
+    public void retrieveDataUser() {
+        firebase.checkForSession(new FirebaseActionListenerCallback(){
+            @Override
+            public void onSuccess() {
+
+                myUserReference = firebase.getMyUserReference();//pega a referencia no
+                // database para o usuario atualmente autenticado
+
+                //myUserReference.keepSynced(true);
+
+                myUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        postOnSuccessRetrieveDataUser(snapshot);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError firebaseError) {
+                        post(firebaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(DatabaseError error) {
+                post("Falha em recuperar a sessao");
+            }
+        });
+    }
+
+    private void postOnSuccessRetrieveDataUser(DataSnapshot snapshot){
+        Driver currentUser = snapshot.getValue(Driver.class);//null caso seja a primeira vez que o metodo e executado para esse usuario
+        post(MapHomeEvent.onSuccessToGetDateUser, currentUser);
+    }
+
     private void post(int type, String newTravelID){
         Log.d("d", "HomeRepositoryImpl.post(type, newTravelID)");
-        post( type, newTravelID, null );
+        post( type, newTravelID, null, null );
+    }
+
+    private void post(int type, Driver currentUser){
+        post(type,null,currentUser,null);
     }
 
     private void post(String error){
-        post(-1, null, error);
+        post(-1, null, null, error);
     }
 
-    private void post(int type, String newTravelID, String error){
+    private void post(int type, String newTravelID, Driver user,String error){
         MapHomeEvent event = new MapHomeEvent();
         event.setNewTravelID(newTravelID);
         event.setEventType(type);
